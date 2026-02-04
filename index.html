@@ -3,27 +3,297 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote</title>
+<title>CodeNote – FINAL FULL FEATURE</title>
 
 <link rel="manifest" href="/Note/manifest.json">
 <meta name="theme-color" content="#0e639c">
 
 <style>
-html,body{
-  margin:0;
-  height:100%;
-  background:#1e1e1e;
-  color:#d4d4d4;
-  font-family:Consolas,monospace;
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#1e1e1e;font-family:Consolas,monospace}
+.app{display:flex;height:100vh}
+
+/* animations */
+@keyframes pop{from{transform:scale(.85);opacity:.5}to{transform:scale(1);opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes glow{0%{box-shadow:0 0 0 #0e639c}50%{box-shadow:0 0 12px #0e639c}100%{box-shadow:0 0 0 #0e639c}}
+
+/* sidebar */
+.sidebar{width:240px;background:#252526;color:#ccc;display:flex;flex-direction:column}
+.sidebar h3{margin:12px;font-size:13px;color:#fff}
+.file-list{flex:1;overflow:auto}
+.file{padding:8px 12px;display:flex;justify-content:space-between;cursor:pointer}
+.file:hover{background:#333}
+.file.active{background:#373737;color:#fff}
+.file .del{color:#dc2626;cursor:pointer}
+.new-btn{margin:8px;padding:8px;background:#0e639c;color:#fff;border:none;border-radius:6px}
+
+/* main */
+.main{flex:1;display:flex;flex-direction:column}
+
+/* top */
+.tabs{height:42px;background:#252526;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+
+/* toolbar */
+.toolbar{display:flex;gap:6px}
+.toolbar button,.toolbar select,.toolbar input[type=color]{
+  background:#3c3c3c;color:#fff;border:none;
+  padding:4px 8px;border-radius:4px;cursor:pointer
+}
+
+/* editor */
+.editor{
+  flex:1;padding:32px;color:#d4d4d4;
+  font-size:14px;outline:none;
+  white-space:pre-wrap;line-height:1.7;
+  caret-color:#0e639c
+}
+
+/* image */
+.img-box{display:inline-block;position:relative;vertical-align:middle}
+.img-box img{display:block}
+.img-box .handle{position:absolute;right:-6px;bottom:-6px;width:12px;height:12px;background:#0e639c;cursor:nwse-resize;border-radius:50%}
+
+/* modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:9999}
+.modal{background:#252526;color:#fff;width:380px;border-radius:10px}
+.modal-header{padding:14px 16px;font-weight:bold;border-bottom:1px solid #333}
+.modal-body{padding:16px}
+.modal-body input{width:100%;padding:10px;background:#1e1e1e;color:#fff;border:1px solid #444;border-radius:6px}
+.modal-footer{padding:14px 16px;display:flex;justify-content:flex-end;gap:8px}
+.btn{padding:6px 14px;border:none;cursor:pointer;border-radius:6px}
+.btn-primary{background:#0e639c;color:#fff}
+.btn-danger{background:#dc2626;color:#fff}
+.btn-cancel{background:#3c3c3c;color:#fff}
+
+/* print */
+@media print{
+  body{background:#fff!important}
+  .sidebar,.tabs,.toolbar,#installBtn{display:none!important}
+  .app,.main{display:block!important}
+  .editor{color:#000!important;font-size:12pt!important;padding:40px!important}
 }
 </style>
 </head>
+
 <body>
-<h1 style="padding:20px">CodeNote</h1>
+<div class="app">
+  <div class="sidebar">
+    <h3>📁 Files</h3>
+    <div class="file-list" id="fileList"></div>
+    <button class="new-btn" onclick="openCreate()">+ New File</button>
+  </div>
+
+  <div class="main">
+    <div class="tabs">
+      <div id="tabName">note</div>
+      <div class="toolbar">
+        <select onchange="setFontSize(this.value)">
+          <option value="">A</option>
+          <option value="12px">12</option>
+          <option value="14px">14</option>
+          <option value="16px">16</option>
+          <option value="18px">18</option>
+          <option value="22px">22</option>
+        </select>
+        <button onclick="cmd('bold')"><b>B</b></button>
+        <button onclick="cmd('italic')"><i>I</i></button>
+        <button onclick="highlight()">🖍️</button>
+        <input type="color" onchange="setColor(this.value)">
+        <button onclick="addImage()">📷</button>
+        <button onclick="printPDF()">🖨️ PDF</button>
+        <button id="installBtn" style="display:none;background:#0e639c">⬇️ Install</button>
+      </div>
+    </div>
+    <div id="editor" class="editor" contenteditable="true"></div>
+  </div>
+</div>
+
+<input type="file" id="imageInput" accept="image/*" hidden>
+
+<div class="modal-backdrop" id="createModal">
+  <div class="modal">
+    <div class="modal-header">สร้างไฟล์ใหม่</div>
+    <div class="modal-body">
+      <input id="nameInput" placeholder="ชื่อไฟล์">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="confirmCreate()">ตกลง</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="deleteModal">
+  <div class="modal">
+    <div class="modal-header">ยืนยันการลบ</div>
+    <div class="modal-body" id="deleteText"></div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">ลบ</button>
+    </div>
+  </div>
+</div>
 
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
+/* ===== FILE SYSTEM ===== */
+let files=JSON.parse(localStorage.getItem("files")||"{}");
+let currentFile=null;
+let deleteTarget=null;
+
+const editor=document.getElementById("editor");
+const fileList=document.getElementById("fileList");
+const tabName=document.getElementById("tabName");
+const imageInput=document.getElementById("imageInput");
+
+function renderFiles(){
+  fileList.innerHTML="";
+  Object.keys(files).forEach(n=>{
+    const d=document.createElement("div");
+    d.className="file"+(n===currentFile?" active":"");
+    d.innerHTML=`<span onclick="openFile('${n}')">${n}</span>
+                 <span class="del" onclick="askDelete('${n}')">🗑️</span>`;
+    fileList.appendChild(d);
+  });
+}
+function openFile(n){
+  save();currentFile=n;
+  editor.innerHTML=files[n]||"";
+  tabName.textContent=n;
+  renderFiles();attachResize();
+}
+function save(){
+  if(currentFile){
+    files[currentFile]=editor.innerHTML;
+    localStorage.setItem("files",JSON.stringify(files));
+  }
+}
+editor.addEventListener("input",()=>requestAnimationFrame(save));
+
+/* ===== TEXT FORMAT ===== */
+function cmd(c){editor.focus();document.execCommand(c,false,null)}
+function setFontSize(size){
+  if(!size)return;
+  const sel=window.getSelection();if(!sel.rangeCount)return;
+  const span=document.createElement("span");span.style.fontSize=size;
+  const r=sel.getRangeAt(0);
+  span.appendChild(r.extractContents());r.insertNode(span);save();
+}
+function setColor(color){
+  const sel=window.getSelection();if(!sel.rangeCount)return;
+  const span=document.createElement("span");span.style.color=color;
+  const r=sel.getRangeAt(0);
+  span.appendChild(r.extractContents());r.insertNode(span);save();
+}
+function highlight(){
+  const sel=window.getSelection();if(!sel.rangeCount)return;
+  const r=sel.getRangeAt(0);
+  const m=document.createElement("mark");
+  r.surroundContents(m);save();
+}
+
+/* ===== IMAGE ===== */
+function addImage(){
+  editor.focus();imageInput.value="";imageInput.click();
+}
+imageInput.onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const box=document.createElement("span");
+    box.className="img-box";
+    box.contentEditable=false;
+    const img=document.createElement("img");
+    img.src=r.result;img.style.width="120px";
+    const h=document.createElement("span");
+    h.className="handle";
+    box.appendChild(img);box.appendChild(h);
+    window.getSelection().getRangeAt(0).insertNode(box);
+    enableResize(img,h);save();
+  };
+  r.readAsDataURL(f);
+};
+function enableResize(img,h){
+  h.onmousedown=e=>{
+    e.preventDefault();
+    const startX=e.clientX,startW=img.offsetWidth;
+    document.onmousemove=ev=>{
+      img.style.width=Math.max(40,startW+(ev.clientX-startX))+"px";
+    };
+    document.onmouseup=()=>{
+      document.onmousemove=null;
+      document.onmouseup=null;
+      save();
+    };
+  };
+}
+function attachResize(){
+  document.querySelectorAll(".img-box").forEach(b=>{
+    enableResize(b.querySelector("img"),b.querySelector(".handle"));
+  });
+}
+
+/* ===== MODAL ===== */
+function openCreate(){
+  document.getElementById("createModal").style.display="flex";
+}
+function askDelete(n){
+  deleteTarget=n;
+  document.getElementById("deleteText").innerHTML=`คุณต้องการลบไฟล์ <b>${n}</b> ใช่หรือไม่?`;
+  document.getElementById("deleteModal").style.display="flex";
+}
+function closeModal(){
+  document.getElementById("createModal").style.display="none";
+  document.getElementById("deleteModal").style.display="none";
+}
+function confirmCreate(){
+  const n=nameInput.value.trim();if(!n)return;
+  files[n]="";
+  localStorage.setItem("files",JSON.stringify(files));
+  closeModal();openFile(n);
+}
+function confirmDelete(){
+  delete files[deleteTarget];
+  localStorage.setItem("files",JSON.stringify(files));
+  closeModal();
+  const k=Object.keys(files);
+  if(k.length)openFile(k[0]);
+  else{
+    currentFile=null;
+    editor.innerHTML="";
+    tabName.textContent="";
+    renderFiles();
+  }
+}
+
+/* ===== PRINT ===== */
+function printPDF(){window.print()}
+
+/* ===== INIT ===== */
+if(Object.keys(files).length===0){
+  files["note"]="🎨 เลือกข้อความแล้วเปลี่ยนสี / เพิ่มรูป / ติดตั้งเป็นแอพได้แล้ว";
+  localStorage.setItem("files",JSON.stringify(files));
+}
+openFile(Object.keys(files)[0]);
+
+/* ===== PWA INSTALL ===== */
+let deferredPrompt;
+const installBtn=document.getElementById("installBtn");
+window.addEventListener("beforeinstallprompt",e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  installBtn.style.display="inline-block";
+});
+installBtn.onclick=async()=>{
+  installBtn.style.display="none";
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt=null;
+  }
+};
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
     navigator.serviceWorker.register('/Note/sw.js');
   });
 }
