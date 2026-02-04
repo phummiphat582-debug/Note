@@ -1,7 +1,8 @@
 {
   "name": "CodeNote",
   "short_name": "CodeNote",
-  "start_url": "./index.html",
+  "start_url": "/Note/",
+  "scope": "/Note/",
   "display": "standalone",
   "background_color": "#1e1e1e",
   "theme_color": "#0e639c",
