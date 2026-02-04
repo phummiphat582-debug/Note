@@ -1,13 +1,11 @@
-self.addEventListener("install", e => {
+self.addEventListener("install",e=>{
+  self.skipWaiting();
   e.waitUntil(
-    caches.open("codenote-v1").then(cache =>
-      cache.addAll(["./", "./index.html", "./manifest.json"])
+    caches.open("codenote-v1").then(c=>
+      c.addAll(["/Note/","/Note/index.html","/Note/manifest.json"])
     )
   );
 });
-
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
-  );
+self.addEventListener("fetch",e=>{
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
 });
