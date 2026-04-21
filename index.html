@@ -3,300 +3,684 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote – FINAL FULL FEATURE</title>
-
+<title>CodeNote</title>
 <link rel="manifest" href="/Note/manifest.json">
 <meta name="theme-color" content="#0e639c">
-
 <style>
-*,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#1e1e1e;font-family:Consolas,monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#1a1a1b;font-family:Consolas,'SF Mono',monospace;overflow:hidden}
 .app{display:flex;height:100vh}
 
-/* animations */
-@keyframes pop{from{transform:scale(.85);opacity:.5}to{transform:scale(1);opacity:1}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes glow{0%{box-shadow:0 0 0 #0e639c}50%{box-shadow:0 0 12px #0e639c}100%{box-shadow:0 0 0 #0e639c}}
-
 /* sidebar */
-.sidebar{width:240px;background:#252526;color:#ccc;display:flex;flex-direction:column}
-.sidebar h3{margin:12px;font-size:13px;color:#fff}
-.file-list{flex:1;overflow:auto}
-.file{padding:8px 12px;display:flex;justify-content:space-between;cursor:pointer}
-.file:hover{background:#333}
-.file.active{background:#373737;color:#fff}
-.file .del{color:#dc2626;cursor:pointer}
-.new-btn{margin:8px;padding:8px;background:#0e639c;color:#fff;border:none;border-radius:6px}
+.sidebar{width:220px;background:#202021;color:#ccc;display:flex;flex-direction:column;border-right:1px solid #333;flex-shrink:0}
+.sidebar-top{padding:10px 12px 6px;display:flex;align-items:center;justify-content:space-between}
+.sidebar-top span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#666}
+.file-list{flex:1;overflow-y:auto;overflow-x:hidden}
+.file-list::-webkit-scrollbar{width:4px}
+.file-list::-webkit-scrollbar-thumb{background:#444;border-radius:2px}
+.file-item{display:flex;align-items:center;padding:7px 10px;cursor:pointer;gap:6px;transition:background .12s;border-left:2px solid transparent}
+.file-item:hover{background:#2a2a2b}
+.file-item.active{background:#2e2e30;border-left-color:#0e639c;color:#fff}
+.file-item .name{flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-item .del{opacity:0;color:#666;font-size:11px;padding:2px 4px;border-radius:3px;transition:opacity .15s;cursor:pointer;flex-shrink:0}
+.file-item:hover .del{opacity:1}
+.file-item .del:hover{color:#ef4444;background:#2f1515}
+.new-btn{margin:8px;padding:7px 10px;background:#0e639c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;transition:background .15s;text-align:left;display:flex;align-items:center;gap:6px}
+.new-btn:hover{background:#1177b0}
+.new-btn:active{transform:scale(.98)}
 
 /* main */
-.main{flex:1;display:flex;flex-direction:column}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
 
-/* top */
-.tabs{height:42px;background:#252526;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+/* topbar */
+.topbar{height:40px;background:#202021;display:flex;align-items:center;justify-content:space-between;padding:0 10px;border-bottom:1px solid #2e2e30;flex-shrink:0;gap:8px}
+.tab-name{font-size:12.5px;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.toolbar{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.tb-btn{background:transparent;color:#aaa;border:none;padding:4px 7px;border-radius:4px;cursor:pointer;font-size:12px;transition:background .12s,color .12s;white-space:nowrap}
+.tb-btn:hover{background:#2e2e30;color:#fff}
+.tb-btn:active{transform:scale(.96)}
+.tb-sep{width:1px;height:16px;background:#333;margin:0 2px}
+.tb-select{background:#2e2e30;color:#ccc;border:1px solid #3a3a3c;padding:3px 5px;border-radius:4px;font-size:11.5px;cursor:pointer;font-family:inherit}
+.tb-select:focus{outline:none;border-color:#0e639c}
+.tb-color{width:26px;height:22px;border:1px solid #3a3a3c;border-radius:4px;cursor:pointer;padding:1px;background:#2e2e30}
 
-/* toolbar */
-.toolbar{display:flex;gap:6px}
-.toolbar button,.toolbar select,.toolbar input[type=color]{
-  background:#3c3c3c;color:#fff;border:none;
-  padding:4px 8px;border-radius:4px;cursor:pointer
-}
+/* status bar */
+.statusbar{height:22px;background:#0e639c;display:flex;align-items:center;padding:0 12px;gap:16px;flex-shrink:0}
+.status-item{font-size:11px;color:rgba(255,255,255,.75);white-space:nowrap}
+.status-item.save-ok{color:#7ee787}
+.status-item.saving{color:#fbbf24}
 
-/* editor */
-.editor{
-  flex:1;padding:32px;color:#d4d4d4;
-  font-size:14px;outline:none;
-  white-space:pre-wrap;line-height:1.7;
-  caret-color:#0e639c
-}
+/* editor area */
+.editor-wrap{flex:1;overflow:auto;position:relative}
+.editor-wrap::-webkit-scrollbar{width:8px}
+.editor-wrap::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+.editor-wrap::-webkit-scrollbar-thumb:hover{background:#444}
+.editor{min-height:100%;padding:28px 36px;color:#d4d4d4;font-size:14px;outline:none;white-space:pre-wrap;line-height:1.8;caret-color:#0e639c;word-break:break-word}
+.editor:empty::before{content:attr(data-placeholder);color:#444;pointer-events:none}
+
+/* drag over */
+.editor-wrap.dragover{outline:2px dashed #0e639c;outline-offset:-4px}
 
 /* image */
-.img-box{display:inline-block;position:relative;vertical-align:middle}
-.img-box img{display:block}
-.img-box .handle{position:absolute;right:-6px;bottom:-6px;width:12px;height:12px;background:#0e639c;cursor:nwse-resize;border-radius:50%}
+.img-box{display:inline-block;position:relative;vertical-align:middle;margin:2px}
+.img-box img{display:block;border-radius:4px}
+.img-box .handle{position:absolute;right:-5px;bottom:-5px;width:11px;height:11px;background:#0e639c;cursor:nwse-resize;border-radius:50%;opacity:.8}
+.img-box .handle:hover{opacity:1}
+.img-box .del-img{position:absolute;top:-6px;right:-6px;width:14px;height:14px;background:#ef4444;color:#fff;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s;line-height:1}
+.img-box:hover .del-img{opacity:1}
 
 /* modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:9999}
-.modal{background:#252526;color:#fff;width:380px;border-radius:10px}
-.modal-header{padding:14px 16px;font-weight:bold;border-bottom:1px solid #333}
-.modal-body{padding:16px}
-.modal-body input{width:100%;padding:10px;background:#1e1e1e;color:#fff;border:1px solid #444;border-radius:6px}
-.modal-footer{padding:14px 16px;display:flex;justify-content:flex-end;gap:8px}
-.btn{padding:6px 14px;border:none;cursor:pointer;border-radius:6px}
-.btn-primary{background:#0e639c;color:#fff}
-.btn-danger{background:#dc2626;color:#fff}
-.btn-cancel{background:#3c3c3c;color:#fff}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(2px)}
+.overlay.show{display:flex}
+.modal{background:#252526;border:1px solid #3a3a3c;border-radius:10px;width:360px;animation:popIn .15s ease}
+@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{padding:14px 16px 10px;font-size:13px;font-weight:600;color:#e5e5e5;border-bottom:1px solid #333}
+.modal-body{padding:14px 16px}
+.modal-body input{width:100%;padding:9px 11px;background:#1e1e1f;color:#e5e5e5;border:1px solid #3a3a3c;border-radius:6px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
+.modal-body input:focus{border-color:#0e639c}
+.modal-foot{padding:10px 16px 14px;display:flex;justify-content:flex-end;gap:8px}
+.mbtn{padding:6px 14px;border:none;cursor:pointer;border-radius:6px;font-size:12px;transition:opacity .12s,transform .1s;font-family:inherit}
+.mbtn:hover{opacity:.85}
+.mbtn:active{transform:scale(.97)}
+.mbtn-ok{background:#0e639c;color:#fff}
+.mbtn-del{background:#dc2626;color:#fff}
+.mbtn-cancel{background:#3a3a3c;color:#ccc}
 
-/* print */
+/* sound indicator */
+.sound-dot{width:6px;height:6px;border-radius:50%;background:#7ee787;display:inline-block;margin-right:4px;vertical-align:middle}
+.sound-dot.off{background:#555}
+
 @media print{
-  body{background:#fff!important}
-  .sidebar,.tabs,.toolbar,#installBtn{display:none!important}
+  .sidebar,.topbar,.statusbar{display:none!important}
   .app,.main{display:block!important}
-  .editor{color:#000!important;font-size:12pt!important;padding:40px!important}
+  .editor{color:#000!important;font-size:12pt!important;padding:30px!important;white-space:pre-wrap!important}
 }
 </style>
 </head>
-
 <body>
 <div class="app">
   <div class="sidebar">
-    <h3>📁 Files</h3>
+    <div class="sidebar-top">
+      <span>Files</span>
+    </div>
     <div class="file-list" id="fileList"></div>
-    <button class="new-btn" onclick="openCreate()">+ New File</button>
+    <button class="new-btn" onclick="openCreate()">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      New File
+    </button>
   </div>
 
   <div class="main">
-    <div class="tabs">
-      <div id="tabName">note</div>
+    <div class="topbar">
+      <div class="tab-name" id="tabName">note</div>
       <div class="toolbar">
-        <select onchange="setFontSize(this.value)">
-          <option value="">A</option>
+        <select class="tb-select" onchange="setFontSize(this.value)" title="Font size">
+          <option value="">Size</option>
+          <option value="11px">11</option>
           <option value="12px">12</option>
           <option value="14px">14</option>
           <option value="16px">16</option>
           <option value="18px">18</option>
           <option value="22px">22</option>
+          <option value="28px">28</option>
+          <option value="36px">36</option>
         </select>
-        <button onclick="cmd('bold')"><b>B</b></button>
-        <button onclick="cmd('italic')"><i>I</i></button>
-        <button onclick="highlight()">🖍️</button>
-        <input type="color" onchange="setColor(this.value)">
-        <button onclick="addImage()">📷</button>
-        <button onclick="printPDF()">🖨️ PDF</button>
-        <button id="installBtn" style="display:none;background:#0e639c">⬇️ Install</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="cmd('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button class="tb-btn" onclick="cmd('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button class="tb-btn" onclick="cmd('underline')" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button class="tb-btn" onclick="cmd('strikeThrough')" title="Strikethrough"><s>S</s></button>
+        <button class="tb-btn" onclick="doHighlight()" title="Highlight selected text">HL</button>
+        <input class="tb-color" type="color" onchange="setColor(this.value)" title="Text color" value="#ff6b6b">
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="cmd('insertUnorderedList')" title="Bullet list">• List</button>
+        <button class="tb-btn" onclick="addImage()" title="Insert image (or drag & drop / paste)">IMG</button>
+        <button class="tb-btn" onclick="printPage()" title="Print / Save as PDF">PDF</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="soundBtn" onclick="toggleSound()" title="Toggle keyboard sound">
+          <span class="sound-dot" id="soundDot"></span>SFX
+        </button>
       </div>
     </div>
-    <div id="editor" class="editor" contenteditable="true"></div>
+
+    <div class="editor-wrap" id="editorWrap">
+      <div id="editor" class="editor" contenteditable="true"
+           data-placeholder="เริ่มพิมพ์ได้เลย... (Ctrl+B Bold · Ctrl+I Italic · Ctrl+S Save · Ctrl+N ไฟล์ใหม่ · ลากรูปวางได้โดยตรง)">
+      </div>
+    </div>
+
+    <div class="statusbar">
+      <span class="status-item save-ok" id="saveStatus">Saved</span>
+      <span class="status-item" id="wordCount">0 words</span>
+      <span class="status-item" id="cursorPos">Ln 1</span>
+      <span class="status-item" id="charCount">0 chars</span>
+    </div>
   </div>
 </div>
 
-<input type="file" id="imageInput" accept="image/*" hidden>
+<input type="file" id="imageInput" accept="image/*" hidden multiple>
 
-<div class="modal-backdrop" id="createModal">
+<!-- Create modal -->
+<div class="overlay" id="createModal">
   <div class="modal">
-    <div class="modal-header">สร้างไฟล์ใหม่</div>
+    <div class="modal-head">สร้างไฟล์ใหม่</div>
     <div class="modal-body">
-      <input id="nameInput" placeholder="ชื่อไฟล์">
+      <input id="nameInput" placeholder="ชื่อไฟล์" autocomplete="off">
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-cancel" onclick="closeModal()">ยกเลิก</button>
-      <button class="btn btn-primary" onclick="confirmCreate()">ตกลง</button>
+    <div class="modal-foot">
+      <button class="mbtn mbtn-cancel" onclick="closeModals()">ยกเลิก</button>
+      <button class="mbtn mbtn-ok" onclick="confirmCreate()">ตกลง</button>
     </div>
   </div>
 </div>
 
-<div class="modal-backdrop" id="deleteModal">
+<!-- Delete modal -->
+<div class="overlay" id="deleteModal">
   <div class="modal">
-    <div class="modal-header">ยืนยันการลบ</div>
-    <div class="modal-body" id="deleteText"></div>
-    <div class="modal-footer">
-      <button class="btn btn-cancel" onclick="closeModal()">ยกเลิก</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">ลบ</button>
+    <div class="modal-head">ยืนยันการลบ</div>
+    <div class="modal-body" id="deleteText" style="color:#ccc;font-size:13px;line-height:1.6"></div>
+    <div class="modal-foot">
+      <button class="mbtn mbtn-cancel" onclick="closeModals()">ยกเลิก</button>
+      <button class="mbtn mbtn-del" onclick="confirmDelete()">ลบ</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ===== FILE SYSTEM ===== */
-let files=JSON.parse(localStorage.getItem("files")||"{}");
-let currentFile=null;
-let deleteTarget=null;
+/* =============================================
+   AUDIO ENGINE – Premium Mechanical Switch
+   Web Audio API — no external files needed
+   Layers: noise burst + spring ping + plate thud
+   ============================================= */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+let soundOn = localStorage.getItem('cn_sfx') !== 'off';
 
-const editor=document.getElementById("editor");
-const fileList=document.getElementById("fileList");
-const tabName=document.getElementById("tabName");
-const imageInput=document.getElementById("imageInput");
+function getACtx() {
+  if (!actx) actx = new AudioCtx();
+  return actx;
+}
 
-function renderFiles(){
-  fileList.innerHTML="";
-  Object.keys(files).forEach(n=>{
-    const d=document.createElement("div");
-    d.className="file"+(n===currentFile?" active":"");
-    d.innerHTML=`<span onclick="openFile('${n}')">${n}</span>
-                 <span class="del" onclick="askDelete('${n}')">🗑️</span>`;
+function playKey(isSpecial) {
+  if (!soundOn) return;
+  try {
+    const ctx = getACtx();
+    const t = ctx.currentTime;
+    const vol = 0.2 + Math.random() * 0.07;
+
+    /* Layer 1: Noise burst – click body */
+    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.04), ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+
+    const bpf = ctx.createBiquadFilter();
+    bpf.type = 'bandpass';
+    bpf.frequency.value = isSpecial ? 850 : 1200 + Math.random() * 250;
+    bpf.Q.value = 1.8;
+
+    const env1 = ctx.createGain();
+    env1.gain.setValueAtTime(vol, t);
+    env1.gain.exponentialRampToValueAtTime(0.001, t + 0.022);
+
+    noise.connect(bpf);
+    bpf.connect(env1);
+    env1.connect(ctx.destination);
+    noise.start(t);
+    noise.stop(t + 0.025);
+
+    /* Layer 2: Sine sweep – spring resonance / ping */
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(isSpecial ? 1600 : 2300 + Math.random() * 500, t);
+    osc2.frequency.exponentialRampToValueAtTime(isSpecial ? 600 : 800, t + 0.02);
+
+    const env2 = ctx.createGain();
+    env2.gain.setValueAtTime(vol * 0.28, t);
+    env2.gain.exponentialRampToValueAtTime(0.001, t + 0.022);
+
+    osc2.connect(env2);
+    env2.connect(ctx.destination);
+    osc2.start(t);
+    osc2.stop(t + 0.024);
+
+    /* Layer 3: Triangle – plate body / low thud */
+    const osc3 = ctx.createOscillator();
+    osc3.type = 'triangle';
+    osc3.frequency.value = isSpecial ? 110 : 170 + Math.random() * 50;
+
+    const env3 = ctx.createGain();
+    env3.gain.setValueAtTime(vol * 0.55, t);
+    env3.gain.exponentialRampToValueAtTime(0.001, t + 0.038);
+
+    osc3.connect(env3);
+    env3.connect(ctx.destination);
+    osc3.start(t);
+    osc3.stop(t + 0.042);
+
+  } catch(e) { /* silent fail – audio not available */ }
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  localStorage.setItem('cn_sfx', soundOn ? 'on' : 'off');
+  updateSoundBtn();
+}
+
+function updateSoundBtn() {
+  document.getElementById('soundDot').className = 'sound-dot' + (soundOn ? '' : ' off');
+  document.getElementById('soundBtn').title = soundOn ? 'คลิกเพื่อปิดเสียง' : 'คลิกเพื่อเปิดเสียง';
+}
+updateSoundBtn();
+
+/* =============================================
+   FILE SYSTEM
+   ============================================= */
+let files = {};
+try { files = JSON.parse(localStorage.getItem('cn_files') || '{}'); } catch(e) { files = {}; }
+let currentFile = null;
+let deleteTarget = null;
+let saveTimer = null;
+let isDirty = false;
+
+const editor    = document.getElementById('editor');
+const fileList  = document.getElementById('fileList');
+const tabName   = document.getElementById('tabName');
+const imageInput = document.getElementById('imageInput');
+const saveStatus = document.getElementById('saveStatus');
+
+/* Debounced save — fires at most once per 800ms
+   This is the main fix for lag: previously saved on every keystroke */
+function scheduleSave() {
+  isDirty = true;
+  setStatus('saving');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(doSave, 800);
+}
+
+function doSave() {
+  if (!currentFile || !isDirty) return;
+  files[currentFile] = editor.innerHTML;
+  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {
+    setStatus('error');
+    return;
+  }
+  isDirty = false;
+  setStatus('saved');
+}
+
+function setStatus(s) {
+  if (s === 'saving') {
+    saveStatus.textContent = 'Saving...';
+    saveStatus.className = 'status-item saving';
+  } else if (s === 'error') {
+    saveStatus.textContent = 'Save failed (storage full?)';
+    saveStatus.className = 'status-item';
+    saveStatus.style.color = '#ef4444';
+  } else {
+    saveStatus.textContent = 'Saved';
+    saveStatus.className = 'status-item save-ok';
+  }
+}
+
+/* Throttled metrics update */
+let metricsTimer = null;
+function scheduleMetrics() {
+  if (metricsTimer) return;
+  metricsTimer = setTimeout(() => {
+    updateMetrics();
+    metricsTimer = null;
+  }, 250);
+}
+
+function updateMetrics() {
+  const text = editor.innerText || '';
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const chars = text.length;
+  document.getElementById('wordCount').textContent = words.toLocaleString() + ' words';
+  document.getElementById('charCount').textContent = chars.toLocaleString() + ' chars';
+}
+
+/* =============================================
+   FILE MANAGEMENT
+   ============================================= */
+function renderFiles() {
+  fileList.innerHTML = '';
+  Object.keys(files).forEach(n => {
+    const d = document.createElement('div');
+    d.className = 'file-item' + (n === currentFile ? ' active' : '');
+    const safeName = n.replace(/'/g, "\\'");
+    d.innerHTML = `<span class="name" title="${n}" onclick="openFile('${safeName}')">📄 ${n}</span>
+                   <span class="del" onclick="askDelete('${safeName}')" title="ลบไฟล์">✕</span>`;
     fileList.appendChild(d);
   });
 }
-function openFile(n){
-  save();currentFile=n;
-  editor.innerHTML=files[n]||"";
-  tabName.textContent=n;
-  renderFiles();attachResize();
-}
-function save(){
-  if(currentFile){
-    files[currentFile]=editor.innerHTML;
-    localStorage.setItem("files",JSON.stringify(files));
-  }
-}
-editor.addEventListener("input",()=>requestAnimationFrame(save));
 
-/* ===== TEXT FORMAT ===== */
-function cmd(c){editor.focus();document.execCommand(c,false,null)}
-function setFontSize(size){
-  if(!size)return;
-  const sel=window.getSelection();if(!sel.rangeCount)return;
-  const span=document.createElement("span");span.style.fontSize=size;
-  const r=sel.getRangeAt(0);
-  span.appendChild(r.extractContents());r.insertNode(span);save();
-}
-function setColor(color){
-  const sel=window.getSelection();if(!sel.rangeCount)return;
-  const span=document.createElement("span");span.style.color=color;
-  const r=sel.getRangeAt(0);
-  span.appendChild(r.extractContents());r.insertNode(span);save();
-}
-function highlight(){
-  const sel=window.getSelection();if(!sel.rangeCount)return;
-  const r=sel.getRangeAt(0);
-  const m=document.createElement("mark");
-  r.surroundContents(m);save();
+function openFile(n) {
+  if (n === currentFile) return;
+  doSave(); // flush current before switching
+  currentFile = n;
+  editor.innerHTML = files[n] || '';
+  tabName.textContent = n;
+  isDirty = false;
+  setStatus('saved');
+  renderFiles();
+  attachResizeAll();
+  updateMetrics();
+  editor.focus();
 }
 
-/* ===== IMAGE ===== */
-function addImage(){
-  editor.focus();imageInput.value="";imageInput.click();
-}
-imageInput.onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    const box=document.createElement("span");
-    box.className="img-box";
-    box.contentEditable=false;
-    const img=document.createElement("img");
-    img.src=r.result;img.style.width="120px";
-    const h=document.createElement("span");
-    h.className="handle";
-    box.appendChild(img);box.appendChild(h);
-    window.getSelection().getRangeAt(0).insertNode(box);
-    enableResize(img,h);save();
-  };
-  r.readAsDataURL(f);
-};
-function enableResize(img,h){
-  h.onmousedown=e=>{
+/* =============================================
+   KEYBOARD – SOUND + SHORTCUTS
+   ============================================= */
+editor.addEventListener('keydown', e => {
+  const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ';
+  playKey(special);
+
+  /* Tab → 4 spaces (prevent focus loss) */
+  if (e.key === 'Tab') {
     e.preventDefault();
-    const startX=e.clientX,startW=img.offsetWidth;
-    document.onmousemove=ev=>{
-      img.style.width=Math.max(40,startW+(ev.clientX-startX))+"px";
+    document.execCommand('insertText', false, '    ');
+  }
+});
+
+editor.addEventListener('input', () => {
+  scheduleSave();
+  scheduleMetrics();
+});
+
+/* Global shortcuts */
+document.addEventListener('keydown', e => {
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && e.key === 's') { e.preventDefault(); doSave(); }
+  if (mod && e.key === 'n') { e.preventDefault(); openCreate(); }
+  if (e.key === 'Escape') closeModals();
+  if (e.key === 'Enter' && document.getElementById('createModal').classList.contains('show')) {
+    e.preventDefault();
+    confirmCreate();
+  }
+});
+
+/* Cursor line tracking */
+document.addEventListener('selectionchange', () => {
+  try {
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const range = sel.getRangeAt(0).cloneRange();
+    range.selectNodeContents(editor);
+    range.setEnd(sel.getRangeAt(0).startContainer, sel.getRangeAt(0).startOffset);
+    const ln = range.toString().split('\n').length;
+    document.getElementById('cursorPos').textContent = 'Ln ' + ln;
+  } catch(e) {}
+});
+
+/* =============================================
+   TEXT FORMATTING
+   ============================================= */
+function cmd(c) { editor.focus(); document.execCommand(c, false, null); }
+
+function setFontSize(size) {
+  if (!size) return;
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.getRangeAt(0).collapsed) return;
+  const span = document.createElement('span');
+  span.style.fontSize = size;
+  try { sel.getRangeAt(0).surroundContents(span); scheduleSave(); } catch(e) {}
+}
+
+function setColor(color) {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.getRangeAt(0).collapsed) return;
+  const span = document.createElement('span');
+  span.style.color = color;
+  try { sel.getRangeAt(0).surroundContents(span); scheduleSave(); } catch(e) {}
+}
+
+function doHighlight() {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.getRangeAt(0).collapsed) return;
+  const mark = document.createElement('mark');
+  mark.style.cssText = 'background:#fef08a;color:#1a1a1b;border-radius:2px;padding:0 1px';
+  try { sel.getRangeAt(0).surroundContents(mark); scheduleSave(); } catch(e) {}
+}
+
+/* =============================================
+   IMAGE HANDLING
+   ============================================= */
+function addImage() { editor.focus(); imageInput.value = ''; imageInput.click(); }
+
+imageInput.onchange = e => Array.from(e.target.files).forEach(insertImageFile);
+
+function insertImageFile(file) {
+  const r = new FileReader();
+  r.onload = () => insertImageSrc(r.result, '180px');
+  r.readAsDataURL(file);
+}
+
+function insertImageSrc(src, width) {
+  width = width || '180px';
+  const box = buildImgBox(src, width);
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount) {
+    const range = sel.getRangeAt(0);
+    range.collapse(false);
+    range.insertNode(box);
+  } else {
+    editor.appendChild(box);
+  }
+  enableResize(box.querySelector('img'), box.querySelector('.handle'));
+  scheduleSave();
+}
+
+function buildImgBox(src, width) {
+  const box = document.createElement('span');
+  box.className = 'img-box';
+  box.contentEditable = 'false';
+
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.width = width;
+  img.style.maxWidth = '100%';
+
+  const handle = document.createElement('span');
+  handle.className = 'handle';
+  handle.title = 'ลากเพื่อปรับขนาด';
+
+  const delBtn = document.createElement('span');
+  delBtn.className = 'del-img';
+  delBtn.textContent = '✕';
+  delBtn.title = 'ลบรูป';
+  delBtn.onclick = () => { box.remove(); scheduleSave(); };
+
+  box.appendChild(img);
+  box.appendChild(handle);
+  box.appendChild(delBtn);
+  return box;
+}
+
+function enableResize(img, handle) {
+  handle.onmousedown = e => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = img.offsetWidth;
+
+    const onMove = ev => {
+      const newW = Math.max(40, startW + (ev.clientX - startX));
+      img.style.width = newW + 'px';
     };
-    document.onmouseup=()=>{
-      document.onmousemove=null;
-      document.onmouseup=null;
-      save();
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      scheduleSave();
     };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
   };
 }
-function attachResize(){
-  document.querySelectorAll(".img-box").forEach(b=>{
-    enableResize(b.querySelector("img"),b.querySelector(".handle"));
+
+function attachResizeAll() {
+  document.querySelectorAll('.img-box').forEach(b => {
+    enableResize(b.querySelector('img'), b.querySelector('.handle'));
   });
 }
 
-/* ===== MODAL ===== */
-function openCreate(){
-  document.getElementById("createModal").style.display="flex";
-}
-function askDelete(n){
-  deleteTarget=n;
-  document.getElementById("deleteText").innerHTML=`คุณต้องการลบไฟล์ <b>${n}</b> ใช่หรือไม่?`;
-  document.getElementById("deleteModal").style.display="flex";
-}
-function closeModal(){
-  document.getElementById("createModal").style.display="none";
-  document.getElementById("deleteModal").style.display="none";
-}
-function confirmCreate(){
-  const n=nameInput.value.trim();if(!n)return;
-  files[n]="";
-  localStorage.setItem("files",JSON.stringify(files));
-  closeModal();openFile(n);
-}
-function confirmDelete(){
-  delete files[deleteTarget];
-  localStorage.setItem("files",JSON.stringify(files));
-  closeModal();
-  const k=Object.keys(files);
-  if(k.length)openFile(k[0]);
-  else{
-    currentFile=null;
-    editor.innerHTML="";
-    tabName.textContent="";
-    renderFiles();
-  }
-}
+/* =============================================
+   DRAG & DROP — images onto editor
+   ============================================= */
+const editorWrap = document.getElementById('editorWrap');
 
-/* ===== PRINT ===== */
-function printPDF(){window.print()}
-
-/* ===== INIT ===== */
-if(Object.keys(files).length===0){
-  files["note"]="🎨 เลือกข้อความแล้วเปลี่ยนสี / เพิ่มรูป / ติดตั้งเป็นแอพได้แล้ว";
-  localStorage.setItem("files",JSON.stringify(files));
-}
-openFile(Object.keys(files)[0]);
-
-/* ===== PWA INSTALL ===== */
-let deferredPrompt;
-const installBtn=document.getElementById("installBtn");
-window.addEventListener("beforeinstallprompt",e=>{
+editorWrap.addEventListener('dragover', e => {
   e.preventDefault();
-  deferredPrompt=e;
-  installBtn.style.display="inline-block";
+  editorWrap.classList.add('dragover');
 });
-installBtn.onclick=async()=>{
-  installBtn.style.display="none";
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt=null;
+editorWrap.addEventListener('dragleave', e => {
+  if (!editorWrap.contains(e.relatedTarget)) editorWrap.classList.remove('dragover');
+});
+editorWrap.addEventListener('drop', e => {
+  e.preventDefault();
+  editorWrap.classList.remove('dragover');
+
+  /* File drops */
+  const imageFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  imageFiles.forEach(insertImageFile);
+
+  /* URL drops (drag from browser) */
+  if (imageFiles.length === 0) {
+    const url = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain');
+    if (url && /\.(png|jpe?g|gif|webp|svg|bmp)(\?.*)?$/i.test(url)) {
+      insertImageSrc(url, '200px');
+    }
   }
-};
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('/Note/sw.js');
+});
+
+/* =============================================
+   PASTE – image from clipboard
+   ============================================= */
+editor.addEventListener('paste', e => {
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      insertImageFile(item.getAsFile());
+      return;
+    }
+  }
+});
+
+/* =============================================
+   MODALS
+   ============================================= */
+function openCreate() {
+  document.getElementById('createModal').classList.add('show');
+  setTimeout(() => {
+    const inp = document.getElementById('nameInput');
+    inp.value = '';
+    inp.style.borderColor = '';
+    inp.focus();
+  }, 60);
+}
+
+function askDelete(n) {
+  deleteTarget = n;
+  document.getElementById('deleteText').innerHTML =
+    `ลบไฟล์ <b style="color:#fff">"${n}"</b> ?<br><span style="color:#888;font-size:12px">การกระทำนี้ไม่สามารถย้อนกลับได้</span>`;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+function closeModals() {
+  document.getElementById('createModal').classList.remove('show');
+  document.getElementById('deleteModal').classList.remove('show');
+}
+
+/* Click outside modal to close */
+['createModal', 'deleteModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) closeModals();
+  });
+});
+
+function confirmCreate() {
+  const inp = document.getElementById('nameInput');
+  const n = inp.value.trim();
+  if (!n) { inp.style.borderColor = '#ef4444'; inp.focus(); return; }
+  if (files[n] !== undefined) {
+    inp.style.borderColor = '#f59e0b';
+    inp.title = 'ชื่อนี้มีอยู่แล้ว';
+    inp.focus();
+    return;
+  }
+  files[n] = '';
+  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
+  closeModals();
+  openFile(n);
+}
+
+function confirmDelete() {
+  if (!deleteTarget) return;
+  delete files[deleteTarget];
+  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
+  closeModals();
+  const keys = Object.keys(files);
+  if (keys.length) {
+    openFile(keys[0]);
+  } else {
+    currentFile = null;
+    editor.innerHTML = '';
+    tabName.textContent = '';
+    renderFiles();
+    setStatus('saved');
+    updateMetrics();
+  }
+}
+
+/* =============================================
+   PRINT / PDF
+   ============================================= */
+function printPage() { doSave(); window.print(); }
+
+/* =============================================
+   PWA INSTALL
+   ============================================= */
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  /* Show install button if you have one */
+  const ib = document.getElementById('installBtn');
+  if (ib) ib.style.display = 'inline-flex';
+});
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/Note/sw.js').catch(() => {});
   });
 }
+
+/* =============================================
+   INIT
+   ============================================= */
+if (Object.keys(files).length === 0) {
+  files['note'] = [
+    '<p><b>ยินดีต้อนรับสู่ CodeNote ✦</b></p>',
+    '<p>เสียงคีบอร์ดเป็น <mark style="background:#fef08a;color:#1a1a1b">Mechanical Switch</mark> สังเคราะห์จาก Web Audio API</p>',
+    '<p>&nbsp;</p>',
+    '<p><b>Shortcuts:</b></p>',
+    '<p>• <b>Ctrl+B</b> / <b>Ctrl+I</b> / <b>Ctrl+U</b> — Bold / Italic / Underline</p>',
+    '<p>• <b>Ctrl+S</b> — บันทึกทันที</p>',
+    '<p>• <b>Ctrl+N</b> — สร้างไฟล์ใหม่</p>',
+    '<p>• <b>Tab</b> — ย่อหน้า 4 spaces</p>',
+    '<p>• <b>Escape</b> — ปิด modal</p>',
+    '<p>&nbsp;</p>',
+    '<p>ลากรูปจากคอมพ์มาวางตรงนี้ได้เลย 📷&nbsp; หรือ Copy แล้ว Ctrl+V ก็ได้</p>'
+  ].join('');
+  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
+}
+
+openFile(Object.keys(files)[0]);
 </script>
 </body>
 </html>
