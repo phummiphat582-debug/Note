@@ -190,9 +190,21 @@ html,body{height:100%;background:#1a1a1b;font-family:Consolas,'SF Mono',monospac
 
 <script>
 /* =============================================
-   AUDIO ENGINE – Premium Mechanical Switch
-   Web Audio API — no external files needed
-   Layers: noise burst + spring ping + plate thud
+   AUDIO ENGINE — Dekey Galaxy 100 V2
+   Gasket-mount + Linear switch "Thocky" profile
+   
+   Character:
+   - Deep, low-frequency "thock" body (gasket resonance)
+   - Smooth linear bottom-out (no tactile click)
+   - Warm mid-range presence (foam dampening)
+   - Very subtle case ping (aluminum top case)
+   - Short, tight decay — not clicky, not mushy
+   
+   Layers:
+   1. Sub-thud: very low sine (~55–90Hz) — the gasket mount body
+   2. Thock body: low bandpass noise (~200–500Hz) — switch bottom-out
+   3. Muffled mid: triangle wave (~350Hz) — foam + plate dampening
+   4. Subtle case ping: short hi-freq sine (2.5kHz–1kHz) — aluminum resonance, very quiet
    ============================================= */
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let actx = null;
@@ -208,61 +220,127 @@ function playKey(isSpecial) {
   try {
     const ctx = getACtx();
     const t = ctx.currentTime;
-    const vol = 0.2 + Math.random() * 0.07;
 
-    /* Layer 1: Noise burst – click body */
-    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.04), ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    // Slight velocity randomisation — keeps it organic
+    const vel = 0.78 + Math.random() * 0.22;         // 0.78–1.0
+    const pitchShift = 1 + (Math.random() - 0.5) * 0.08; // ±4% pitch variation
 
-    const noise = ctx.createBufferSource();
-    noise.buffer = buf;
-
-    const bpf = ctx.createBiquadFilter();
-    bpf.type = 'bandpass';
-    bpf.frequency.value = isSpecial ? 850 : 1200 + Math.random() * 250;
-    bpf.Q.value = 1.8;
+    /* ── Layer 1: Sub-thud — gasket mount / plate flex ──
+       Very low sine, punchy attack, quick decay ~55ms
+       This is the "thock" depth that makes gasket mounts feel different */
+    const osc1 = ctx.createOscillator();
+    osc1.type = 'sine';
+    const subFreq = isSpecial ? 58 : (72 + Math.random() * 18); // 72–90 Hz
+    osc1.frequency.setValueAtTime(subFreq * pitchShift, t);
+    osc1.frequency.exponentialRampToValueAtTime(subFreq * pitchShift * 0.55, t + 0.055);
 
     const env1 = ctx.createGain();
-    env1.gain.setValueAtTime(vol, t);
-    env1.gain.exponentialRampToValueAtTime(0.001, t + 0.022);
+    env1.gain.setValueAtTime(0, t);
+    env1.gain.linearRampToValueAtTime(0.52 * vel, t + 0.003);   // fast attack
+    env1.gain.exponentialRampToValueAtTime(0.001, t + 0.058);   // quick decay
 
-    noise.connect(bpf);
-    bpf.connect(env1);
+    osc1.connect(env1);
     env1.connect(ctx.destination);
-    noise.start(t);
-    noise.stop(t + 0.025);
+    osc1.start(t);
+    osc1.stop(t + 0.062);
 
-    /* Layer 2: Sine sweep – spring resonance / ping */
-    const osc2 = ctx.createOscillator();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(isSpecial ? 1600 : 2300 + Math.random() * 500, t);
-    osc2.frequency.exponentialRampToValueAtTime(isSpecial ? 600 : 800, t + 0.02);
+    /* ── Layer 2: Thock body — noise burst through low-shelf ──
+       Bandpass noise centered 250–380Hz = the "meat" of the sound
+       Very short (35ms) for tightness, not mushiness */
+    const bufLen = Math.floor(ctx.sampleRate * 0.035);
+    const buf2 = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const d2 = buf2.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) d2[i] = Math.random() * 2 - 1;
+
+    const noise2 = ctx.createBufferSource();
+    noise2.buffer = buf2;
+
+    const lpf2 = ctx.createBiquadFilter();
+    lpf2.type = 'lowpass';
+    lpf2.frequency.value = isSpecial ? 320 : (380 + Math.random() * 80); // 380–460 Hz
+    lpf2.Q.value = 0.9;
+
+    const hpf2 = ctx.createBiquadFilter();
+    hpf2.type = 'highpass';
+    hpf2.frequency.value = isSpecial ? 140 : 170;
 
     const env2 = ctx.createGain();
-    env2.gain.setValueAtTime(vol * 0.28, t);
-    env2.gain.exponentialRampToValueAtTime(0.001, t + 0.022);
+    env2.gain.setValueAtTime(0, t);
+    env2.gain.linearRampToValueAtTime(0.38 * vel, t + 0.002);
+    env2.gain.exponentialRampToValueAtTime(0.001, t + 0.036);
 
-    osc2.connect(env2);
+    noise2.connect(hpf2);
+    hpf2.connect(lpf2);
+    lpf2.connect(env2);
     env2.connect(ctx.destination);
-    osc2.start(t);
-    osc2.stop(t + 0.024);
+    noise2.start(t);
+    noise2.stop(t + 0.038);
 
-    /* Layer 3: Triangle – plate body / low thud */
+    /* ── Layer 3: Muffled mid — foam damping character ──
+       Triangle wave at low-mid frequency, soft envelope
+       Simulates the "muted" resonance of foam + gasket */
     const osc3 = ctx.createOscillator();
     osc3.type = 'triangle';
-    osc3.frequency.value = isSpecial ? 110 : 170 + Math.random() * 50;
+    const midFreq = isSpecial ? 210 : (260 + Math.random() * 60); // 260–320 Hz
+    osc3.frequency.setValueAtTime(midFreq * pitchShift, t);
+    osc3.frequency.exponentialRampToValueAtTime(midFreq * pitchShift * 0.75, t + 0.045);
 
     const env3 = ctx.createGain();
-    env3.gain.setValueAtTime(vol * 0.55, t);
-    env3.gain.exponentialRampToValueAtTime(0.001, t + 0.038);
+    env3.gain.setValueAtTime(0, t);
+    env3.gain.linearRampToValueAtTime(0.18 * vel, t + 0.004);
+    env3.gain.exponentialRampToValueAtTime(0.001, t + 0.048);
 
     osc3.connect(env3);
     env3.connect(ctx.destination);
     osc3.start(t);
-    osc3.stop(t + 0.042);
+    osc3.stop(t + 0.052);
 
-  } catch(e) { /* silent fail – audio not available */ }
+    /* ── Layer 4: Case ping — aluminum top case resonance ──
+       Very quiet, fast sweep from 2.5kHz → 1.2kHz
+       Gives it the subtle "premium" metallic quality without being clicky */
+    const osc4 = ctx.createOscillator();
+    osc4.type = 'sine';
+    osc4.frequency.setValueAtTime(2500, t);
+    osc4.frequency.exponentialRampToValueAtTime(1200, t + 0.018);
+
+    const env4 = ctx.createGain();
+    env4.gain.setValueAtTime(0, t);
+    env4.gain.linearRampToValueAtTime(0.045 * vel, t + 0.001); // very quiet
+    env4.gain.exponentialRampToValueAtTime(0.001, t + 0.020);
+
+    osc4.connect(env4);
+    env4.connect(ctx.destination);
+    osc4.start(t);
+    osc4.stop(t + 0.022);
+
+    /* ── Layer 5 (special keys only): Stabiliser rattle ──
+       Space / Enter / Backspace have slightly longer, looser feel
+       Extra low noise burst — simulates stab rattle dampened by lube */
+    if (isSpecial) {
+      const bufS = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.028), ctx.sampleRate);
+      const dS = bufS.getChannelData(0);
+      for (let i = 0; i < dS.length; i++) dS[i] = (Math.random() * 2 - 1) * 0.6;
+
+      const noiseS = ctx.createBufferSource();
+      noiseS.buffer = bufS;
+
+      const lpfS = ctx.createBiquadFilter();
+      lpfS.type = 'lowpass';
+      lpfS.frequency.value = 280;
+
+      const envS = ctx.createGain();
+      envS.gain.setValueAtTime(0, t + 0.004); // slight delay after main hit
+      envS.gain.linearRampToValueAtTime(0.12 * vel, t + 0.008);
+      envS.gain.exponentialRampToValueAtTime(0.001, t + 0.032);
+
+      noiseS.connect(lpfS);
+      lpfS.connect(envS);
+      envS.connect(ctx.destination);
+      noiseS.start(t + 0.004);
+      noiseS.stop(t + 0.034);
+    }
+
+  } catch(e) { /* silent fail */ }
 }
 
 function toggleSound() {
@@ -273,7 +351,7 @@ function toggleSound() {
 
 function updateSoundBtn() {
   document.getElementById('soundDot').className = 'sound-dot' + (soundOn ? '' : ' off');
-  document.getElementById('soundBtn').title = soundOn ? 'คลิกเพื่อปิดเสียง' : 'คลิกเพื่อเปิดเสียง';
+  document.getElementById('soundBtn').title = soundOn ? 'คลิกเพื่อปิดเสียง (Dekey Galaxy 100 V2)' : 'คลิกเพื่อเปิดเสียง';
 }
 updateSoundBtn();
 
@@ -293,8 +371,6 @@ const tabName   = document.getElementById('tabName');
 const imageInput = document.getElementById('imageInput');
 const saveStatus = document.getElementById('saveStatus');
 
-/* Debounced save — fires at most once per 800ms
-   This is the main fix for lag: previously saved on every keystroke */
 function scheduleSave() {
   isDirty = true;
   setStatus('saving');
@@ -327,7 +403,6 @@ function setStatus(s) {
   }
 }
 
-/* Throttled metrics update */
 let metricsTimer = null;
 function scheduleMetrics() {
   if (metricsTimer) return;
@@ -362,7 +437,7 @@ function renderFiles() {
 
 function openFile(n) {
   if (n === currentFile) return;
-  doSave(); // flush current before switching
+  doSave();
   currentFile = n;
   editor.innerHTML = files[n] || '';
   tabName.textContent = n;
@@ -375,13 +450,12 @@ function openFile(n) {
 }
 
 /* =============================================
-   KEYBOARD – SOUND + SHORTCUTS
+   KEYBOARD — SOUND + SHORTCUTS
    ============================================= */
 editor.addEventListener('keydown', e => {
   const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ';
   playKey(special);
 
-  /* Tab → 4 spaces (prevent focus loss) */
   if (e.key === 'Tab') {
     e.preventDefault();
     document.execCommand('insertText', false, '    ');
@@ -393,7 +467,6 @@ editor.addEventListener('input', () => {
   scheduleMetrics();
 });
 
-/* Global shortcuts */
 document.addEventListener('keydown', e => {
   const mod = e.ctrlKey || e.metaKey;
   if (mod && e.key === 's') { e.preventDefault(); doSave(); }
@@ -405,7 +478,6 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* Cursor line tracking */
 document.addEventListener('selectionchange', () => {
   try {
     const sel = window.getSelection();
@@ -529,7 +601,7 @@ function attachResizeAll() {
 }
 
 /* =============================================
-   DRAG & DROP — images onto editor
+   DRAG & DROP
    ============================================= */
 const editorWrap = document.getElementById('editorWrap');
 
@@ -544,11 +616,9 @@ editorWrap.addEventListener('drop', e => {
   e.preventDefault();
   editorWrap.classList.remove('dragover');
 
-  /* File drops */
   const imageFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
   imageFiles.forEach(insertImageFile);
 
-  /* URL drops (drag from browser) */
   if (imageFiles.length === 0) {
     const url = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain');
     if (url && /\.(png|jpe?g|gif|webp|svg|bmp)(\?.*)?$/i.test(url)) {
@@ -558,7 +628,7 @@ editorWrap.addEventListener('drop', e => {
 });
 
 /* =============================================
-   PASTE – image from clipboard
+   PASTE — image from clipboard
    ============================================= */
 editor.addEventListener('paste', e => {
   const items = e.clipboardData && e.clipboardData.items;
@@ -597,7 +667,6 @@ function closeModals() {
   document.getElementById('deleteModal').classList.remove('show');
 }
 
-/* Click outside modal to close */
 ['createModal', 'deleteModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', function(e) {
     if (e.target === this) closeModals();
@@ -644,13 +713,12 @@ function confirmDelete() {
 function printPage() { doSave(); window.print(); }
 
 /* =============================================
-   PWA INSTALL
+   PWA
    ============================================= */
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  /* Show install button if you have one */
   const ib = document.getElementById('installBtn');
   if (ib) ib.style.display = 'inline-flex';
 });
@@ -666,7 +734,7 @@ if ('serviceWorker' in navigator) {
 if (Object.keys(files).length === 0) {
   files['note'] = [
     '<p><b>ยินดีต้อนรับสู่ CodeNote ✦</b></p>',
-    '<p>เสียงคีบอร์ดเป็น <mark style="background:#fef08a;color:#1a1a1b">Mechanical Switch</mark> สังเคราะห์จาก Web Audio API</p>',
+    '<p>เสียงคีบอร์ดจำลองจาก <mark style="background:#fef08a;color:#1a1a1b">Dekey Galaxy 100 V2</mark> — Gasket Mount · Linear Switch · Foam Dampened</p>',
     '<p>&nbsp;</p>',
     '<p><b>Shortcuts:</b></p>',
     '<p>• <b>Ctrl+B</b> / <b>Ctrl+I</b> / <b>Ctrl+U</b> — Bold / Italic / Underline</p>',
