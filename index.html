@@ -826,10 +826,11 @@ html,body {
 
       <!-- Font Size Selector -->
       <span style="font-size:11.5px;color:var(--text-dim);">ขนาด:</span>
-      <select class="matte-select" onchange="setFontSize(this.value)">
+      <select class="matte-select" id="fontSizeSelect" onchange="setFontSize(this.value)">
+        <option value="16px">16 px</option>
         <option value="18px">18 px</option>
         <option value="20px">20 px</option>
-        <option value="22px" selected>22 px (ใหญ่คมชัด)</option>
+        <option value="22px">22 px (ใหญ่คมชัด)</option>
         <option value="26px">26 px (ใหญ่มาก)</option>
         <option value="30px">30 px (จัมโบ้)</option>
       </select>
@@ -844,8 +845,8 @@ html,body {
       <button class="matte-btn" onclick="addImage()" title="แทรกรูปภาพ">🖼️</button>
       
       <!-- Thai Font Selector -->
-      <select class="matte-select" onchange="setFontFamily(this.value)">
-        <option value="'Prompt', sans-serif" selected>Prompt</option>
+      <select class="matte-select" id="fontFamilySelect" onchange="setFontFamily(this.value)">
+        <option value="'Prompt', sans-serif">Prompt</option>
         <option value="'Noto Sans Thai', sans-serif">Noto Sans Thai</option>
         <option value="'Kanit', sans-serif">Kanit</option>
         <option value="'Cascadia Code', monospace">Cascadia Code</option>
@@ -1408,14 +1409,27 @@ document.addEventListener('click', e => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   FONT & FORMATTING CONTROLS
+   FONT & FORMATTING CONTROLS (บันทึกขนาดและฟอนต์ถาวร)
    ═══════════════════════════════════════════════════════════════ */
+let currentFontSize = localStorage.getItem('cn_font_size') || '22px';
+let currentFontFamily = localStorage.getItem('cn_font_family') || "'Prompt', sans-serif";
+
 function setFontSize(size) {
-  editor.style.fontSize = size;
+  currentFontSize = size;
+  localStorage.setItem('cn_font_size', size);
+  if (editor) editor.style.fontSize = size;
+  const lineNums = document.getElementById('lineNumbers');
+  if (lineNums) lineNums.style.fontSize = size;
+  const sel = document.getElementById('fontSizeSelect');
+  if (sel) sel.value = size;
 }
 
 function setFontFamily(font) {
-  editor.style.fontFamily = font;
+  currentFontFamily = font;
+  localStorage.setItem('cn_font_family', font);
+  if (editor) editor.style.fontFamily = font;
+  const sel = document.getElementById('fontFamilySelect');
+  if (sel) sel.value = font;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1928,6 +1942,8 @@ if (currentFlowingTheme === 'custom' && savedCustom) {
   setFlowingTheme(currentFlowingTheme);
 }
 setBeamSize(currentBeamSize);
+setFontSize(currentFontSize);
+setFontFamily(currentFontFamily);
 const savedSpeed = localStorage.getItem('cn_flow_speed_key') || 'normal';
 setFlowSpeed(savedSpeed);
 buildSfxPanel();
