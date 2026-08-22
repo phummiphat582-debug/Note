@@ -3,160 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote — Cyberpunk PowerShell UIL</title>
+<title>CodeNote — Matte Black Flowing RGB</title>
 <link rel="manifest" href="/Note/manifest.json">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#121214">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,300..700;1,300..700&family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Orbitron:wght@400;600;700;900&family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&family=Cascadia+Code:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root {
-  --bg-pitch-black: #000000;
-  --bg-deep-card: #040508;
-  --bg-cyber-panel: #07090e;
-  --bg-cyber-card: #0c0f17;
-  --border-neon-dim: rgba(0, 240, 255, 0.18);
-  --border-neon-bright: rgba(0, 240, 255, 0.6);
-  --text-main: #f8fafc;
-  --text-muted: #64748b;
-  --font-mono: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, 'Noto Sans Thai', monospace;
-  --font-hud: 'Orbitron', var(--font-mono);
-  
-  /* Glowing Palette */
-  --glow-cyan: #00f0ff;
-  --glow-pink: #ff007f;
-  --glow-purple: #9d00ff;
-  --glow-yellow: #ffee00;
-  --glow-green: #00ff66;
+  /* Matte Black Palette */
+  --bg-matte-base: #101013;
+  --bg-matte-dark: #0a0a0c;
+  --bg-matte-panel: #16161a;
+  --bg-matte-card: #1c1c22;
+  --border-matte: #2a2a33;
+  --border-matte-active: #404052;
+  --text-muted: #8e8e9f;
+  --text-sub: #b0b0c2;
+  --accent-cyan: #38bdf8;
+  --accent-pink: #f43f5e;
+  --accent-green: #34d399;
+  --accent-yellow: #fbbf24;
+  --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', 'Cascadia Code', Consolas, sans-serif;
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 }
 
 html,body {
   height: 100%;
   width: 100%;
-  background: #000000;
-  color: #f8fafc;
-  font-family: var(--font-mono);
+  background: var(--bg-matte-base);
+  color: #f1f5f9;
+  font-family: var(--font-thai);
   overflow: hidden;
   user-select: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   FLOWING ANIMATED GLOWING RGB TEXT (ตัวหนังสือวิ่งเรืองแสงตลอดเวลา)
+   CRISP ANIMATED FLOWING GRADIENT TEXT (สีวิ่งคมชัด ไม่มีแสงฟุ้งทับ)
    ═══════════════════════════════════════════════════════════════ */
-@keyframes continuousChromaticFlow {
-  0% {
-    background-position: 0% 50%;
-    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.75)) drop-shadow(0 0 16px rgba(255, 0, 127, 0.45));
-  }
-  25% {
-    filter: drop-shadow(0 0 8px rgba(255, 0, 127, 0.8)) drop-shadow(0 0 20px rgba(157, 0, 255, 0.5));
-  }
-  50% {
-    background-position: 200% 50%;
-    filter: drop-shadow(0 0 8px rgba(157, 0, 255, 0.8)) drop-shadow(0 0 20px rgba(0, 255, 102, 0.5));
-  }
-  75% {
-    filter: drop-shadow(0 0 8px rgba(0, 255, 102, 0.8)) drop-shadow(0 0 20px rgba(255, 238, 0, 0.5));
-  }
-  100% {
-    background-position: 400% 50%;
-    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.75)) drop-shadow(0 0 16px rgba(255, 0, 127, 0.45));
-  }
+@keyframes rainbowTextFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
 }
 
-@keyframes neonBorderPulse {
-  0%, 100% { border-color: rgba(0, 240, 255, 0.35); box-shadow: 0 0 12px rgba(0, 240, 255, 0.15) inset; }
-  50% { border-color: rgba(255, 0, 127, 0.5); box-shadow: 0 0 16px rgba(255, 0, 127, 0.25) inset; }
-}
-
-@keyframes scanlineMove {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(1000%); }
-}
-
-@keyframes cursorBlinkGlow {
-  0%, 49% { opacity: 1; filter: drop-shadow(0 0 8px #00f0ff); }
-  50%, 100% { opacity: 0; filter: none; }
-}
-
-/* Base Flowing Text Definition */
-.flowing-glow-text,
+/* Main Flowing Text Class - Sharp, Crisp & Clean for Thai Font */
+.flowing-rainbow-text,
 .editor,
 .editor * {
   background: linear-gradient(
     90deg,
     #ff0055 0%,
-    #ff7700 12%,
-    #ffee00 24%,
-    #00ff66 36%,
-    #00f0ff 48%,
-    #7000ff 60%,
-    #ff00b3 72%,
-    #ff0055 84%,
-    #ff7700 92%,
-    #00f0ff 100%
+    #ff6600 14%,
+    #ffcc00 28%,
+    #10b981 42%,
+    #06b6d4 56%,
+    #8b5cf6 70%,
+    #ec4899 84%,
+    #ff0055 100%
   ) !important;
-  background-size: 400% 100% !important;
+  background-size: 300% 100% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  animation: continuousChromaticFlow 3.6s linear infinite !important;
+  animation: rainbowTextFlow 4s linear infinite !important;
+  text-shadow: none !important;
+  filter: none !important;
   display: inline;
 }
 
-.editor p, .editor div { display: block !important; }
-
-/* Glowing Header Text */
-.hud-glowing-title {
-  font-family: var(--font-hud);
-  font-weight: 900;
-  letter-spacing: 0.15em;
-  background: linear-gradient(90deg, #00f0ff, #ff007f, #ffee00, #00ff66, #00f0ff);
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: continuousChromaticFlow 4s linear infinite;
-  text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+.editor p, .editor div, .editor h1, .editor h2, .editor h3, .editor li {
+  display: block !important;
+  margin-bottom: 6px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CYBER UIL LAYOUT (FUTURISTIC HUD INTERFACE)
+   MATTE BLACK UIL INTERFACE
    ═══════════════════════════════════════════════════════════════ */
-.cyber-app {
+.app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background: #000000;
+  background: var(--bg-matte-base);
   position: relative;
-  overflow: hidden;
 }
 
-/* Background Cyber Grid */
-.cyber-bg-grid {
-  position: absolute;
-  inset: 0;
-  background-image: 
-    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ── TOP HUD NAVIGATION BAR ── */
-.cyber-topbar {
-  height: 46px;
-  background: #020305;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+/* ── TOP NAVIGATION BAR (MATTE HUD) ── */
+.matte-topbar {
+  height: 48px;
+  background: var(--bg-matte-dark);
+  border-bottom: 1px solid var(--border-matte);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+  padding: 0 16px;
+  flex-shrink: 0;
+  z-index: 50;
+  gap: 12px;
 }
 
 .topbar-left {
@@ -165,89 +110,77 @@ html,body {
   gap: 12px;
 }
 
-.hud-logo {
+.brand-badge {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 4px 10px;
-  background: rgba(0, 240, 255, 0.06);
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  border-radius: 4px;
+  background: var(--bg-matte-card);
+  border: 1px solid var(--border-matte);
+  border-radius: 6px;
 }
-.hud-logo .logo-icon {
-  color: var(--glow-cyan);
+.brand-badge .icon {
   font-size: 16px;
-  filter: drop-shadow(0 0 6px var(--glow-cyan));
 }
-.hud-logo .logo-text {
-  font-family: var(--font-hud);
-  font-size: 12px;
+.brand-badge .title {
   font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 13px;
   color: #fff;
+  letter-spacing: 0.05em;
 }
-.hud-logo .logo-badge {
-  font-size: 9px;
-  background: var(--glow-pink);
+.brand-badge .tag {
+  font-size: 10px;
+  background: #3b82f6;
   color: #fff;
-  padding: 1px 4px;
-  border-radius: 2px;
-  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
 }
 
-/* Terminal Tabs */
-.cyber-tabs {
+/* Tabs */
+.matte-tabs {
   display: flex;
   align-items: center;
   gap: 4px;
   overflow-x: auto;
   max-width: 50vw;
 }
-.cyber-tabs::-webkit-scrollbar { display: none; }
+.matte-tabs::-webkit-scrollbar { display: none; }
 
-.cyber-tab {
+.matte-tab {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 32px;
   padding: 0 12px;
-  background: #06080d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  font-size: 11.5px;
-  color: #94a3b8;
+  background: var(--bg-matte-card);
+  border: 1px solid var(--border-matte);
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: var(--text-sub);
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
 }
-.cyber-tab:hover {
-  background: #0e121a;
-  border-color: rgba(0, 240, 255, 0.4);
+.matte-tab:hover {
+  background: #25252e;
   color: #fff;
 }
-.cyber-tab.active {
-  background: #0c121e;
-  border-color: var(--glow-cyan);
+.matte-tab.active {
+  background: #23232c;
   color: #fff;
+  border-color: var(--accent-cyan);
   font-weight: 600;
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
 }
-.cyber-tab .tab-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--glow-cyan);
-  box-shadow: 0 0 6px var(--glow-cyan);
-}
-.cyber-tab .tab-close {
+.matte-tab .tab-close {
   font-size: 11px;
-  opacity: 0.5;
+  opacity: 0.6;
   padding: 1px 4px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
-.cyber-tab .tab-close:hover {
+.matte-tab .tab-close:hover {
   opacity: 1;
-  background: #ff0055;
+  background: #ef4444;
   color: #fff;
 }
 
@@ -257,13 +190,13 @@ html,body {
   gap: 8px;
 }
 
-.cyber-btn {
-  background: #080b12;
+.matte-btn {
+  background: var(--bg-matte-card);
   color: #cbd5e1;
-  border: 1px solid rgba(0, 240, 255, 0.25);
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 11px;
+  border: 1px solid var(--border-matte);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
   font-family: inherit;
   cursor: pointer;
   display: inline-flex;
@@ -271,264 +204,261 @@ html,body {
   gap: 6px;
   transition: all 0.15s;
 }
-.cyber-btn:hover {
-  background: #101624;
-  border-color: var(--glow-cyan);
+.matte-btn:hover {
+  background: #25252e;
+  border-color: #4b4b5c;
   color: #fff;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.35);
 }
-.cyber-btn.active {
-  background: rgba(0, 240, 255, 0.15);
-  border-color: var(--glow-cyan);
-  color: var(--glow-cyan);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+.matte-btn.active {
+  background: #2a2a38;
+  border-color: var(--accent-cyan);
+  color: #fff;
 }
 
-.cyber-select {
-  background: #080b12;
-  color: #00f0ff;
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
+.matte-select {
+  background: var(--bg-matte-card);
+  color: #f1f5f9;
+  border: 1px solid var(--border-matte);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
   font-family: inherit;
   cursor: pointer;
   outline: none;
 }
-.cyber-select:focus {
-  border-color: var(--glow-cyan);
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+.matte-select:focus {
+  border-color: var(--accent-cyan);
 }
 
-/* ── SECONDARY HUD TOOLBAR ── */
-.cyber-toolbar {
-  height: 38px;
-  background: #010204;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+/* ── SECONDARY FORMATTING TOOLBAR ── */
+.matte-toolbar {
+  height: 42px;
+  background: var(--bg-matte-dark);
+  border-bottom: 1px solid var(--border-matte);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
-  z-index: 90;
-  gap: 8px;
+  padding: 0 16px;
+  flex-shrink: 0;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.tool-cluster {
+.toolbar-cluster {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.cyber-badge {
-  padding: 2px 7px;
-  border-radius: 3px;
-  font-size: 10px;
-  font-family: var(--font-hud);
-  letter-spacing: 0.05em;
-  font-weight: 700;
-  border: 1px solid currentColor;
+.toolbar-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border-matte);
+  margin: 0 4px;
 }
-.badge-ps { color: var(--glow-cyan); background: rgba(0, 240, 255, 0.08); border-color: rgba(0, 240, 255, 0.3); }
-.badge-rgb { color: var(--glow-pink); background: rgba(255, 0, 127, 0.08); border-color: rgba(255, 0, 127, 0.3); }
 
 /* ── MAIN WORKSPACE ── */
-.cyber-workspace {
+.matte-workspace {
   flex: 1;
   display: flex;
   min-height: 0;
   position: relative;
-  z-index: 10;
 }
 
-/* Cyber Sidebar */
-.cyber-sidebar {
-  width: 230px;
-  background: #020306;
-  border-right: 1px solid rgba(0, 240, 255, 0.15);
+/* Matte Sidebar */
+.matte-sidebar {
+  width: 240px;
+  background: var(--bg-matte-dark);
+  border-right: 1px solid var(--border-matte);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   transition: width 0.2s ease;
 }
-.cyber-sidebar.collapsed {
+.matte-sidebar.collapsed {
   width: 0;
   overflow: hidden;
   border-right: none;
 }
 
-.sidebar-hud-head {
-  padding: 10px 12px;
-  font-size: 10px;
-  font-family: var(--font-hud);
-  letter-spacing: 0.1em;
-  color: #64748b;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.sidebar-header {
+  padding: 12px 14px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid var(--border-matte);
+}
+.sidebar-header span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 700;
 }
 
 .sidebar-file-list {
   flex: 1;
   overflow-y: auto;
-  padding: 6px;
+  padding: 8px;
 }
-.sidebar-file-list::-webkit-scrollbar { width: 3px; }
-.sidebar-file-list::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.2); }
+.sidebar-file-list::-webkit-scrollbar { width: 4px; }
+.sidebar-file-list::-webkit-scrollbar-thumb { background: #2a2a33; border-radius: 2px; }
 
-.cyber-file-row {
+.matte-file-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 10px;
-  border-radius: 4px;
-  font-size: 11.5px;
-  color: #94a3b8;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-sub);
   cursor: pointer;
-  margin-bottom: 2px;
-  border-left: 2px solid transparent;
+  margin-bottom: 3px;
+  border-left: 3px solid transparent;
   transition: all 0.12s;
 }
-.cyber-file-row:hover {
-  background: rgba(0, 240, 255, 0.06);
+.matte-file-row:hover {
+  background: var(--bg-matte-card);
   color: #fff;
-  border-left-color: rgba(0, 240, 255, 0.4);
 }
-.cyber-file-row.active {
-  background: rgba(0, 240, 255, 0.12);
+.matte-file-row.active {
+  background: var(--bg-matte-card);
   color: #fff;
-  border-left-color: var(--glow-cyan);
+  border-left-color: var(--accent-cyan);
   font-weight: 600;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15) inset;
 }
-.cyber-file-row .file-del {
+.matte-file-row .file-del {
   opacity: 0;
-  color: #64748b;
-  font-size: 10px;
-  padding: 2px 4px;
-  border-radius: 2px;
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 2px 5px;
+  border-radius: 3px;
 }
-.cyber-file-row:hover .file-del { opacity: 1; }
-.cyber-file-row .file-del:hover { background: #ff0055; color: #fff; }
+.matte-file-row:hover .file-del { opacity: 1; }
+.matte-file-row .file-del:hover { background: #ef4444; color: #fff; }
 
-/* ── CENTER POWERSHELL UIL EDITOR VIEW ── */
-.cyber-viewport {
+/* ── CENTER EDITOR VIEWPORT ── */
+.matte-viewport {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background: #000000;
+  background: var(--bg-matte-base);
   position: relative;
 }
 
-/* PowerShell Prompt HUD Line */
-.ps-uil-prompt-bar {
-  padding: 10px 18px 4px;
-  background: #010204;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+/* PowerShell Prompt Path Line */
+.ps-prompt-banner {
+  padding: 10px 24px 6px;
+  background: var(--bg-matte-dark);
+  border-bottom: 1px solid var(--border-matte);
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   flex-wrap: wrap;
 }
-.prompt-badge-terminal {
-  background: #003366;
-  color: #00f0ff;
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  padding: 1px 6px;
-  border-radius: 3px;
+.ps-prompt-tag {
+  background: #0284c7;
+  color: #fff;
+  padding: 1px 7px;
+  border-radius: 4px;
   font-weight: 700;
-  font-size: 10.5px;
+  font-size: 11px;
 }
-.prompt-badge-dir {
-  color: #facc15;
+.ps-prompt-path {
+  color: var(--accent-yellow);
   font-weight: 600;
 }
-.prompt-arrow {
-  color: var(--glow-green);
-  font-weight: 900;
-  font-size: 13px;
+.ps-prompt-file {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+.ps-prompt-arrow {
+  color: var(--accent-green);
+  font-weight: 700;
 }
 
-/* Main Note Editor with Line Numbers */
-.editor-main-wrap {
+/* Editor Main Body with Large Text */
+.editor-main-area {
   flex: 1;
   display: flex;
   overflow-y: auto;
   overflow-x: hidden;
-  background: #000000;
+  background: var(--bg-matte-base);
   position: relative;
 }
-.editor-main-wrap::-webkit-scrollbar { width: 6px; }
-.editor-main-wrap::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.25); border-radius: 3px; }
+.editor-main-area::-webkit-scrollbar { width: 8px; }
+.editor-main-area::-webkit-scrollbar-thumb { background: #2a2a33; border-radius: 4px; }
+.editor-main-area::-webkit-scrollbar-thumb:hover { background: #3a3a48; }
 
 .editor-line-numbers {
-  padding: 20px 10px;
-  width: 52px;
-  color: #334155;
-  font-size: 13px;
-  line-height: 1.8;
+  padding: 24px 14px;
+  width: 56px;
+  color: #404052;
+  font-size: 15px;
+  line-height: 2.0;
   text-align: right;
-  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  border-right: 1px solid var(--border-matte);
   flex-shrink: 0;
   user-select: none;
+  font-family: var(--font-mono);
 }
 
+/* Main Editable Canvas (Large & Crisp Font) */
 .editor {
   flex: 1;
   min-height: 100%;
-  padding: 20px 28px;
+  padding: 24px 36px;
   color: #ffffff;
-  font-size: 14.5px;
-  line-height: 1.8;
+  font-size: 20px; /* ตัวหนังสือขนาดใหญ่ อ่านสบายตา */
+  line-height: 2.0;
   outline: none;
   white-space: pre-wrap;
   word-break: break-word;
   user-select: text;
-  font-family: inherit;
-  caret-color: #00f0ff;
+  font-family: var(--font-thai);
+  caret-color: #38bdf8;
   position: relative;
 }
 .editor:empty::before {
   content: attr(data-placeholder);
-  color: #334155;
+  color: #404052;
   pointer-events: none;
 }
 
-/* Image insertion */
+/* Inserted Image Box */
 .img-box {
   display: inline-block;
   position: relative;
   vertical-align: middle;
-  margin: 6px 2px;
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  border-radius: 6px;
-  padding: 2px;
-  background: #05070d;
+  margin: 8px 4px;
+  border: 1px solid var(--border-matte);
+  border-radius: 8px;
+  padding: 3px;
+  background: var(--bg-matte-card);
 }
-.img-box img { display: block; border-radius: 4px; max-width: 100%; }
+.img-box img { display: block; border-radius: 6px; max-width: 100%; }
 .img-box .handle {
   position: absolute;
   right: -5px;
   bottom: -5px;
-  width: 12px;
-  height: 12px;
-  background: var(--glow-cyan);
+  width: 13px;
+  height: 13px;
+  background: var(--accent-cyan);
   cursor: nwse-resize;
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--glow-cyan);
 }
 .img-box .del-img {
   position: absolute;
   top: -6px;
   right: -6px;
-  width: 16px;
-  height: 16px;
-  background: #ff0055;
+  width: 18px;
+  height: 18px;
+  background: #ef4444;
   color: #fff;
   border-radius: 50%;
-  font-size: 10px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -538,108 +468,103 @@ html,body {
 }
 .img-box:hover .del-img { opacity: 1; }
 
-/* ── POWERSHELL INTERACTIVE CLI HUD CONSOLE ── */
-.cyber-console-hud {
-  background: #020305;
-  border-top: 1px solid rgba(0, 240, 255, 0.2);
-  padding: 8px 16px;
+/* ── POWERSHELL INTERACTIVE CLI DRAWER ── */
+.matte-console-drawer {
+  background: var(--bg-matte-dark);
+  border-top: 1px solid var(--border-matte);
+  padding: 10px 20px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   flex-shrink: 0;
 }
 .console-log {
-  max-height: 120px;
+  max-height: 130px;
   overflow-y: auto;
-  font-size: 11.5px;
+  font-size: 12.5px;
   display: none;
   flex-direction: column;
   gap: 3px;
   padding-bottom: 4px;
+  font-family: var(--font-mono);
 }
 .console-log.open { display: flex; }
-.console-row { font-family: var(--font-mono); line-height: 1.4; white-space: pre-wrap; }
-.console-row.success { color: var(--glow-green); text-shadow: 0 0 6px rgba(0, 255, 102, 0.4); }
-.console-row.error { color: #ff0055; text-shadow: 0 0 6px rgba(255, 0, 85, 0.4); }
-.console-row.info { color: var(--glow-cyan); text-shadow: 0 0 6px rgba(0, 240, 255, 0.4); }
+.console-row { line-height: 1.5; white-space: pre-wrap; }
+.console-row.success { color: var(--accent-green); }
+.console-row.error { color: #f43f5e; }
+.console-row.info { color: var(--accent-cyan); }
 
 .console-input-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.cli-prompt-symbol {
-  color: var(--glow-green);
-  font-weight: 900;
-  font-size: 13px;
-  font-family: var(--font-hud);
+.cli-prompt-label {
+  color: var(--accent-green);
+  font-weight: 700;
+  font-size: 14px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
 }
 .cli-input {
   flex: 1;
   background: transparent;
   border: none;
-  color: #fff;
+  color: #f8fafc;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 13.5px;
   outline: none;
 }
-.cli-input::placeholder { color: #334155; }
+.cli-input::placeholder { color: #4b4b5c; }
 
 /* ── BOTTOM STATUS BAR ── */
-.cyber-statusbar {
-  height: 24px;
-  background: #000000;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+.matte-statusbar {
+  height: 26px;
+  background: var(--bg-matte-dark);
+  border-top: 1px solid var(--border-matte);
   display: flex;
   align-items: center;
-  padding: 0 14px;
-  gap: 16px;
-  font-size: 10.5px;
-  color: #64748b;
+  padding: 0 16px;
+  gap: 18px;
+  font-size: 11.5px;
+  color: var(--text-muted);
   flex-shrink: 0;
-  z-index: 100;
 }
-.status-pill {
+.status-item {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   white-space: nowrap;
 }
-.status-pill.active-rgb {
-  color: #00f0ff;
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
-  font-weight: 600;
-}
-.status-pill.save-ok {
-  color: var(--glow-green);
-}
+.status-item.save-ok { color: var(--accent-green); font-weight: 600; }
+.status-item.rgb-tag { color: var(--accent-cyan); font-weight: 600; }
 
-/* ── SFX PANEL POPUP ── */
+/* ── SFX POPUP PANEL ── */
 .sfx-popup {
   display: none;
   position: absolute;
-  top: 86px;
-  right: 14px;
-  width: 310px;
-  background: #04060a;
-  border: 1px solid var(--border-neon-bright);
-  border-radius: 6px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 15px rgba(0,240,255,0.2);
+  top: 96px;
+  right: 16px;
+  width: 320px;
+  background: var(--bg-matte-panel);
+  border: 1px solid var(--border-matte-active);
+  border-radius: 8px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.8);
   z-index: 99999;
 }
 .sfx-popup.open { display: block; }
 .sfx-head {
-  padding: 10px 14px;
-  font-family: var(--font-hud);
-  font-size: 10.5px;
-  letter-spacing: 0.1em;
-  color: #64748b;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 14px;
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  color: var(--text-sub);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-matte);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.sfx-list { padding: 6px 0; max-height: 260px; overflow-y: auto; }
+.sfx-list { padding: 6px 0; max-height: 280px; overflow-y: auto; }
 .sfx-item {
   display: flex;
   align-items: center;
@@ -649,208 +574,215 @@ html,body {
   transition: all 0.1s;
   border-left: 2px solid transparent;
 }
-.sfx-item:hover { background: rgba(0, 240, 255, 0.08); }
+.sfx-item:hover { background: var(--bg-matte-card); }
 .sfx-item.active {
-  background: rgba(0, 240, 255, 0.14);
-  border-left-color: var(--glow-cyan);
+  background: var(--bg-matte-card);
+  border-left-color: var(--accent-cyan);
 }
-.sfx-item-name { font-size: 12px; color: #fff; font-weight: 600; }
-.sfx-item-desc { font-size: 10px; color: #64748b; }
+.sfx-item-name { font-size: 13px; color: #fff; font-weight: 600; }
+.sfx-item-desc { font-size: 11px; color: var(--text-muted); }
 
-/* Modal Dialogs */
+/* Modals */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.75);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 999999;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(3px);
 }
 .modal-overlay.show { display: flex; }
-.cyber-modal {
-  background: #05070d;
-  border: 1px solid var(--glow-cyan);
-  box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
-  border-radius: 6px;
-  width: 380px;
+.matte-modal {
+  background: var(--bg-matte-panel);
+  border: 1px solid var(--border-matte-active);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
+  width: 400px;
 }
-.cyber-modal-head {
-  padding: 12px 16px;
-  font-family: var(--font-hud);
-  font-size: 12px;
+.matte-modal-head {
+  padding: 14px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
   color: #fff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  border-bottom: 1px solid var(--border-matte);
 }
-.cyber-modal-body { padding: 16px; }
-.cyber-modal-body input {
+.matte-modal-body { padding: 18px; }
+.matte-modal-body input {
   width: 100%;
-  padding: 8px 12px;
-  background: #000;
-  color: #00f0ff;
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  border-radius: 4px;
-  font-size: 13px;
+  padding: 10px 14px;
+  background: var(--bg-matte-dark);
+  color: #fff;
+  border: 1px solid var(--border-matte);
+  border-radius: 6px;
+  font-size: 14px;
   font-family: inherit;
   outline: none;
 }
-.cyber-modal-body input:focus {
-  border-color: var(--glow-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+.matte-modal-body input:focus {
+  border-color: var(--accent-cyan);
 }
-.cyber-modal-foot {
-  padding: 10px 16px 14px;
+.matte-modal-foot {
+  padding: 12px 18px 16px;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
 }
 
-#particleCanvas {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 99999;
-}
-
 @media print {
-  .cyber-topbar, .cyber-toolbar, .cyber-sidebar, .cyber-console-hud, .cyber-statusbar, .editor-line-numbers, .ps-uil-prompt-bar {
+  .matte-topbar, .matte-toolbar, .matte-sidebar, .matte-console-drawer, .matte-statusbar, .editor-line-numbers, .ps-prompt-banner {
     display: none !important;
   }
-  .cyber-app, .cyber-viewport { background: #fff !important; color: #000 !important; }
-  .editor, .editor * { background: none !important; -webkit-text-fill-color: #000 !important; color: #000 !important; font-size: 12pt !important; }
+  .app-container, .matte-viewport { background: #fff !important; color: #000 !important; }
+  .editor, .editor * { background: none !important; -webkit-text-fill-color: #000 !important; color: #000 !important; font-size: 14pt !important; }
 }
 </style>
 </head>
 
 <body>
-<canvas id="particleCanvas"></canvas>
-
-<div class="cyber-app">
-  <div class="cyber-bg-grid"></div>
-
-  <!-- ── TOP HUD BAR ── -->
-  <div class="cyber-topbar">
+<div class="app-container">
+  <!-- ── TOP MATTE HUD BAR ── -->
+  <div class="matte-topbar">
     <div class="topbar-left">
-      <div class="hud-logo">
-        <span class="logo-icon">⚡</span>
-        <span class="logo-text">CODENOTE</span>
-        <span class="logo-badge">UIL</span>
+      <div class="brand-badge">
+        <span class="icon">⚡</span>
+        <span class="title">CODENOTE</span>
+        <span class="tag">MATTE RGB</span>
       </div>
 
-      <!-- Windows Terminal Tab Bar -->
-      <div class="cyber-tabs" id="terminalTabs"></div>
-      <button class="cyber-btn" onclick="openCreate()" title="New Tab / Note (Ctrl+N)">+ Tab</button>
+      <!-- Tab Bar -->
+      <div class="matte-tabs" id="terminalTabs"></div>
+      <button class="matte-btn" onclick="openCreate()" title="เพิ่มแท็บโน้ตใหม่ (Ctrl+N)">+ Note</button>
     </div>
 
     <div class="topbar-right">
-      <button class="cyber-btn" onclick="toggleSidebar()" title="Toggle Sidebar Tree">📁 Tree</button>
-      <button class="cyber-btn" onclick="printPage()" title="Print / PDF">🖨️ PDF</button>
+      <button class="matte-btn" onclick="toggleSidebar()" title="เปิด/ปิด แถบไฟล์">📁 Tree</button>
+      <button class="matte-btn" onclick="printPage()" title="พิมพ์ / ส่งออก PDF">🖨️ PDF</button>
 
-      <!-- Keyboard Sound Switch -->
-      <button class="cyber-btn" id="sfxBtn" onclick="toggleSfxPanel(event)" title="Mechanical Sound Settings">
-        <span id="sfxDot" style="width:7px;height:7px;border-radius:50%;background:#00f0ff;box-shadow:0 0 6px #00f0ff;"></span>
+      <!-- Keyboard Sound Button -->
+      <button class="matte-btn" id="sfxBtn" onclick="toggleSfxPanel(event)" title="การตั้งค่าเสียงคีย์บอร์ด">
+        <span id="sfxDot" style="width:7px;height:7px;border-radius:50%;background:#38bdf8;"></span>
         <span id="sfxLabel">SFX</span>
       </button>
 
       <!-- SFX Dropdown -->
       <div class="sfx-popup" id="sfxPanel">
         <div class="sfx-head">
-          <span>KEYBOARD AUDIO ENGINE</span>
+          <span>เสียงพิมพ์คีย์บอร์ด (SFX)</span>
           <label style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
-            <input type="checkbox" id="sfxToggle" checked onchange="onSfxToggle(this.checked)"> ON
+            <input type="checkbox" id="sfxToggle" checked onchange="onSfxToggle(this.checked)"> เปิด
           </label>
         </div>
         <div class="sfx-list" id="sfxProfiles"></div>
-        <div style="padding:10px 14px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;">
-          <span style="font-size:10px;color:#64748b;">VOL</span>
+        <div style="padding:10px 14px;border-top:1px solid var(--border-matte);display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;color:var(--text-muted);">ระดับเสียง</span>
           <input type="range" id="sfxVol" min="0" max="100" value="85" style="flex:1;" oninput="onVolChange(this.value)">
-          <span id="sfxVolVal" style="font-size:10px;color:#00f0ff;min-width:26px;">85%</span>
+          <span id="sfxVolVal" style="font-size:11px;color:var(--accent-cyan);min-width:28px;">85%</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── SECONDARY HUD TOOLBAR ── -->
-  <div class="cyber-toolbar">
-    <div class="tool-cluster">
-      <span class="cyber-badge badge-ps">POWERSHELL UIL</span>
-      <span class="cyber-badge badge-rgb">FLOWING RGB</span>
-      <button class="cyber-btn" onclick="cmd('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
-      <button class="cyber-btn" onclick="cmd('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
-      <button class="cyber-btn" onclick="cmd('underline')" title="Underline (Ctrl+U)"><u>U</u></button>
-      <button class="cyber-btn" onclick="cmd('insertUnorderedList')" title="List">• List</button>
-      <button class="cyber-btn" onclick="addImage()" title="Image">🖼️ Image</button>
+  <!-- ── SECONDARY FORMATTING TOOLBAR ── -->
+  <div class="matte-toolbar">
+    <div class="toolbar-cluster">
+      <!-- Font Size Selector -->
+      <span style="font-size:12px;color:var(--text-muted);">ขนาดตัวอักษร:</span>
+      <select class="matte-select" onchange="setFontSize(this.value)">
+        <option value="16px">16 px</option>
+        <option value="18px">18 px</option>
+        <option value="20px" selected>20 px (มาตรฐาน)</option>
+        <option value="24px">24 px (ใหญ่)</option>
+        <option value="28px">28 px (ใหญ่มาก)</option>
+        <option value="32px">32 px (ขนาดยักษ์)</option>
+      </select>
+
+      <div class="toolbar-sep"></div>
+
+      <!-- Thai Font Family Selector -->
+      <span style="font-size:12px;color:var(--text-muted);">ฟอนต์:</span>
+      <select class="matte-select" onchange="setFontFamily(this.value)">
+        <option value="'Prompt', sans-serif" selected>Prompt (โมเดิร์น)</option>
+        <option value="'Noto Sans Thai', sans-serif">Noto Sans Thai (ทางการ)</option>
+        <option value="'Kanit', sans-serif">Kanit (ทันสมัย)</option>
+        <option value="'Cascadia Code', monospace">Cascadia Code (โค้ด)</option>
+      </select>
+
+      <div class="toolbar-sep"></div>
+
+      <button class="matte-btn" onclick="cmd('bold')" title="ตัวหนา (Ctrl+B)"><b>B</b></button>
+      <button class="matte-btn" onclick="cmd('italic')" title="ตัวเอียง (Ctrl+I)"><i>I</i></button>
+      <button class="matte-btn" onclick="cmd('underline')" title="ขีดเส้นใต้ (Ctrl+U)"><u>U</u></button>
+      <button class="matte-btn" onclick="cmd('insertUnorderedList')" title="รายการแบบจุด">• รายการ</button>
+      <button class="matte-btn" onclick="addImage()" title="แทรกรูปภาพ">🖼️ รูปภาพ</button>
     </div>
 
-    <div class="tool-cluster">
-      <span style="font-size:10.5px;color:#64748b;">SPEED:</span>
-      <select class="cyber-select" id="rgbSpeedSelect" onchange="setRgbSpeed(this.value)">
-        <option value="2.5s">Fast (2.5s)</option>
-        <option value="3.6s" selected>Smooth (3.6s)</option>
-        <option value="5.5s">Relax (5.5s)</option>
+    <div class="toolbar-cluster">
+      <span style="font-size:12px;color:var(--text-muted);">ความเร็วสีวิ่ง:</span>
+      <select class="matte-select" onchange="setRgbSpeed(this.value)">
+        <option value="2.5s">เร็ว (2.5s)</option>
+        <option value="4.0s" selected>นุ่มนวล (4.0s)</option>
+        <option value="6.0s">ชิลล์ๆ (6.0s)</option>
       </select>
     </div>
   </div>
 
   <!-- ── WORKSPACE ── -->
-  <div class="cyber-workspace">
-    <!-- Collapsible Sidebar -->
-    <div class="cyber-sidebar" id="psSidebar">
-      <div class="sidebar-hud-head">
-        <span>NOTE FILESYSTEM</span>
-        <span style="color:var(--glow-cyan);" id="fileCountBadge">0 files</span>
+  <div class="matte-workspace">
+    <!-- Sidebar -->
+    <div class="matte-sidebar" id="psSidebar">
+      <div class="sidebar-header">
+        <span>รายการบันทึก (NOTES)</span>
+        <span style="color:var(--accent-cyan);font-size:11px;" id="fileCountBadge">0 ไฟล์</span>
       </div>
       <div class="sidebar-file-list" id="fileList"></div>
-      <div style="padding:8px;border-top:1px solid rgba(255,255,255,0.05);">
-        <button class="cyber-btn" style="width:100%;justify-content:center;" onclick="openCreate()">
-          + Add New Note
+      <div style="padding:10px;border-top:1px solid var(--border-matte);">
+        <button class="matte-btn" style="width:100%;justify-content:center;" onclick="openCreate()">
+          + สร้างโน้ตใหม่
         </button>
       </div>
     </div>
 
-    <!-- Center Pitch Black PowerShell Viewport -->
-    <div class="cyber-viewport">
-      <!-- PowerShell Prompt HUD -->
-      <div class="ps-uil-prompt-bar">
-        <span class="prompt-badge-terminal">PS 7.4</span>
-        <span class="prompt-badge-dir">C:\Users\CodeNote</span>
-        <span style="color:#64748b;">❯</span>
-        <span class="hud-glowing-title" id="currentFileBadge" style="font-size:12px;">note.ps1</span>
-        <span class="prompt-arrow">❯_</span>
+    <!-- Center Viewport -->
+    <div class="matte-viewport">
+      <!-- PowerShell Prompt Path Banner -->
+      <div class="ps-prompt-banner">
+        <span class="ps-prompt-tag">PS 7.4</span>
+        <span class="ps-prompt-path">C:\Users\CodeNote</span>
+        <span style="color:var(--text-muted);">❯</span>
+        <span class="ps-prompt-file" id="currentFileBadge">บันทึก.ps1</span>
+        <span class="ps-prompt-arrow">❯_</span>
       </div>
 
-      <!-- Editor Container with Animated Flowing Text -->
-      <div class="editor-main-wrap" id="editorContainer">
+      <!-- Editor Area -->
+      <div class="editor-main-area" id="editorContainer">
         <div class="editor-line-numbers" id="lineNumbers">1</div>
         <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-             data-placeholder="พิมพ์ข้อความหรือบันทึกโค้ด... ตัวหนังสือจะวิ่งเรืองแสง RGB แบบอนิเมชั่นตลอดเวลา (Ctrl+S บันทึก)">
+             data-placeholder="เริ่มพิมพ์ข้อความหรือจดโน้ตที่นี่... (ตัวหนังสือสีวิ่งนุ่มนวลคมชัด · พื้นหลังดำด้าน · Ctrl+S บันทึก)">
         </div>
       </div>
 
-      <!-- Interactive Cyber PowerShell Console Drawer -->
-      <div class="cyber-console-hud">
+      <!-- Interactive PowerShell CLI Drawer -->
+      <div class="matte-console-drawer">
         <div class="console-log" id="cmdLog"></div>
         <div class="console-input-row">
-          <span class="cli-prompt-symbol">PS ❯</span>
-          <input type="text" class="cli-input" id="cmdInput" placeholder="พิมพ์คำสั่ง PowerShell: dir, cat &lt;name&gt;, new &lt;name&gt;, edit &lt;name&gt;, cls, help..." autocomplete="off">
-          <button class="cyber-btn" onclick="runCommandFromInput()" style="padding:2px 8px;font-size:11px;">RUN ↵</button>
+          <span class="cli-prompt-label">PS ❯</span>
+          <input type="text" class="cli-input" id="cmdInput" placeholder="พิมพ์คำสั่ง: dir, cat &lt;ชื่อไฟล์&gt;, new &lt;ชื่อไฟล์&gt;, edit &lt;ชื่อไฟล์&gt;, cls, help..." autocomplete="off">
+          <button class="matte-btn" onclick="runCommandFromInput()" style="padding:3px 10px;font-size:11.5px;">RUN ↵</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── BOTTOM STATUS BAR ── -->
-  <div class="cyber-statusbar">
-    <span class="status-pill save-ok" id="saveStatus">● Saved</span>
-    <span class="status-pill" id="wordCount">0 words</span>
-    <span class="status-pill" id="charCount">0 chars</span>
-    <span class="status-pill" id="cursorPos">Ln 1, Col 1</span>
-    <span class="status-pill active-rgb">🌈 Animated Glow: ON</span>
-    <span class="status-pill" style="margin-left:auto;color:#00f0ff;" id="sfxStatus">♪ Galaxy 100 V2</span>
+  <!-- ── STATUS BAR ── -->
+  <div class="matte-statusbar">
+    <span class="status-item save-ok" id="saveStatus">● บันทึกแล้ว</span>
+    <span class="status-item" id="wordCount">0 คำ</span>
+    <span class="status-item" id="charCount">0 ตัวอักษร</span>
+    <span class="status-item" id="cursorPos">แถว 1, คอลัมน์ 1</span>
+    <span class="status-item rgb-tag">🌈 ตัวหนังสือสีวิ่ง: เปิดทำงาน</span>
+    <span class="status-item" style="margin-left:auto;color:var(--accent-cyan);" id="sfxStatus">♪ Galaxy 100 V2</span>
   </div>
 </div>
 
@@ -858,85 +790,31 @@ html,body {
 
 <!-- Create Note Modal -->
 <div class="modal-overlay" id="createModal">
-  <div class="cyber-modal">
-    <div class="cyber-modal-head">⚡ CREATE NEW NOTE</div>
-    <div class="cyber-modal-body">
-      <input id="nameInput" placeholder="เช่น project-notes.ps1 หรือ task-list" autocomplete="off">
+  <div class="matte-modal">
+    <div class="matte-modal-head">⚡ สร้างไฟล์ Note ใหม่</div>
+    <div class="matte-modal-body">
+      <input id="nameInput" placeholder="เช่น บันทึกงานประจำวัน หรือ my-notes" autocomplete="off">
     </div>
-    <div class="cyber-modal-foot">
-      <button class="cyber-btn" onclick="closeModals()">Cancel</button>
-      <button class="cyber-btn active" onclick="confirmCreate()">OK</button>
+    <div class="matte-modal-foot">
+      <button class="matte-btn" onclick="closeModals()">ยกเลิก</button>
+      <button class="matte-btn active" onclick="confirmCreate()">สร้างไฟล์</button>
     </div>
   </div>
 </div>
 
 <!-- Delete Note Modal -->
 <div class="modal-overlay" id="deleteModal">
-  <div class="cyber-modal" style="border-color:#ff0055;">
-    <div class="cyber-modal-head" style="color:#ff0055;">⚠️ CONFIRM DELETE</div>
-    <div class="cyber-modal-body" id="deleteText" style="color:#cbd5e1;font-size:13px;line-height:1.6"></div>
-    <div class="cyber-modal-foot">
-      <button class="cyber-btn" onclick="closeModals()">Cancel</button>
-      <button class="cyber-btn" style="background:#ff0055;color:#fff;border-color:#ff0055;" onclick="confirmDelete()">Delete</button>
+  <div class="matte-modal" style="border-color:#f43f5e;">
+    <div class="matte-modal-head" style="color:#f43f5e;">⚠️ ยืนยันการลบไฟล์</div>
+    <div class="matte-modal-body" id="deleteText" style="color:#cbd5e1;font-size:13.5px;line-height:1.6"></div>
+    <div class="matte-modal-foot">
+      <button class="matte-btn" onclick="closeModals()">ยกเลิก</button>
+      <button class="matte-btn" style="background:#f43f5e;color:#fff;border-color:#f43f5e;" onclick="confirmDelete()">ลบไฟล์</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   NEON PARTICLES & GLOW SPARKS
-   ═══════════════════════════════════════════════════════════════ */
-const particleCanvas = document.getElementById('particleCanvas');
-const pctx = particleCanvas.getContext('2d');
-let particles = [];
-
-function resizeCanvas() {
-  particleCanvas.width = window.innerWidth;
-  particleCanvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-function addSpark(x, y) {
-  const colors = ['#00f0ff', '#ff007f', '#ffee00', '#00ff66', '#9d00ff'];
-  for (let i = 0; i < 7; i++) {
-    particles.push({
-      x, y,
-      vx: (Math.random() - 0.5) * 5,
-      vy: (Math.random() - 0.5) * 5 - 1.5,
-      size: Math.random() * 3.5 + 1.5,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      alpha: 1,
-      decay: Math.random() * 0.04 + 0.02
-    });
-  }
-}
-
-function renderParticles() {
-  pctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.alpha -= p.decay;
-    if (p.alpha <= 0) {
-      particles.splice(i, 1);
-      continue;
-    }
-    pctx.save();
-    pctx.globalAlpha = p.alpha;
-    pctx.fillStyle = p.color;
-    pctx.shadowColor = p.color;
-    pctx.shadowBlur = 10;
-    pctx.beginPath();
-    pctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    pctx.fill();
-    pctx.restore();
-  }
-  requestAnimationFrame(renderParticles);
-}
-renderParticles();
-
 /* ═══════════════════════════════════════════════════════════════
    MULTI-PROFILE KEYBOARD AUDIO ENGINE
    ═══════════════════════════════════════════════════════════════ */
@@ -957,7 +835,7 @@ function getACtx() {
 const SFX_PROFILES = [
   {
     id: 'galaxy', name: 'Dekey Galaxy 100 V2', desc: 'Gasket · Linear · Deep Thock',
-    icon: '🌌', badge: 'THOCK', badgeColor: '#00ff66',
+    icon: '🌌', badge: 'THOCK', badgeColor: '#34d399',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
       sine(ctx, dest, t, isSpecial ? 58 : (72 + rnd(18)), 0.55 * pitch, 0.003, 0.058, 0.52 * vel, 0.55);
@@ -969,7 +847,7 @@ const SFX_PROFILES = [
   },
   {
     id: 'holy_panda', name: 'Holy Pandas', desc: 'Tactile bump · Round thock',
-    icon: '🐼', badge: 'TACTILE', badgeColor: '#00f0ff',
+    icon: '🐼', badge: 'TACTILE', badgeColor: '#38bdf8',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
       sine(ctx, dest, t, isSpecial ? 80 : (95 + rnd(15)), 0.6 * pitch, 0.002, 0.07, 0.48 * vel, 0.5);
@@ -981,7 +859,7 @@ const SFX_PROFILES = [
   },
   {
     id: 'topre', name: 'HHKB Topre 45g', desc: 'Electrostatic · Soft Dome',
-    icon: '⌨️', badge: 'TOPRE', badgeColor: '#9d00ff',
+    icon: '⌨️', badge: 'TOPRE', badgeColor: '#c084fc',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
       sine(ctx, dest, t, isSpecial ? 65 : (78 + rnd(10)), 0.5 * pitch, 0.001, 0.10, 0.44 * vel, 0.45);
@@ -992,7 +870,7 @@ const SFX_PROFILES = [
   },
   {
     id: 'mx_blue', name: 'Cherry MX Blue', desc: 'Click bar · Sharp clack',
-    icon: '🔵', badge: 'CLICKY', badgeColor: '#00f0ff',
+    icon: '🔵', badge: 'CLICKY', badgeColor: '#38bdf8',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
       sine(ctx, dest, t, 4200, 2200, 0.0003, 0.010, 0.55 * vel, 1, true);
@@ -1004,7 +882,7 @@ const SFX_PROFILES = [
   },
   {
     id: 'ibm_model_m', name: 'IBM Model M', desc: 'Buckling spring vintage legend',
-    icon: '🏛️', badge: 'BUCKLING', badgeColor: '#ffee00',
+    icon: '🏛️', badge: 'BUCKLING', badgeColor: '#fbbf24',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
       sine(ctx, dest, t, 5500, 2800, 0.0003, 0.008, 0.65 * vel, 1, true);
@@ -1092,7 +970,7 @@ function buildSfxPanel() {
         <div class="sfx-item-name">${p.name}</div>
         <div class="sfx-item-desc">${p.desc}</div>
       </div>
-      <span class="cyber-badge" style="color:${p.badgeColor};border-color:${p.badgeColor}">${p.badge}</span>
+      <span style="font-size:10px;padding:2px 6px;border-radius:4px;color:${p.badgeColor};border:1px solid ${p.badgeColor}">${p.badge}</span>
     `;
     el.onclick = () => selectProfile(p.id, true);
     container.appendChild(el);
@@ -1130,14 +1008,11 @@ function updateSfxUI() {
   const statusEl = document.getElementById('sfxStatus');
 
   if (tog) tog.checked = soundOn;
-  if (dot) {
-    dot.style.background = soundOn ? prof.badgeColor : '#475569';
-    dot.style.boxShadow = soundOn ? `0 0 8px ${prof.badgeColor}` : 'none';
-  }
-  if (lbl) lbl.textContent = soundOn ? prof.icon + ' ' + prof.badge : 'SFX OFF';
+  if (dot) dot.style.background = soundOn ? prof.badgeColor : '#4b4b5c';
+  if (lbl) lbl.textContent = soundOn ? prof.icon + ' ' + prof.badge : 'SFX ปิด';
   if (statusEl) {
-    statusEl.textContent = soundOn ? `♪ ${prof.name}` : '♪ Muted';
-    statusEl.style.color = soundOn ? prof.badgeColor : '#64748b';
+    statusEl.textContent = soundOn ? `♪ ${prof.name}` : '♪ ปิดเสียง';
+    statusEl.style.color = soundOn ? prof.badgeColor : '#8e8e9f';
   }
 }
 
@@ -1155,12 +1030,20 @@ document.addEventListener('click', e => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   RGB SPEED DURATION CHANGER
+   FONT & SPEED CONTROLS
    ═══════════════════════════════════════════════════════════════ */
+function setFontSize(size) {
+  editor.style.fontSize = size;
+}
+
+function setFontFamily(font) {
+  editor.style.fontFamily = font;
+}
+
 function setRgbSpeed(speed) {
   const styleEl = document.getElementById('dynamicRgbSpeedStyle') || document.createElement('style');
   styleEl.id = 'dynamicRgbSpeedStyle';
-  styleEl.innerHTML = `.flowing-glow-text, .editor, .editor * { animation-duration: ${speed} !important; }`;
+  styleEl.innerHTML = `.flowing-rainbow-text, .editor, .editor * { animation-duration: ${speed} !important; }`;
   document.head.appendChild(styleEl);
 }
 
@@ -1196,9 +1079,9 @@ function doSave() {
 }
 
 function setStatus(s) {
-  if (s === 'saving') { saveStatus.textContent = '● Saving...'; saveStatus.style.color = '#ffee00'; }
-  else if (s === 'error') { saveStatus.textContent = '● Save failed'; saveStatus.style.color = '#ff0055'; }
-  else { saveStatus.textContent = '● Saved'; saveStatus.style.color = '#00ff66'; }
+  if (s === 'saving') { saveStatus.textContent = '● กำลังบันทึก...'; saveStatus.style.color = '#fbbf24'; }
+  else if (s === 'error') { saveStatus.textContent = '● บันทึกไม่สำเร็จ'; saveStatus.style.color = '#f43f5e'; }
+  else { saveStatus.textContent = '● บันทึกแล้ว'; saveStatus.style.color = '#34d399'; }
 }
 
 function updateLineNumbers() {
@@ -1211,24 +1094,23 @@ function updateLineNumbers() {
 function updateMetrics() {
   const text = editor.innerText || '';
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  document.getElementById('wordCount').textContent = words.toLocaleString() + ' words';
-  document.getElementById('charCount').textContent = text.length.toLocaleString() + ' chars';
+  document.getElementById('wordCount').textContent = words.toLocaleString() + ' คำ';
+  document.getElementById('charCount').textContent = text.length.toLocaleString() + ' ตัวอักษร';
   updateLineNumbers();
 }
 
 function renderTabsAndFiles() {
   const names = Object.keys(files);
-  document.getElementById('fileCountBadge').textContent = `${names.length} files`;
+  document.getElementById('fileCountBadge').textContent = `${names.length} ไฟล์`;
 
   // Render Tabs
   terminalTabs.innerHTML = '';
   names.forEach(n => {
     const tab = document.createElement('div');
-    tab.className = 'cyber-tab' + (n === currentFile ? ' active' : '');
+    tab.className = 'matte-tab' + (n === currentFile ? ' active' : '');
     tab.innerHTML = `
-      <span class="tab-dot"></span>
-      <span title="${n}">${n}</span>
-      <span class="tab-close" onclick="event.stopPropagation(); askDelete('${n.replace(/'/g, "\\'")}')" title="Close">✕</span>
+      <span title="${n}">📄 ${n}</span>
+      <span class="tab-close" onclick="event.stopPropagation(); askDelete('${n.replace(/'/g, "\\'")}')" title="ปิด">✕</span>
     `;
     tab.onclick = () => openFile(n);
     terminalTabs.appendChild(tab);
@@ -1238,10 +1120,10 @@ function renderTabsAndFiles() {
   fileList.innerHTML = '';
   names.forEach(n => {
     const row = document.createElement('div');
-    row.className = 'cyber-file-row' + (n === currentFile ? ' active' : '');
+    row.className = 'matte-file-row' + (n === currentFile ? ' active' : '');
     row.innerHTML = `
-      <div style="display:flex;align-items:center;gap:7px;min-width:0;flex:1;" onclick="openFile('${n.replace(/'/g, "\\'")}')">
-        <span style="color:var(--glow-cyan);">📄</span>
+      <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;" onclick="openFile('${n.replace(/'/g, "\\'")}')">
+        <span style="color:var(--accent-cyan);">📄</span>
         <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${n}">${n}</span>
       </div>
       <span class="file-del" onclick="askDelete('${n.replace(/'/g, "\\'")}')" title="ลบ">✕</span>
@@ -1264,21 +1146,10 @@ function openFile(n) {
   editor.focus();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   KEYSTROKES & TYPING SPARK PARTICLES
-   ═══════════════════════════════════════════════════════════════ */
+/* ── Keystrokes ── */
 editor.addEventListener('keydown', e => {
   const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ';
   playKey(special);
-
-  // Rainbow Spark Particle at Cursor
-  try {
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount) {
-      const rect = sel.getRangeAt(0).getBoundingClientRect();
-      if (rect.x > 0 && rect.y > 0) addSpark(rect.x, rect.y + 10);
-    }
-  } catch(err) {}
 
   if (e.key === 'Tab') {
     e.preventDefault();
@@ -1293,7 +1164,7 @@ editor.addEventListener('input', () => {
 
 document.addEventListener('keydown', e => {
   const mod = e.ctrlKey || e.metaKey;
-  if (mod && e.key === 's') { e.preventDefault(); doSave(); logCmd('File saved: ' + currentFile, 'success'); }
+  if (mod && e.key === 's') { e.preventDefault(); doSave(); logCmd('บันทึกไฟล์เรียบร้อย: ' + currentFile, 'success'); }
   if (mod && e.key === 'n') { e.preventDefault(); openCreate(); }
   if (e.key === 'Escape') { closeModals(); sfxPanelOpen = false; document.getElementById('sfxPanel').classList.remove('open'); }
   if (e.key === 'Enter' && document.getElementById('createModal').classList.contains('show')) { e.preventDefault(); confirmCreate(); }
@@ -1309,7 +1180,7 @@ document.addEventListener('selectionchange', () => {
     const lines = r.toString().split('\n');
     const ln = lines.length;
     const col = lines[lines.length - 1].length + 1;
-    document.getElementById('cursorPos').textContent = `Ln ${ln}, Col ${col}`;
+    document.getElementById('cursorPos').textContent = `แถว ${ln}, คอลัมน์ ${col}`;
   } catch(e) {}
 });
 
@@ -1378,13 +1249,13 @@ function executePowerShellCmd(input) {
     case 'cat':
     case 'type':
     case 'gc':
-      if (!arg) { logCmd('Usage: cat <filename>', 'error'); break; }
+      if (!arg) { logCmd('วิธีใช้: cat <ชื่อไฟล์>', 'error'); break; }
       if (files[arg] !== undefined) {
         const temp = document.createElement('div');
         temp.innerHTML = files[arg];
-        logCmd(temp.innerText || '(empty file)', 'info');
+        logCmd(temp.innerText || '(ไฟล์ว่างเปล่า)', 'info');
       } else {
-        logCmd(`Cannot find path '${arg}' because it does not exist.`, 'error');
+        logCmd(`ไม่พบไฟล์ '${arg}'`, 'error');
       }
       break;
 
@@ -1392,12 +1263,12 @@ function executePowerShellCmd(input) {
     case 'ni':
     case 'touch':
       if (!arg) { openCreate(); break; }
-      if (files[arg] !== undefined) { logCmd(`File '${arg}' already exists.`, 'error'); }
+      if (files[arg] !== undefined) { logCmd(`ไฟล์ '${arg}' มีอยู่แล้ว`, 'error'); }
       else {
         files[arg] = '';
         localStorage.setItem('cn_files', JSON.stringify(files));
         openFile(arg);
-        logCmd(`Created new note file: ${arg}`, 'success');
+        logCmd(`สร้างไฟล์ใหม่เรียบร้อย: ${arg}`, 'success');
       }
       break;
 
@@ -1405,12 +1276,12 @@ function executePowerShellCmd(input) {
     case 'code':
     case 'notepad':
     case 'open':
-      if (!arg) { logCmd('Usage: edit <filename>', 'error'); break; }
+      if (!arg) { logCmd('วิธีใช้: edit <ชื่อไฟล์>', 'error'); break; }
       if (files[arg] !== undefined) {
         openFile(arg);
-        logCmd(`Opened '${arg}' in editor.`, 'success');
+        logCmd(`เปิดไฟล์ '${arg}' ในโปรแกรมแก้ไขแล้ว`, 'success');
       } else {
-        logCmd(`File '${arg}' not found. Creating new file...`, 'info');
+        logCmd(`ไม่พบไฟล์ '${arg}' กำลังสร้างไฟล์ใหม่...`, 'info');
         files[arg] = '';
         localStorage.setItem('cn_files', JSON.stringify(files));
         openFile(arg);
@@ -1420,13 +1291,13 @@ function executePowerShellCmd(input) {
     case 'rm':
     case 'del':
     case 'remove-item':
-      if (!arg) { logCmd('Usage: rm <filename>', 'error'); break; }
+      if (!arg) { logCmd('วิธีใช้: rm <ชื่อไฟล์>', 'error'); break; }
       if (files[arg] !== undefined) {
         deleteTarget = arg;
         confirmDelete();
-        logCmd(`Removed note file: ${arg}`, 'success');
+        logCmd(`ลบไฟล์ '${arg}' เรียบร้อย`, 'success');
       } else {
-        logCmd(`Cannot find file '${arg}'.`, 'error');
+        logCmd(`ไม่พบไฟล์ '${arg}'`, 'error');
       }
       break;
 
@@ -1438,14 +1309,14 @@ function executePowerShellCmd(input) {
 
     case 'sfx':
       if (!arg) {
-        logCmd(`Available Sound Profiles:\n` + SFX_PROFILES.map(p => `  • ${p.id} (${p.name})`).join('\n'), 'info');
+        logCmd(`โปรไฟล์เสียงคีย์บอร์ดที่เลือกได้:\n` + SFX_PROFILES.map(p => `  • ${p.id} (${p.name})`).join('\n'), 'info');
       } else {
         const target = SFX_PROFILES.find(p => p.id === arg || p.name.toLowerCase().includes(arg.toLowerCase()));
         if (target) {
           selectProfile(target.id, true);
-          logCmd(`Switched SFX profile to: ${target.name}`, 'success');
+          logCmd(`เปลี่ยนเสียงคีย์บอร์ดเป็น: ${target.name}`, 'success');
         } else {
-          logCmd(`SFX profile '${arg}' not found.`, 'error');
+          logCmd(`ไม่พบเสียงคีย์บอร์ด '${arg}'`, 'error');
         }
       }
       break;
@@ -1453,25 +1324,23 @@ function executePowerShellCmd(input) {
     case 'help':
     case 'get-help':
     case '?':
-      logCmd(`PowerShell CodeNote UIL Commands:
+      logCmd(`คำสั่ง PowerShell CodeNote:
   • dir, ls              - แสดงรายชื่อโน้ตทั้งหมด
-  • cat <name>           - อ่านเนื้อหาของไฟล์
-  • new <name>           - สร้างไฟล์โน้ตใหม่
-  • edit <name>          - เปิดไฟล์ในตัวแก้ไข
-  • rm <name>            - ลบไฟล์
+  • cat <ชื่อไฟล์>        - อ่านเนื้อหาของไฟล์
+  • new <ชื่อไฟล์>        - สร้างไฟล์โน้ตใหม่
+  • edit <ชื่อไฟล์>       - เปิดไฟล์ในตัวแก้ไข
+  • rm <ชื่อไฟล์>         - ลบไฟล์
   • sfx [profile]        - เปลี่ยนเสียงคีย์บอร์ด (galaxy, holy_panda, topre, mx_blue, ibm_model_m)
   • cls, clear           - ล้างข้อความ Terminal`, 'info');
       break;
 
     default:
-      logCmd(`The term '${cmd}' is not recognized as a cmdlet. Type 'help' for command list.`, 'error');
+      logCmd(`ไม่รู้จักคำสั่ง '${cmd}' พิมพ์ 'help' เพื่อดูคำสั่งทั้งหมด`, 'error');
       break;
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   UI ACTIONS & TOOLBAR
-   ═══════════════════════════════════════════════════════════════ */
+/* ── UI Actions ── */
 function cmd(c) { editor.focus(); document.execCommand(c, false, null); }
 
 function toggleSidebar() {
@@ -1484,11 +1353,11 @@ imageInput.onchange = e => Array.from(e.target.files).forEach(insertImageFile);
 
 function insertImageFile(file) {
   const r = new FileReader();
-  r.onload = () => insertImageSrc(r.result, '260px');
+  r.onload = () => insertImageSrc(r.result, '280px');
   r.readAsDataURL(file);
 }
 
-function insertImageSrc(src, width = '260px') {
+function insertImageSrc(src, width = '280px') {
   const box = buildImgBox(src, width);
   const sel = window.getSelection();
   if (sel && sel.rangeCount) {
@@ -1511,7 +1380,7 @@ function buildImgBox(src, width) {
   img.style.width = width;
   const handle = document.createElement('span');
   handle.className = 'handle';
-  handle.title = 'Drag to resize';
+  handle.title = 'ลากเพื่อปรับขนาดรูป';
   const del = document.createElement('span');
   del.className = 'del-img';
   del.textContent = '✕';
@@ -1526,7 +1395,7 @@ function enableResize(img, handle) {
   handle.onmousedown = e => {
     e.preventDefault();
     const startX = e.clientX, startW = img.offsetWidth;
-    const onMove = ev => img.style.width = Math.max(50, startW + (ev.clientX - startX)) + 'px';
+    const onMove = ev => img.style.width = Math.max(60, startW + (ev.clientX - startX)) + 'px';
     const onUp = () => {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
@@ -1553,7 +1422,7 @@ function openCreate() {
 
 function askDelete(n) {
   deleteTarget = n;
-  document.getElementById('deleteText').innerHTML = `ต้องการลบไฟล์ <strong style="color:var(--glow-cyan)">"${n}"</strong> หรือไม่?<br><span style="color:#64748b;font-size:11.5px;">ไฟล์นี้จะถูกลบออกจากระบบทันที</span>`;
+  document.getElementById('deleteText').innerHTML = `ต้องการลบไฟล์ <strong style="color:var(--accent-cyan)">"${n}"</strong> หรือไม่?<br><span style="color:var(--text-muted);font-size:12px;">ไฟล์นี้จะถูกลบออกจากระบบทันที</span>`;
   document.getElementById('deleteModal').classList.add('show');
 }
 
@@ -1565,14 +1434,14 @@ function closeModals() {
 function confirmCreate() {
   const inp = document.getElementById('nameInput');
   let n = inp.value.trim();
-  if (!n) { inp.style.borderColor = '#ff0055'; inp.focus(); return; }
+  if (!n) { inp.style.borderColor = '#f43f5e'; inp.focus(); return; }
   if (!n.includes('.')) n += '.ps1';
-  if (files[n] !== undefined) { inp.style.borderColor = '#ffee00'; inp.focus(); return; }
+  if (files[n] !== undefined) { inp.style.borderColor = '#fbbf24'; inp.focus(); return; }
   files[n] = '';
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
   closeModals();
   openFile(n);
-  logCmd(`Created and opened new note: ${n}`, 'success');
+  logCmd(`สร้างและเปิดไฟล์ใหม่: ${n}`, 'success');
 }
 
 function confirmDelete() {
@@ -1585,7 +1454,7 @@ function confirmDelete() {
   else {
     currentFile = null;
     editor.innerHTML = '';
-    document.getElementById('currentFileBadge').textContent = '(no file)';
+    document.getElementById('currentFileBadge').textContent = '(ไม่มีไฟล์)';
     renderTabsAndFiles();
     setStatus('saved');
     updateMetrics();
@@ -1594,7 +1463,7 @@ function confirmDelete() {
 
 function printPage() { doSave(); window.print(); }
 
-/* ── Drag & Drop Images ── */
+/* Drag & Drop */
 const editorContainer = document.getElementById('editorContainer');
 editorContainer.addEventListener('dragover', e => e.preventDefault());
 editorContainer.addEventListener('drop', e => {
@@ -1603,7 +1472,7 @@ editorContainer.addEventListener('drop', e => {
   imgs.forEach(insertImageFile);
 });
 
-/* ── PWA ── */
+/* PWA */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/Note/sw.js').catch(()=>{}));
 }
@@ -1612,29 +1481,29 @@ if ('serviceWorker' in navigator) {
    INITIALIZATION
    ═══════════════════════════════════════════════════════════════ */
 if (Object.keys(files).length === 0) {
-  files['Welcome.ps1'] = [
+  files['ยินดีต้อนรับ.ps1'] = [
     '<p><strong># =========================================================</strong></p>',
-    '<p><strong># CodeNote Cyberpunk UIL — Pure Black & Glowing RGB Edition ⚡</strong></p>',
+    '<p><strong># CodeNote Studio — Matte Black & Flowing RGB Edition ⚡</strong></p>',
     '<p><strong># =========================================================</strong></p>',
     '<p>&nbsp;</p>',
-    '<p>Write-Host "ยินดีต้อนรับสู่ CodeNote บนพื้นหลังสีดำสนิท (Pitch Black)" -ForegroundColor Cyan</p>',
-    '<p>Write-Host "✨ ตัวหนังสือวิ่งเรืองแสง RGB แบบอนิเมชั่นตลอดเวลา สวยงาม คมชัดสะใจ!" -ForegroundColor Magenta</p>',
+    '<p>ยินดีต้อนรับสู่ CodeNote ในธีม <b>พื้นหลังสีดำด้าน (Matte Black)</b></p>',
+    '<p>✨ ตัวหนังสือขนาดใหญ่ อ่านสบายตา พร้อม <b>อนิเมชั่นสีรุ้งวิ่งนุ่มนวล คมชัด ไม่มีแสงฟุ้งทับกัน</b></p>',
     '<p>&nbsp;</p>',
-    '<p><strong># ไฮไลท์ฟีเจอร์เด่น:</strong></p>',
-    '<p>1. 🌌 <b>Pure Pitch Black Background (#000000):</b> พื้นหลังดำสนิท ขับเน้นแสงสีให้สว่างเรืองรอง</p>',
-    '<p>2. 🌈 <b>Continuous Flowing Neon Glow:</b> ตัวหนังสือมีประกายแสงสีรุ้งวิ่งตลอดเวลา ไม่หยุดนิ่ง</p>',
-    '<p>3. ⚡ <b>Futuristic UIL Layout:</b> หน้าจอแนว Cyber HUD พร้อมระบบแท็บแบบ Windows Terminal</p>',
-    '<p>4. ⌨️ <b>Interactive PowerShell Console:</b> พิมพ์คำสั่ง <code>dir</code>, <code>cat</code>, <code>new</code>, <code>sfx</code> ที่ช่องด้านล่าง</p>',
-    '<p>5. 🔊 <b>Mechanical Keyboard Audio:</b> เสียงพิมพ์สัมผัสสมจริงระดับโปร่งใส</p>',
+    '<p><strong># ไฮไลท์การปรับปรุง:</strong></p>',
+    '<p>1. 🖤 <b>พื้นหลังสีดำด้าน (Matte Black):</b> สบายตา มินิมอล สไตล์ UIL</p>',
+    '<p>2. 🌈 <b>สีวิ่งที่ตัวหนังสือคมชัด:</b> ตัวหนังสือมีสีวิ่งลื่นไหลตลอดเวลา โดยไม่มีเงาเรืองแสงฟุ้งทับกัน</p>',
+    '<p>3. 🇹🇭 <b>ฟอนต์ภาษาไทยขนาดใหญ่ (Prompt, Noto Sans Thai, Kanit):</b> ตัวหนังสือใหญ่ คมชัด สระและวรรณยุกต์ไม่ตกหล่น</p>',
+    '<p>4. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>dir</code>, <code>cat</code>, <code>new</code>, <code>sfx</code> ที่ช่องคอนโซลด้านล่าง</p>',
+    '<p>5. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> มี 5 โปรไฟล์เสียงสมจริงระดับพรีเมียม</p>',
     '<p>&nbsp;</p>',
     '<p><strong># คีย์ลัด:</strong></p>',
-    '<p>• <b>Ctrl+S:</b> Save · <b>Ctrl+N:</b> New Note · <b>Tab:</b> 4 Spaces Indent</p>'
+    '<p>• <b>Ctrl+S:</b> บันทึก · <b>Ctrl+N:</b> สร้างโน้ตใหม่ · <b>Tab:</b> เว้นวรรคย่อหน้า</p>'
   ].join('');
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
 
 buildSfxPanel();
-openFile(Object.keys(files)[0] || 'Welcome.ps1');
+openFile(Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1');
 </script>
 </body>
 </html>
