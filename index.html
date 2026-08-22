@@ -30,6 +30,10 @@
   --accent-red: #ef4444;
   --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', sans-serif;
   --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+
+  /* Dynamic Flowing Gradient Preset (Default Rainbow) */
+  --flowing-gradient: linear-gradient(90deg, #ff1744 0%, #ff6d00 14%, #ffd600 28%, #00e676 42%, #00e5ff 56%, #7c3aed 70%, #ec4899 84%, #ff1744 100%);
+  --flowing-speed: 4s;
 }
 
 html,body {
@@ -43,14 +47,14 @@ html,body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CRISP ANIMATED RAINBOW FOR HEADINGS (สีรุ้งวิ่งคมชัด ไม่มีแสงฟุ้ง)
+   CRISP ANIMATED FLOWING GRADIENT (ปรับเปลี่ยนโทนสีได้ตามใจชอบ)
    ═══════════════════════════════════════════════════════════════ */
 @keyframes rainbowFlowSharp {
   0%   { background-position: 0% 50%; }
   100% { background-position: 300% 50%; }
 }
 
-/* Sharp Rainbow Class for Headings, Bold, and Highlights */
+/* Flowing Sharp Colors for Headings, Bold, and Highlights */
 .rainbow-sharp,
 .editor h1,
 .editor h2,
@@ -58,21 +62,11 @@ html,body {
 .editor strong,
 .editor b,
 .hud-title-rainbow {
-  background: linear-gradient(
-    90deg,
-    #ff1744 0%,
-    #ff6d00 14%,
-    #ffd600 28%,
-    #00e676 42%,
-    #00e5ff 56%,
-    #7c3aed 70%,
-    #ec4899 84%,
-    #ff1744 100%
-  ) !important;
+  background: var(--flowing-gradient) !important;
   background-size: 300% 100% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  animation: rainbowFlowSharp 4s linear infinite !important;
+  animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
   font-weight: 700;
   display: inline-block;
   text-shadow: none !important;
@@ -701,8 +695,23 @@ html,body {
   <!-- ── SECONDARY FORMATTING TOOLBAR ── -->
   <div class="matte-toolbar">
     <div class="toolbar-cluster">
+      <!-- Flowing Color Theme Selector -->
+      <span style="font-size:12px;color:var(--text-dim);">🎨 โทนสีวิ่ง:</span>
+      <select class="matte-select" id="flowingThemeSelect" onchange="setFlowingTheme(this.value)">
+        <option value="rainbow" selected>🌈 Spectrum Rainbow (รุ้งหลากสี)</option>
+        <option value="cyber">⚡ Cyber Neon (ฟ้า-ม่วง-ชมพู)</option>
+        <option value="sunset">🌅 Sunset Gold (ส้มทอง-ชมพู)</option>
+        <option value="matrix">🍃 Matrix Emerald (เขียวมรกต-มะนาว)</option>
+        <option value="ocean">🌊 Ocean Cyan (ฟ้าเทอร์ควอยซ์-น้ำเงิน)</option>
+        <option value="purple">🔮 Galaxy Purple (ม่วงกาแล็กซี-มาเจนต้า)</option>
+        <option value="fire">🔥 Lava Fire (ไฟแดง-ส้ม-เหลือง)</option>
+        <option value="aurora">💎 Aurora Hologram (ออโรร่า-พาสเทล)</option>
+      </select>
+
+      <div class="toolbar-sep"></div>
+
       <!-- Font Size Selector -->
-      <span style="font-size:12px;color:var(--text-dim);">ขนาดตัวอักษร:</span>
+      <span style="font-size:12px;color:var(--text-dim);">ขนาด:</span>
       <select class="matte-select" onchange="setFontSize(this.value)">
         <option value="18px">18 px</option>
         <option value="20px">20 px</option>
@@ -714,7 +723,7 @@ html,body {
       <div class="toolbar-sep"></div>
 
       <!-- Format Buttons -->
-      <button class="matte-btn" onclick="makeRainbowHeading()" title="ทำเป็นหัวข้อสีรุ้งวิ่ง">🌈 หัวข้อสีรุ้ง</button>
+      <button class="matte-btn" onclick="makeRainbowHeading()" title="ทำเป็นหัวข้อสีวิ่ง">✨ ทำเป็นหัวข้อสีวิ่ง</button>
       <button class="matte-btn" onclick="cmd('bold')" title="ตัวหนา (Ctrl+B)"><b>B</b></button>
       <button class="matte-btn" onclick="cmd('italic')" title="ตัวเอียง (Ctrl+I)"><i>I</i></button>
       <button class="matte-btn" onclick="cmd('underline')" title="ขีดเส้นใต้ (Ctrl+U)"><u>U</u></button>
@@ -765,7 +774,7 @@ html,body {
       <div class="editor-main-area" id="editorContainer">
         <div class="editor-line-numbers" id="lineNumbers">1</div>
         <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-             data-placeholder="เริ่มพิมพ์ข้อความ... (ตัวหนังสือสีเขียวคมชัด · หัวข้อสีรุ้งวิ่ง · กดเปลี่ยนแท็บด้านบนได้ทันที)">
+             data-placeholder="เริ่มพิมพ์ข้อความ... (ตัวหนังสือสีเขียวคมชัด · หัวข้อสีวิ่งเลือกโทนสีได้ · กดเปลี่ยนแท็บด้านบนได้ทันที)">
         </div>
       </div>
 
@@ -774,7 +783,7 @@ html,body {
         <div class="console-log" id="cmdLog"></div>
         <div class="console-input-row">
           <span class="cli-prompt-label">PS ❯</span>
-          <input type="text" class="cli-input" id="cmdInput" placeholder="พิมพ์คำสั่ง: dir, cat &lt;ชื่อไฟล์&gt;, new &lt;ชื่อไฟล์&gt;, edit &lt;ชื่อไฟล์&gt;, cls, help..." autocomplete="off">
+          <input type="text" class="cli-input" id="cmdInput" placeholder="พิมพ์คำสั่ง: dir, cat &lt;ชื่อไฟล์&gt;, theme &lt;ชื่อธีม&gt;, new &lt;ชื่อไฟล์&gt;, edit &lt;ชื่อไฟล์&gt;, cls, help..." autocomplete="off">
           <button class="matte-btn" onclick="runCommandFromInput()" style="padding:3px 10px;font-size:11.5px;">RUN ↵</button>
         </div>
       </div>
@@ -787,7 +796,7 @@ html,body {
     <span class="status-item" id="wordCount">0 คำ</span>
     <span class="status-item" id="charCount">0 ตัวอักษร</span>
     <span class="status-item" id="cursorPos">แถว 1, คอลัมน์ 1</span>
-    <span class="status-item rgb-tag">✨ สีเขียวเทอร์มินัล + หัวข้อสีรุ้ง</span>
+    <span class="status-item rgb-tag" id="themeStatus">🎨 โทนสีวิ่ง: Spectrum Rainbow</span>
     <span class="status-item" style="margin-left:auto;color:var(--accent-cyan);" id="sfxStatus">♪ Galaxy 100 V2</span>
   </div>
 </div>
@@ -821,6 +830,69 @@ html,body {
 </div>
 
 <script>
+/* ═══════════════════════════════════════════════════════════════
+   FLOWING COLOR THEMES PRESETS (เลือกโทนสีวิ่ง)
+   ═══════════════════════════════════════════════════════════════ */
+const COLOR_THEMES = {
+  rainbow: {
+    name: 'Spectrum Rainbow',
+    label: '🌈 Spectrum Rainbow',
+    gradient: 'linear-gradient(90deg, #ff1744 0%, #ff6d00 14%, #ffd600 28%, #00e676 42%, #00e5ff 56%, #7c3aed 70%, #ec4899 84%, #ff1744 100%)'
+  },
+  cyber: {
+    name: 'Cyber Neon',
+    label: '⚡ Cyber Neon',
+    gradient: 'linear-gradient(90deg, #00e5ff 0%, #7c3aed 25%, #ec4899 50%, #f43f5e 75%, #00e5ff 100%)'
+  },
+  sunset: {
+    name: 'Sunset Gold',
+    label: '🌅 Sunset Gold',
+    gradient: 'linear-gradient(90deg, #ff4b1f 0%, #ff9068 25%, #ffb347 50%, #ffcc33 75%, #ff4b1f 100%)'
+  },
+  matrix: {
+    name: 'Matrix Emerald',
+    label: '🍃 Matrix Emerald',
+    gradient: 'linear-gradient(90deg, #00e676 0%, #a3e635 25%, #34d399 50%, #10b981 75%, #00e676 100%)'
+  },
+  ocean: {
+    name: 'Ocean Cyan',
+    label: '🌊 Ocean Cyan',
+    gradient: 'linear-gradient(90deg, #00c6ff 0%, #0072ff 25%, #38bdf8 50%, #06b6d4 75%, #00c6ff 100%)'
+  },
+  purple: {
+    name: 'Galaxy Purple',
+    label: '🔮 Galaxy Purple',
+    gradient: 'linear-gradient(90deg, #9333ea 0%, #c084fc 25%, #f43f5e 50%, #db2777 75%, #9333ea 100%)'
+  },
+  fire: {
+    name: 'Lava Fire',
+    label: '🔥 Lava Fire',
+    gradient: 'linear-gradient(90deg, #ef4444 0%, #f97316 25%, #eab308 50%, #f59e0b 75%, #ef4444 100%)'
+  },
+  aurora: {
+    name: 'Aurora Hologram',
+    label: '💎 Aurora Hologram',
+    gradient: 'linear-gradient(90deg, #f472b6 0%, #38bdf8 25%, #4ade80 50%, #facc15 75%, #f472b6 100%)'
+  }
+};
+
+let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'rainbow';
+
+function setFlowingTheme(themeKey) {
+  if (!COLOR_THEMES[themeKey]) themeKey = 'rainbow';
+  currentFlowingTheme = themeKey;
+  localStorage.setItem('cn_flowing_theme', themeKey);
+
+  const t = COLOR_THEMES[themeKey];
+  document.documentElement.style.setProperty('--flowing-gradient', t.gradient);
+
+  const sel = document.getElementById('flowingThemeSelect');
+  if (sel) sel.value = themeKey;
+
+  const status = document.getElementById('themeStatus');
+  if (status) status.textContent = `🎨 โทนสีวิ่ง: ${t.name}`;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    MULTI-PROFILE KEYBOARD AUDIO ENGINE
    ═══════════════════════════════════════════════════════════════ */
@@ -1274,7 +1346,7 @@ function executePowerShellCmd(input) {
   logCmd(`PS C:\\Users\\CodeNote> ${input}`, 'info');
   const parts = input.split(/\s+/);
   const cmd = parts[0].toLowerCase();
-  const arg = parts.slice(1).join(' ');
+  const arg = parts.slice(1).join(' ').toLowerCase();
 
   switch(cmd) {
     case 'ls':
@@ -1285,6 +1357,19 @@ function executePowerShellCmd(input) {
         const len = (files[name] || '').length;
         logCmd(`-a----         8/22/2026   5:00 PM         ${len.toString().padStart(6, ' ')} ${name}`, 'info');
       });
+      break;
+
+    case 'theme':
+    case 'color':
+    case 'rgb':
+      if (!arg) {
+        logCmd(`โทนสีวิ่งที่เลือกได้:\n` + Object.keys(COLOR_THEMES).map(k => `  • ${k} (${COLOR_THEMES[k].name})`).join('\n'), 'info');
+      } else if (COLOR_THEMES[arg]) {
+        setFlowingTheme(arg);
+        logCmd(`เปลี่ยนโทนสีวิ่งเป็น: ${COLOR_THEMES[arg].name}`, 'success');
+      } else {
+        logCmd(`ไม่พบโทนสี '${arg}' (พิมพ์ theme เพื่อดูรายชื่อ)`, 'error');
+      }
       break;
 
     case 'cat':
@@ -1352,7 +1437,7 @@ function executePowerShellCmd(input) {
       if (!arg) {
         logCmd(`โปรไฟล์เสียงคีย์บอร์ดที่เลือกได้:\n` + SFX_PROFILES.map(p => `  • ${p.id} (${p.name})`).join('\n'), 'info');
       } else {
-        const target = SFX_PROFILES.find(p => p.id === arg || p.name.toLowerCase().includes(arg.toLowerCase()));
+        const target = SFX_PROFILES.find(p => p.id === arg || p.name.toLowerCase().includes(arg));
         if (target) {
           selectProfile(target.id, true);
           logCmd(`เปลี่ยนเสียงคีย์บอร์ดเป็น: ${target.name}`, 'success');
@@ -1367,6 +1452,7 @@ function executePowerShellCmd(input) {
     case '?':
       logCmd(`คำสั่ง PowerShell CodeNote:
   • dir, ls              - แสดงรายชื่อโน้ตทั้งหมด
+  • theme <ชื่อธีม>      - เปลี่ยนโทนสีวิ่ง (rainbow, cyber, sunset, matrix, ocean, purple, fire, aurora)
   • cat <ชื่อไฟล์>        - อ่านเนื้อหาของไฟล์
   • new <ชื่อไฟล์>        - สร้างไฟล์โน้ตใหม่
   • edit <ชื่อไฟล์>       - เปิดไฟล์ในตัวแก้ไข
@@ -1527,13 +1613,14 @@ if (Object.keys(files).length === 0) {
     '<p>&nbsp;</p>',
     '<p>ยินดีต้อนรับสู่ CodeNote ในธีม <b>พื้นหลังสีดำด้าน (Matte Black)</b></p>',
     '<p>• ตัวหนังสือเนื้อหาทั่วไปเป็น <b>สีเขียวเทอร์มินัลคมชัด</b></p>',
-    '<p>• หัวข้อและข้อความเน้นเป็น <b class="rainbow-sharp">สีรุ้งวิ่งคมชัด ไม่มีแสงฟุ้ง</b></p>',
+    '<p>• หัวข้อและข้อความเน้นเป็น <b class="rainbow-sharp">สีวิ่งคมชัด ไม่มีแสงฟุ้ง</b></p>',
     '<p>&nbsp;</p>',
     '<h3 class="rainbow-sharp"># ไฮไลท์การใช้งาน:</h3>',
-    '<p>1. 📂 <b>สลับแถบแท็บด้านบนและแถบด้านข้างได้ทันที:</b> กดคลิกแท็บเพื่อเปลี่ยนไฟล์ได้อย่างราบรื่น</p>',
-    '<p>2. 🌈 <b>ปุ่ม "หัวข้อสีรุ้ง":</b> ไฮไลท์ข้อความแล้วกดปุ่มหัวข้อสีรุ้งที่แถบเครื่องมือด้านบน</p>',
-    '<p>3. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>dir</code>, <code>cat</code>, <code>new</code>, <code>sfx</code> ที่ช่องคอนโซลด้านล่าง</p>',
-    '<p>4. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> 5 โปรไฟล์เสียงสมจริงระดับเทพ</p>',
+    '<p>1. 🎨 <b>เลือกโทนสีวิ่งได้ตามใจชอบ:</b> เลือกได้ที่แถบด้านบน (Spectrum, Cyber Neon, Sunset Gold, Matrix, Ocean, Galaxy, Lava, Aurora)</p>',
+    '<p>2. 📂 <b>สลับแท็บด้านบนได้ทันที:</b> กดคลิกแท็บเพื่อสลับไฟล์และบันทึกอัตโนมัติ</p>',
+    '<p>3. ✨ <b>ปุ่ม "ทำเป็นหัวข้อสีวิ่ง":</b> ไฮไลท์ข้อความแล้วกดปุ่มเพื่อใส่สีวิ่งได้ทันที</p>',
+    '<p>4. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>theme neon</code>, <code>dir</code>, <code>cat</code>, <code>sfx</code> ที่ช่องด้านล่าง</p>',
+    '<p>5. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> 5 โปรไฟล์เสียงสัมผัสระดับพรีเมียม</p>',
     '<p>&nbsp;</p>',
     '<p><strong># คีย์ลัด:</strong></p>',
     '<p>• <b>Ctrl+S:</b> บันทึก · <b>Ctrl+N:</b> สร้างโน้ตใหม่ · <b>Tab:</b> เว้นวรรคย่อหน้า</p>'
@@ -1541,6 +1628,7 @@ if (Object.keys(files).length === 0) {
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
 
+setFlowingTheme(currentFlowingTheme);
 buildSfxPanel();
 openFile(Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1');
 </script>
