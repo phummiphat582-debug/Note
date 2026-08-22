@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote — Hollywood Cyberpunk Terminal</title>
+<title>CodeNote — Cyberpunk Flow Engine</title>
 <link rel="manifest" href="/Note/manifest.json">
 <meta name="theme-color" content="#030305">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,10 +30,11 @@
   --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', sans-serif;
   --font-mono: 'Share Tech Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 
-  /* Wide Smooth Cyber Fluid Gradient (กว้าง นุ่มนวล ทรงพลัง ไม่มีแสงขาว) */
+  /* Dynamic Flow Variables */
   --flowing-gradient: linear-gradient(90deg, #003b14 0%, #008f39 20%, #00ff66 40%, #00f59b 50%, #00e5ff 65%, #008f39 85%, #003b14 100%);
   --flow-bg-pos: 0px 0;
   --flow-bg-size: 800px 100%;
+  --flow-filter: none;
 }
 
 html,body {
@@ -63,7 +64,7 @@ html,body {
 body.hide-rain #matrixCanvas { opacity: 0; }
 
 /* ═══════════════════════════════════════════════════════════════
-   HOLLYWOOD FLUID PLASMA TEXT (คลื่นไซเบอร์ไหลลื่น ทรงพลัง)
+   CYBER TEXT FLOW ENGINE (รองรับหลากหลายเทคนิค)
    ═══════════════════════════════════════════════════════════════ */
 .editor,
 .editor *,
@@ -72,7 +73,8 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   background-image: var(--flowing-gradient) !important;
   background-size: var(--flow-bg-size, 800px 100%) !important;
   background-position: var(--flow-bg-pos, 0px 0) !important;
-  background-repeat: repeat-x !important;
+  background-repeat: repeat !important;
+  filter: var(--flow-filter, none) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   text-shadow: none !important;
@@ -463,7 +465,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   font-family: var(--font-mono);
 }
 
-/* Main Text Canvas: Hollywood Cyber Fluid Flow */
+/* Main Text Canvas: Hollywood Cyber Text */
 .editor {
   flex: 1;
   min-height: 100%;
@@ -609,7 +611,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   border: 1px solid #00ff66;
   box-shadow: 0 20px 70px rgba(0, 255, 102, 0.15);
   border-radius: 10px;
-  width: 580px;
+  width: 620px;
   max-width: 95vw;
 }
 .studio-cat-title {
@@ -618,7 +620,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-sub);
-  margin: 12px 0 8px;
+  margin: 14px 0 8px;
   font-family: var(--font-mono);
 }
 .studio-grid {
@@ -858,12 +860,15 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 
       <div class="toolbar-sep"></div>
 
-      <!-- Animation Style Selector (สไตล์การเคลื่อนไหวความเท่) -->
-      <span style="font-size:11.5px;color:var(--text-dim);">การเคลื่อนไหว:</span>
-      <select class="matte-select" id="animStyleSelect" onchange="setAnimStyle(this.value)">
-        <option value="plasma" selected>🌊 คลื่นพลาสมาไหลลื่น (Plasma Fluid Flow)</option>
-        <option value="pulse">⚡ พัลส์คลื่นความถี่ (Cyber Pulse Wave)</option>
-        <option value="aurora">🌀 ออโรราเรืองแสง (Aurora Shift)</option>
+      <!-- 6 Animation Techniques Selector (เทคนิคการวิ่งของสี) -->
+      <span style="font-size:11.5px;color:var(--text-dim);">🔮 เทคนิคการวิ่ง:</span>
+      <select class="matte-select" id="animTechniqueSelect" onchange="setAnimTechnique(this.value)">
+        <option value="diagonal-sheen" selected>✨ โฮโลแกรมมุมทแยง 45° (Holographic Sheen)</option>
+        <option value="plasma">🌊 คลื่นพลาสมาแนวนอน (Plasma Stream)</option>
+        <option value="hue-cycle">🌈 วงล้อ 360° เปลี่ยนสีทั้งหน้า (Hue Shift)</option>
+        <option value="neon-breath">💓 นีออนหายใจชีพจร (Neon Pulse Heartbeat)</option>
+        <option value="chromatic-drift">🌀 คลื่นไซเบอร์ 2 มิติ (Dual Chromatic Drift)</option>
+        <option value="warp-speed">⚡ ไฟฟ้าสถิตแวบวาบ (Electric Warp Spark)</option>
       </select>
 
       <div class="toolbar-sep"></div>
@@ -939,7 +944,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
       <div class="editor-main-area" id="editorContainer">
         <div class="editor-line-numbers" id="lineNumbers">1</div>
         <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-             data-placeholder="// เริ่มพิมพ์ข้อความที่นี่... (สีนีออนแท้จะเคลื่อนไหวไหลเวียนนุ่มนวลทรงพลัง)">
+             data-placeholder="// เริ่มพิมพ์ข้อความที่นี่... (ทดลองเลือก 'เทคนิคการวิ่ง' ด้านบนเพื่อดูเอฟเฟกต์สุดเท่)">
         </div>
       </div>
 
@@ -972,12 +977,12 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 <div class="modal-overlay" id="colorStudioModal">
   <div class="studio-modal">
     <div class="matte-modal-head" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>💻 สตูดิโอเลือกสีแฮกเกอร์ (HOLLYWOOD CYBER STUDIO)</span>
+      <span>💻 สตูดิโอเลือกสีและเทคนิค (CYBER ENGINE STUDIO)</span>
       <span style="cursor:pointer;font-size:16px;" onclick="closeModals()">✕</span>
     </div>
     <div class="matte-modal-body" style="max-height:75vh;overflow-y:auto;">
       <!-- Category 1: Pure Cyber Hacker Themes -->
-      <div class="studio-cat-title">💻 ธีมคลื่นนีออนไซเบอร์ (NEON FLUID WAVES):</div>
+      <div class="studio-cat-title">💻 ธีมสีนีออนเข้มข้น (NEON PALETTES):</div>
       <div class="studio-grid" id="hackerGrid"></div>
 
       <!-- Category 2: Multicolor Waves -->
@@ -985,7 +990,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
       <div class="studio-grid" id="rainbowGrid"></div>
 
       <!-- Custom Color Mixer -->
-      <div class="studio-cat-title">⚡ ผสมสีแฮกเกอร์ของตัวเอง (CUSTOM DECRYPTOR PALETTE):</div>
+      <div class="studio-cat-title">⚡ ผสมสีของคุณเองสดๆ (CUSTOM DECRYPTOR PALETTE):</div>
       <div class="custom-maker-box">
         <div class="color-inputs-row">
           <div class="color-input-item">
@@ -993,11 +998,11 @@ body.hide-rain #matrixCanvas { opacity: 0; }
             <input type="color" id="customC1" value="#003b14" onchange="updateCustomGradient()">
           </div>
           <div class="color-input-item">
-            <span>สีเขียวนีออน</span>
+            <span>สีกลาง</span>
             <input type="color" id="customC2" value="#00ff66" onchange="updateCustomGradient()">
           </div>
           <div class="color-input-item">
-            <span>สีฟ้านีออน</span>
+            <span>สีนีออนเด่น</span>
             <input type="color" id="customC3" value="#00e5ff" onchange="updateCustomGradient()">
           </div>
           <div class="color-input-item">
@@ -1108,62 +1113,62 @@ function toggleMatrixRain() {
 if (!rainOn) document.body.classList.add('hide-rain');
 
 /* ═══════════════════════════════════════════════════════════════
-   WIDE ORGANIC CYBER PALETTES (กว้าง นุ่มนวล ทรงพลัง ไม่มีสีขาว)
+   COLOR THEMES
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   'matrix-hacker': {
     category: 'hacker',
     name: 'The Matrix Fluid',
     label: '💚 The Matrix (เขียวนีออนมรกต)',
-    gradient: 'linear-gradient(90deg, #003b14 0%, #008f39 20%, #00ff66 40%, #00f59b 50%, #00e5ff 65%, #008f39 85%, #003b14 100%)',
-    bgSize: '800px 100%'
+    gradient: 'linear-gradient(var(--grad-deg, 135deg), #003b14 0%, #008f39 20%, #00ff66 40%, #00f59b 50%, #00e5ff 65%, #008f39 85%, #003b14 100%)',
+    bgSize: '800px 800px'
   },
   'cyber-cyan': {
     category: 'hacker',
     name: 'Cyberpunk Night City',
     label: '💙 Cyberpunk (ฟ้า-ชมพูไซเบอร์)',
-    gradient: 'linear-gradient(90deg, #001f3f 0%, #0074d9 20%, #00f0ff 40%, #ff007f 55%, #7928ca 75%, #0074d9 90%, #001f3f 100%)',
-    bgSize: '800px 100%'
+    gradient: 'linear-gradient(var(--grad-deg, 135deg), #001f3f 0%, #0074d9 20%, #00f0ff 40%, #ff007f 55%, #7928ca 75%, #0074d9 90%, #001f3f 100%)',
+    bgSize: '800px 800px'
   },
   'mr-robot-amber': {
     category: 'hacker',
     name: 'Mr. Robot Amber Fluid',
     label: '💛 Mr. Robot (ส้มทองอำพัน CRT)',
-    gradient: 'linear-gradient(90deg, #4d2600 0%, #994d00 20%, #ff8000 40%, #ffaa00 55%, #ffcc00 70%, #994d00 85%, #4d2600 100%)',
-    bgSize: '800px 100%'
+    gradient: 'linear-gradient(var(--grad-deg, 135deg), #4d2600 0%, #994d00 20%, #ff8000 40%, #ffaa00 55%, #ffcc00 70%, #994d00 85%, #4d2600 100%)',
+    bgSize: '800px 800px'
   },
   'red-breach': {
     category: 'hacker',
     name: 'Red Alert Plasma',
     label: '❤️ Red Alert (แดงเพลิงพลาสมา)',
-    gradient: 'linear-gradient(90deg, #3b0008 0%, #800014 20%, #ff0033 40%, #ff3366 55%, #ff0055 70%, #800014 85%, #3b0008 100%)',
-    bgSize: '800px 100%'
+    gradient: 'linear-gradient(var(--grad-deg, 135deg), #3b0008 0%, #800014 20%, #ff0033 40%, #ff3366 55%, #ff0055 70%, #800014 85%, #3b0008 100%)',
+    bgSize: '800px 800px'
   },
   'ghost-violet': {
     category: 'hacker',
     name: 'Ghost in the Shell Ultraviolet',
     label: '💜 Ghost Violet (ม่วงอัลตราไวโอเลต)',
-    gradient: 'linear-gradient(90deg, #20003b 0%, #580099 20%, #b300ff 40%, #e000ff 55%, #ff00b3 70%, #580099 85%, #20003b 100%)',
-    bgSize: '800px 100%'
+    gradient: 'linear-gradient(var(--grad-deg, 135deg), #20003b 0%, #580099 20%, #b300ff 40%, #e000ff 55%, #ff00b3 70%, #580099 85%, #20003b 100%)',
+    bgSize: '800px 800px'
   },
   'toxic-lime': {
     category: 'hacker',
     name: 'Toxic Biohazard Acid',
     label: '☣️ Toxic Acid (เขียวมะนาวกรด)',
-    gradient: 'linear-gradient(90deg, #1f2e00 0%, #5c8a00 20%, #a6ff00 40%, #ccff00 55%, #e6ff00 70%, #5c8a00 85%, #1f2e00 100%)',
-    bgSize: '800px 100%'
+    gradient: 'linear-gradient(var(--grad-deg, 135deg), #1f2e00 0%, #5c8a00 20%, #a6ff00 40%, #ccff00 55%, #e6ff00 70%, #5c8a00 85%, #1f2e00 100%)',
+    bgSize: '800px 800px'
   },
   'rainbow-decrypt': {
     category: 'rainbow',
     name: 'Quantum Spectral Fluid',
     label: '🌈 Quantum Spectral (รุ้งควอนตัม)',
-    gradient: 'linear-gradient(90deg, #ff0055 0%, #ff5500 16%, #ffcc00 33%, #00ff66 50%, #00d4ff 66%, #a800ff 83%, #ff0055 100%)',
-    bgSize: '900px 100%'
+    gradient: 'linear-gradient(var(--grad-deg, 135deg), #ff0055 0%, #ff5500 16%, #ffcc00 33%, #00ff66 50%, #00d4ff 66%, #a800ff 83%, #ff0055 100%)',
+    bgSize: '900px 900px'
   }
 };
 
 let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'matrix-hacker';
-let currentAnimStyle = localStorage.getItem('cn_anim_style') || 'plasma';
+let currentTechnique = localStorage.getItem('cn_anim_technique') || 'diagonal-sheen';
 let speedMultiplier = 1.0;
 
 function setFlowingTheme(themeKey, customGradient = null) {
@@ -1181,7 +1186,7 @@ function setFlowingTheme(themeKey, customGradient = null) {
 
     const t = COLOR_THEMES[themeKey];
     document.documentElement.style.setProperty('--flowing-gradient', t.gradient);
-    document.documentElement.style.setProperty('--flow-bg-size', t.bgSize || '800px 100%');
+    document.documentElement.style.setProperty('--flow-bg-size', t.bgSize || '800px 800px');
 
     const status = document.getElementById('themeStatus');
     if (status) status.textContent = `💻 ${t.name.toUpperCase()}`;
@@ -1190,15 +1195,26 @@ function setFlowingTheme(themeKey, customGradient = null) {
   renderStudioGrid();
 }
 
-function setAnimStyle(style) {
-  currentAnimStyle = style;
-  localStorage.setItem('cn_anim_style', style);
-  const sel = document.getElementById('animStyleSelect');
-  if (sel) sel.value = style;
+function setAnimTechnique(tech) {
+  currentTechnique = tech;
+  localStorage.setItem('cn_anim_technique', tech);
+  const sel = document.getElementById('animTechniqueSelect');
+  if (sel) sel.value = tech;
+
+  if (tech === 'diagonal-sheen') {
+    document.documentElement.style.setProperty('--grad-deg', '135deg');
+    document.documentElement.style.setProperty('--flow-bg-size', '900px 900px');
+  } else if (tech === 'plasma') {
+    document.documentElement.style.setProperty('--grad-deg', '90deg');
+    document.documentElement.style.setProperty('--flow-bg-size', '800px 100%');
+  } else {
+    document.documentElement.style.setProperty('--grad-deg', '90deg');
+    document.documentElement.style.setProperty('--flow-bg-size', '800px 100%');
+  }
 }
 
 function setFlowSpeed(speedKey) {
-  if (speedKey === 'fast') speedMultiplier = 1.8;
+  if (speedKey === 'fast') speedMultiplier = 2.0;
   else if (speedKey === 'chill') speedMultiplier = 0.5;
   else speedMultiplier = 1.0;
   localStorage.setItem('cn_flow_speed_key', speedKey);
@@ -1207,33 +1223,73 @@ function setFlowSpeed(speedKey) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   GUARANTEED 60FPS FLUID MOTION ENGINE
-   (คลื่นพลาสมาไหลลื่น / พัลส์ความถี่ / ออโรรา นุ่มนวล ทรงพลัง)
+   6-TECHNIQUE DYNAMIC 60FPS MOTION ENGINE
    ═══════════════════════════════════════════════════════════════ */
 let animTime = 0;
-let flowPosPx = 0;
+let techTick = 0;
+let hueDeg = 0;
 
-function cyberFluidLoop() {
+function multiTechniqueEngineLoop() {
   animTime += (0.02 * speedMultiplier);
-  
-  if (currentAnimStyle === 'pulse') {
-    // พัลส์คลื่นความถี่ (เคลื่อนไหวขยาย-หดเป็นจังหวะ)
-    const wave = (Math.sin(animTime) * 350) + (animTime * 60);
-    document.documentElement.style.setProperty('--flow-bg-pos', `${wave.toFixed(1)}px 0`);
-  } else if (currentAnimStyle === 'aurora') {
-    // ออโรราเรืองแสง (คลื่นพลิ้วไหว 2 มิติ)
-    const wave = (Math.sin(animTime * 1.5) * 200) + (Math.cos(animTime * 0.8) * 150) + (animTime * 80);
-    document.documentElement.style.setProperty('--flow-bg-pos', `${wave.toFixed(1)}px 0`);
-  } else {
-    // คลื่นพลาสมาไหลลื่นต่อเนื่อง (Plasma Fluid Flow)
-    flowPosPx += (2.2 * speedMultiplier);
-    if (flowPosPx >= 100000) flowPosPx = 0;
-    document.documentElement.style.setProperty('--flow-bg-pos', `${flowPosPx.toFixed(1)}px 0`);
+  techTick += (2.2 * speedMultiplier);
+  if (techTick >= 100000) techTick = 0;
+
+  switch (currentTechnique) {
+    case 'diagonal-sheen': {
+      // 1. โฮโลแกรมมุมทแยง 45 องศา (Holographic Sheen): ไหลทแยงทั้งแกน X และ Y พร้อมกัน
+      const posX = (techTick * 1.5) % 900;
+      const posY = (techTick * 1.5) % 900;
+      document.documentElement.style.setProperty('--flow-bg-pos', `${posX.toFixed(1)}px ${posY.toFixed(1)}px`);
+      document.documentElement.style.setProperty('--flow-filter', 'none');
+      break;
+    }
+
+    case 'hue-cycle': {
+      // 2. วงล้อเฉดสี 360° หมุนเปลี่ยนสีทั้งหน้า (Full Spectrum Hue Cycle)
+      hueDeg = (hueDeg + (0.6 * speedMultiplier)) % 360;
+      document.documentElement.style.setProperty('--flow-bg-pos', `${techTick.toFixed(1)}px 0`);
+      document.documentElement.style.setProperty('--flow-filter', `hue-rotate(${hueDeg.toFixed(1)}deg) saturate(1.25)`);
+      break;
+    }
+
+    case 'neon-breath': {
+      // 3. นีออนหายใจเป็นจังหวะชีพจร (Cyber Neon Pulse Heartbeat)
+      const breath = 0.75 + (Math.sin(animTime * 2.2) * 0.35);
+      const shiftX = Math.sin(animTime) * 150;
+      document.documentElement.style.setProperty('--flow-bg-pos', `${shiftX.toFixed(1)}px 0`);
+      document.documentElement.style.setProperty('--flow-filter', `brightness(${breath.toFixed(2)}) saturate(${1 + breath})`);
+      break;
+    }
+
+    case 'chromatic-drift': {
+      // 4. คลื่นไซเบอร์ 2 มิติ (Dual Chromatic Drift)
+      const waveX = (Math.sin(animTime * 1.8) * 300) + (techTick * 0.8);
+      const waveY = Math.cos(animTime * 1.2) * 50;
+      document.documentElement.style.setProperty('--flow-bg-pos', `${waveX.toFixed(1)}px ${waveY.toFixed(1)}px`);
+      document.documentElement.style.setProperty('--flow-filter', 'none');
+      break;
+    }
+
+    case 'warp-speed': {
+      // 5. ไฟฟ้าสถิตแวบวาบความเร็วสูง (Electric Warp Spark)
+      const spark = (Math.random() > 0.94) ? 1.4 : 1.0;
+      document.documentElement.style.setProperty('--flow-bg-pos', `${(techTick * 3.5).toFixed(1)}px 0`);
+      document.documentElement.style.setProperty('--flow-filter', `brightness(${spark}) contrast(1.1)`);
+      break;
+    }
+
+    case 'plasma':
+    default: {
+      // 6. คลื่นพลาสมาแนวนอนไหลลื่น (Plasma Stream)
+      document.documentElement.style.setProperty('--flow-bg-pos', `${techTick.toFixed(1)}px 0`);
+      document.documentElement.style.setProperty('--flow-filter', 'none');
+      break;
+    }
   }
 
-  requestAnimationFrame(cyberFluidLoop);
+  requestAnimationFrame(multiTechniqueEngineLoop);
 }
-requestAnimationFrame(cyberFluidLoop);
+requestAnimationFrame(multiTechniqueEngineLoop);
 
 /* ═══════════════════════════════════════════════════════════════
    FONT PERSISTENCE ENGINE (บันทึกขนาดและฟอนต์ถาวร)
@@ -1312,7 +1368,7 @@ function updateCustomGradient() {
   const c2 = document.getElementById('customC2').value;
   const c3 = document.getElementById('customC3').value;
   const c4 = document.getElementById('customC4').value;
-  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 35%, ${c3} 65%, ${c4} 100%)`;
+  const grad = `linear-gradient(var(--grad-deg, 135deg), ${c1} 0%, ${c2} 35%, ${c3} 65%, ${c4} 100%)`;
   document.getElementById('customPreviewBar').style.background = grad;
 }
 
@@ -1321,7 +1377,7 @@ function applyCustomGradient() {
   const c2 = document.getElementById('customC2').value;
   const c3 = document.getElementById('customC3').value;
   const c4 = document.getElementById('customC4').value;
-  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 35%, ${c3} 65%, ${c4} 100%)`;
+  const grad = `linear-gradient(var(--grad-deg, 135deg), ${c1} 0%, ${c2} 35%, ${c3} 65%, ${c4} 100%)`;
   setFlowingTheme(null, grad);
   closeModals();
 }
@@ -2039,16 +2095,18 @@ if ('serviceWorker' in navigator) {
    ═══════════════════════════════════════════════════════════════ */
 if (Object.keys(files).length === 0) {
   files['ยินดีต้อนรับ.ps1'] = [
-    '<h2>// HOLLYWOOD CYBERPUNK TERMINAL — SYSTEM ONLINE ⚡</h2>',
+    '<h2>// CYBERPUNK FLOW ENGINE — 6 MOTION TECHNIQUES ⚡</h2>',
     '<p>&nbsp;</p>',
-    '<p>ยินดีต้อนรับสู่ระบบ CodeNote ในรูปแบบ <b>คลื่นพลาสมาไซเบอร์ไหลลื่น (Cyber Plasma Fluid)</b></p>',
-    '<p>• 🌊 <b>คลื่นสีไหลเวียนระดับภาพยนตร์:</b> สีมรกตเขียวนีออนและฟ้าครามไหลเคลื่อนไหวผสมผสานกันอย่างนุ่มนวล ทรงพลัง</p>',
-    '<p>• 🌧️ <b>Matrix Digital Code Rain:</b> ฝนโค้ดดิจิทัลตกลงมาด้านหลังอย่างสมจริง (กดปุ่มเปิด/ปิด ได้)</p>',
+    '<p>ยินดีต้อนรับสู่ระบบ CodeNote พร้อม <b>6 เทคนิคการวิ่งของสีระดับภาพยนตร์</b></p>',
+    '<p>• ลองสลับเล่นได้ที่เมนู <b>"🔮 เทคนิคการวิ่ง"</b> บนแถบเครื่องมือด้านบน:</p>',
     '<p>&nbsp;</p>',
-    '<h3># สไตล์การเคลื่อนไหวความเท่ (เลือกได้ที่ Toolbar ด้านบน):</h3>',
-    '<p>1. 🌊 <b>คลื่นพลาสมาไหลลื่น (Plasma Fluid Flow):</b> สีไหลเวียนต่อเนื่อง นุ่มนวล ทรงพลัง</p>',
-    '<p>2. ⚡ <b>พัลส์คลื่นความถี่ (Cyber Pulse Wave):</b> คลื่นพัลส์จังหวะหายใจ ขยาย-หดอย่างมีมิติ</p>',
-    '<p>3. 🌀 <b>ออโรราเรืองแสง (Aurora Shift):</b> คลื่นพลิ้วไหวโฮโลแกรมรอบทิศทาง</p>',
+    '<h3># 6 เทคนิคการเคลื่อนไหวของสี (Motion Techniques):</h3>',
+    '<p>1. ✨ <b>โฮโลแกรมมุมทแยง 45° (Holographic Sheen):</b> สีเหลือบมุมทแยงพาดผ่านทุกบรรทัดพร้อมกันแบบ 3 มิติ (แนะนำ)</p>',
+    '<p>2. 🌊 <b>คลื่นพลาสมาแนวนอน (Plasma Stream):</b> คลื่นพลาสมาไซเบอร์ไหลเวียนลึกซึ้งต่อเนื่อง</p>',
+    '<p>3. 🌈 <b>วงล้อ 360° เปลี่ยนสีทั้งหน้า (Hue Shift):</b> ข้อความจะค่อยๆ หมุนเปลี่ยนเฉดสีตลอดเวลาอย่างนุ่มนวล</p>',
+    '<p>4. 💓 <b>นีออนหายใจชีพจร (Neon Pulse Heartbeat):</b> สีจะเรืองแสงสว่าง-หรี่ตามจังหวะชีพจรไซเบอร์</p>',
+    '<p>5. 🌀 <b>คลื่นไซเบอร์ 2 มิติ (Dual Chromatic Drift):</b> คลื่นสีเคลื่อนไหวซ้อนกัน 2 ระนาบ</p>',
+    '<p>6. ⚡ <b>ไฟฟ้าสถิตแวบวาบ (Electric Warp Spark):</b> คลื่นความเร็วสูงมีประกายไฟฟ้าสถิตแวบวาบ</p>',
     '<p>&nbsp;</p>',
     '<p><strong># คีย์ลัด:</strong></p>',
     '<p>• <b>Ctrl+S:</b> บันทึก · <b>Ctrl+N:</b> สร้างโน้ตใหม่ · <b>Tab:</b> เว้นวรรคย่อหน้า</p>'
@@ -2062,7 +2120,7 @@ if (currentFlowingTheme === 'custom' && savedCustom) {
 } else {
   setFlowingTheme(currentFlowingTheme);
 }
-setAnimStyle(currentAnimStyle);
+setAnimTechnique(currentTechnique);
 setFontSize(currentFontSize);
 setFontFamily(currentFontFamily);
 const savedSpeed = localStorage.getItem('cn_flow_speed_key') || 'normal';
