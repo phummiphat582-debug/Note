@@ -29,9 +29,9 @@
   --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', sans-serif;
   --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 
-  /* Flowing Gradient Preset */
+  /* Flowing Gradient Colors */
   --flowing-gradient: linear-gradient(90deg, #ffffff 0%, #ff1744 14%, #ff9100 28%, #ffd600 42%, #00e676 56%, #00e5ff 70%, #d500f9 84%, #ffffff 100%);
-  --flowing-speed: 3s;
+  --flowing-speed: 3.5s;
 }
 
 html,body {
@@ -45,39 +45,54 @@ html,body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ANIMATED FLOWING COLOR WAVE (สีวิ่งไปมาบนตัวหนังสือตลอดเวลา)
+   GPU-ACCELERATED VISIBLE CHROMATIC ANIMATION
+   (อนิเมชั่นสีวิ่ง 100% ด้วย GPU HUE & GRADIENT SHIFT)
    ═══════════════════════════════════════════════════════════════ */
-@keyframes flowWaveBackAndForth {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes dynamicHueAndFlow {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: hue-rotate(180deg);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(360deg);
+  }
 }
 
-@keyframes flowContinuous {
-  0%   { background-position: 0% 50%; }
-  100% { background-position: 300% 50%; }
+@keyframes continuousFlowOnly {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    background-position: 300% 50%;
+    filter: hue-rotate(360deg);
+  }
 }
 
-/* Base Flowing Text Definition */
-.flowing-text-active,
+/* Core Flowing Text Styling on Editor and Elements */
 .editor,
 .editor *,
 .rainbow-sharp,
 .hud-title-rainbow {
-  background: var(--flowing-gradient) !important;
+  background-image: var(--flowing-gradient) !important;
   background-size: 250% 100% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  animation: flowWaveBackAndForth var(--flowing-speed) ease-in-out infinite !important;
-  text-shadow: none !important;
-  filter: none !important;
+  animation: dynamicHueAndFlow var(--flowing-speed) ease-in-out infinite !important;
+  will-change: filter, background-position !important;
+  transform: translateZ(0) !important;
 }
 
 body.anim-continuous .editor,
 body.anim-continuous .editor *,
 body.anim-continuous .rainbow-sharp,
 body.anim-continuous .hud-title-rainbow {
-  animation: flowContinuous var(--flowing-speed) linear infinite !important;
+  animation: continuousFlowOnly var(--flowing-speed) linear infinite !important;
 }
 
 .editor p, .editor div, .editor h1, .editor h2, .editor h3, .editor li {
@@ -459,7 +474,7 @@ body.anim-continuous .hud-title-rainbow {
   word-break: break-word;
   user-select: text;
   font-family: var(--font-thai);
-  font-weight: 400;
+  font-weight: 500;
   caret-color: #00e5ff;
   position: relative;
   text-shadow: none !important;
@@ -843,9 +858,8 @@ body.anim-continuous .hud-title-rainbow {
       <span style="font-size:11.5px;color:var(--text-dim);">ความเร็ว:</span>
       <select class="matte-select" id="speedSelect" onchange="setFlowSpeed(this.value)">
         <option value="2s">เร็วสะใจ (2s)</option>
-        <option value="3s" selected>มาตรฐาน (3s)</option>
-        <option value="4.5s">นุ่มนวล (4.5s)</option>
-        <option value="6s">ชิลล์ๆ (6s)</option>
+        <option value="3.5s" selected>มาตรฐาน (3.5s)</option>
+        <option value="5s">นุ่มนวล (5s)</option>
       </select>
 
       <div class="toolbar-sep"></div>
@@ -1019,7 +1033,7 @@ body.anim-continuous .hud-title-rainbow {
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   FLOWING COLOR THEMES PRESETS (สีสดใส วิ่งไปมาชัดเจน)
+   FLOWING COLOR THEMES PRESETS (สีสดใส วิ่งไปมาชัดเจน 100%)
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   rainbow: {
@@ -1066,7 +1080,7 @@ const COLOR_THEMES = {
 
 let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'rainbow';
 let currentAnimStyle = localStorage.getItem('cn_anim_style') || 'wave';
-let currentFlowSpeed = localStorage.getItem('cn_flow_speed') || '3s';
+let currentFlowSpeed = localStorage.getItem('cn_flow_speed') || '3.5s';
 
 function setFlowingTheme(themeKey, customGradient = null) {
   if (customGradient) {
@@ -1872,12 +1886,12 @@ if (Object.keys(files).length === 0) {
     '<h2># CodeNote Studio — Matte Black Terminal ⚡</h2>',
     '<p>&nbsp;</p>',
     '<p>ยินดีต้อนรับสู่ CodeNote ในธีม <b>พื้นหลังสีดำด้าน (Matte Black)</b></p>',
-    '<p>• <b>ตัวหนังสือมีสีวิ่งไปมาอย่างสวยงาม ลื่นไหล และคมกริบ</b></p>',
+    '<p>• <b>ตัวหนังสือมีสีวิ่งไปมาแบบอนิเมชั่น 100% สดใส ลื่นไหล คมชัด</b></p>',
     '<p>• <b>เลือกสลับสีวิ่งได้ทันที</b> ที่แถบเม็ดสีด้านบน หรือกดสตูดิโอสี</p>',
     '<p>&nbsp;</p>',
     '<h3># ฟีเจอร์การใช้งาน:</h3>',
     '<p>1. 🎨 <b>เลือกโทนสีวิ่ง:</b> สลับสีรุ้ง, นีออน, ส้มทอง, เขียวมรกต, ฟ้าน้ำทะเล ฯลฯ ได้ใน 1 คลิก</p>',
-    '<p>2. ⚡ <b>การวิ่งไปมา (Wave Animation):</b> สีจะวิ่งพาดผ่านตัวหนังสือไป-มาอย่างนุ่มนวลตลอดเวลา</p>',
+    '<p>2. ⚡ <b>อนิเมชั่นวิ่งไป-มา:</b> สีจะวิ่งพาดผ่านตัวหนังสือทุกตัวตลอดเวลาอย่างต่อเนื่อง</p>',
     '<p>3. 📂 <b>สลับแท็บได้ทันที:</b> กดคลิกแท็บด้านบนเพื่อสลับไฟล์และบันทึกอัตโนมัติ</p>',
     '<p>4. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>theme cyber</code>, <code>dir</code> ที่ช่องด้านล่าง</p>',
     '<p>5. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> 5 โปรไฟล์เสียงสัมผัสระดับพรีเมียม</p>',
