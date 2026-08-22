@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote — Matte Black White & Flowing Colors</title>
+<title>CodeNote — Matte Black Animated Flow</title>
 <link rel="manifest" href="/Note/manifest.json">
-<meta name="theme-color" content="#0c0c0f">
+<meta name="theme-color" content="#0a0a0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&family=Cascadia+Code:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -15,13 +15,12 @@
 
 :root {
   /* Matte Black Theme */
-  --bg-matte-base: #0c0c0f;
-  --bg-matte-dark: #060608;
-  --bg-matte-panel: #111115;
-  --bg-matte-card: #16161c;
-  --border-matte: #22222a;
-  --border-matte-active: #383846;
-  --text-white: #f8fafc;
+  --bg-matte-base: #0a0a0d;
+  --bg-matte-dark: #050507;
+  --bg-matte-panel: #101014;
+  --bg-matte-card: #15151a;
+  --border-matte: #1f1f26;
+  --border-matte-active: #33333f;
   --text-dim: #64748b;
   --text-sub: #94a3b8;
   --accent-cyan: #06b6d4;
@@ -30,98 +29,63 @@
   --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', sans-serif;
   --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 
-  /* Flowing Gradient for Headings & Accents */
-  --pure-flowing-gradient: linear-gradient(90deg, #ff1744 0%, #ff6d00 14%, #ffd600 28%, #00e676 42%, #00e5ff 56%, #7c3aed 70%, #ec4899 84%, #ff1744 100%);
-  
-  /* White Base with Flowing Color Wave Gradient */
-  --white-flowing-gradient: linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #ff1744 28%, #ffd600 42%, #00e5ff 56%, #ec4899 70%, #ffffff 85%, #ffffff 100%);
-  
-  --flowing-speed: 4s;
+  /* Flowing Gradient Preset */
+  --flowing-gradient: linear-gradient(90deg, #ffffff 0%, #ff1744 14%, #ff9100 28%, #ffd600 42%, #00e676 56%, #00e5ff 70%, #d500f9 84%, #ffffff 100%);
+  --flowing-speed: 3s;
 }
 
 html,body {
   height: 100%;
   width: 100%;
   background: var(--bg-matte-base);
-  color: var(--text-white);
+  color: #ffffff;
   font-family: var(--font-thai);
   overflow: hidden;
   user-select: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CRISP ANIMATED FLOWING GRADIENT (ไม่มีแสงฟุ้ง ไม่เบลอ ไม่ทับซ้อน)
+   ANIMATED FLOWING COLOR WAVE (สีวิ่งไปมาบนตัวหนังสือตลอดเวลา)
    ═══════════════════════════════════════════════════════════════ */
-@keyframes rainbowFlowSharp {
+@keyframes flowWaveBackAndForth {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes flowContinuous {
   0%   { background-position: 0% 50%; }
   100% { background-position: 300% 50%; }
 }
 
-/* ── Mode 1: White Base with Continuous Flowing Color Beam (ตัวหนังสือสีขาว พร้อมสีวิ่งผ่านตลอดเวลา) ── */
-body.mode-white-flow .editor,
-body.mode-white-flow .editor p,
-body.mode-white-flow .editor div,
-body.mode-white-flow .editor li {
-  background: var(--white-flowing-gradient) !important;
-  background-size: 300% 100% !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
-  text-shadow: none !important;
-  filter: none !important;
-  display: block !important;
-  margin-bottom: 8px;
-}
-
-/* ── Mode 2: Full Color Flow (ตัวหนังสือวิ่งสีเต็มตัว) ── */
-body.mode-full-flow .editor,
-body.mode-full-flow .editor p,
-body.mode-full-flow .editor div,
-body.mode-full-flow .editor li {
-  background: var(--pure-flowing-gradient) !important;
-  background-size: 300% 100% !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
-  text-shadow: none !important;
-  filter: none !important;
-  display: block !important;
-  margin-bottom: 8px;
-}
-
-/* ── Mode 3: Crisp Solid White + Flowing Headings (ตัวหนังสือสีขาวคม + หัวข้อสีวิ่ง) ── */
-body.mode-solid-white .editor {
-  color: #f8fafc !important;
-  -webkit-text-fill-color: #f8fafc !important;
-  background: none !important;
-}
-body.mode-solid-white .editor p,
-body.mode-solid-white .editor div,
-body.mode-solid-white .editor li {
-  color: #f8fafc !important;
-  -webkit-text-fill-color: #f8fafc !important;
-  background: none !important;
-  display: block !important;
-  margin-bottom: 8px;
-}
-
-/* Headings & Highlights always use Pure Vibrant Flowing Colors */
+/* Base Flowing Text Definition */
+.flowing-text-active,
+.editor,
+.editor *,
 .rainbow-sharp,
-.editor h1,
-.editor h2,
-.editor h3,
-.editor strong,
-.editor b,
 .hud-title-rainbow {
-  background: var(--pure-flowing-gradient) !important;
-  background-size: 300% 100% !important;
+  background: var(--flowing-gradient) !important;
+  background-size: 250% 100% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
-  font-weight: 700;
-  display: inline-block;
+  animation: flowWaveBackAndForth var(--flowing-speed) ease-in-out infinite !important;
   text-shadow: none !important;
   filter: none !important;
+}
+
+body.anim-continuous .editor,
+body.anim-continuous .editor *,
+body.anim-continuous .rainbow-sharp,
+body.anim-continuous .hud-title-rainbow {
+  animation: flowContinuous var(--flowing-speed) linear infinite !important;
+}
+
+.editor p, .editor div, .editor h1, .editor h2, .editor h3, .editor li {
+  background: inherit;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block !important;
+  margin-bottom: 8px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -379,7 +343,7 @@ body.mode-solid-white .editor li {
   padding: 8px;
 }
 .sidebar-file-list::-webkit-scrollbar { width: 4px; }
-.sidebar-file-list::-webkit-scrollbar-thumb { background: #22222a; border-radius: 2px; }
+.sidebar-file-list::-webkit-scrollbar-thumb { background: #1f1f26; border-radius: 2px; }
 
 .matte-file-row {
   display: flex;
@@ -466,13 +430,13 @@ body.mode-solid-white .editor li {
   position: relative;
 }
 .editor-main-area::-webkit-scrollbar { width: 8px; }
-.editor-main-area::-webkit-scrollbar-thumb { background: #1e1e26; border-radius: 4px; }
-.editor-main-area::-webkit-scrollbar-thumb:hover { background: #2c2c38; }
+.editor-main-area::-webkit-scrollbar-thumb { background: #1a1a22; border-radius: 4px; }
+.editor-main-area::-webkit-scrollbar-thumb:hover { background: #262632; }
 
 .editor-line-numbers {
   padding: 24px 14px;
   width: 56px;
-  color: #383846;
+  color: #33333f;
   font-size: 16px;
   line-height: 1.9;
   text-align: right;
@@ -482,7 +446,7 @@ body.mode-solid-white .editor li {
   font-family: var(--font-mono);
 }
 
-/* Main Text Canvas: Crisp White Base with Flowing Color */
+/* Main Text Canvas: Crisp Flowing Colors */
 .editor {
   flex: 1;
   min-height: 100%;
@@ -504,8 +468,8 @@ body.mode-solid-white .editor li {
 
 .editor:empty::before {
   content: attr(data-placeholder);
-  color: #383846;
-  -webkit-text-fill-color: #383846;
+  color: #33333f;
+  -webkit-text-fill-color: #33333f;
   pointer-events: none;
 }
 
@@ -607,7 +571,7 @@ body.mode-solid-white .editor li {
   font-size: 13.5px;
   outline: none;
 }
-.cli-input::placeholder { color: #404052; }
+.cli-input::placeholder { color: #33333f; }
 
 /* ── BOTTOM STATUS BAR ── */
 .matte-statusbar {
@@ -809,7 +773,7 @@ body.mode-solid-white .editor li {
 </style>
 </head>
 
-<body class="mode-white-flow">
+<body>
 <div class="app-container">
   <!-- ── TOP MATTE HUD BAR ── -->
   <div class="matte-topbar">
@@ -861,17 +825,27 @@ body.mode-solid-white .editor li {
   <div class="matte-toolbar">
     <div class="toolbar-cluster">
       <!-- Quick Palette Swatches Bar -->
-      <span style="font-size:11.5px;color:var(--text-dim);">🎨 โทนสีวิ่ง:</span>
+      <span style="font-size:11.5px;color:var(--text-dim);">🎨 สลับสีด่วน:</span>
       <div class="palette-swatches" id="quickSwatchesBar"></div>
 
       <div class="toolbar-sep"></div>
 
-      <!-- Flowing Text Mode Selector -->
-      <span style="font-size:11.5px;color:var(--text-dim);">รูปแบบตัวหนังสือ:</span>
-      <select class="matte-select" id="flowModeSelect" onchange="setFlowMode(this.value)">
-        <option value="white-flow" selected>⚪ ตัวหนังสือสีขาว + สีวิ่งผ่าน</option>
-        <option value="full-flow">🌈 ตัวหนังสือสีวิ่งเต็มสี</option>
-        <option value="solid-white">⚪ สีขาวล้วน + หัวข้อสีวิ่ง</option>
+      <!-- Animation Movement Style -->
+      <span style="font-size:11.5px;color:var(--text-dim);">การวิ่ง:</span>
+      <select class="matte-select" id="animStyleSelect" onchange="setAnimStyle(this.value)">
+        <option value="wave" selected>⚡ วิ่งไป-มา (Wave)</option>
+        <option value="continuous">🌊 วิ่งไหลยาว (Continuous)</option>
+      </select>
+
+      <div class="toolbar-sep"></div>
+
+      <!-- Speed Selector -->
+      <span style="font-size:11.5px;color:var(--text-dim);">ความเร็ว:</span>
+      <select class="matte-select" id="speedSelect" onchange="setFlowSpeed(this.value)">
+        <option value="2s">เร็วสะใจ (2s)</option>
+        <option value="3s" selected>มาตรฐาน (3s)</option>
+        <option value="4.5s">นุ่มนวล (4.5s)</option>
+        <option value="6s">ชิลล์ๆ (6s)</option>
       </select>
 
       <div class="toolbar-sep"></div>
@@ -936,7 +910,7 @@ body.mode-solid-white .editor li {
       <div class="editor-main-area" id="editorContainer">
         <div class="editor-line-numbers" id="lineNumbers">1</div>
         <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-             data-placeholder="เริ่มพิมพ์ข้อความที่นี่... (ตัวหนังสือสีขาวคมชัด พร้อมสีวิ่งผ่านอย่างนุ่มนวล · เลือกสีวิ่งได้สดๆ)">
+             data-placeholder="เริ่มพิมพ์ข้อความที่นี่... (ตัวหนังสือมีสีวิ่งไปมาสดใส คมชัด ลื่นไหลตลอดเวลา · เลือกสีวิ่งได้สดๆ)">
         </div>
       </div>
 
@@ -965,7 +939,7 @@ body.mode-solid-white .editor li {
 
 <input type="file" id="imageInput" accept="image/*" hidden multiple>
 
-<!-- ── IN-APP COLOR STUDIO MODAL (เลือกสีและสร้างสีเองสดๆ) ── -->
+<!-- ── IN-APP COLOR STUDIO MODAL ── -->
 <div class="modal-overlay" id="colorStudioModal">
   <div class="studio-modal">
     <div class="matte-modal-head" style="display:flex;align-items:center;justify-content:space-between;">
@@ -986,15 +960,15 @@ body.mode-solid-white .editor li {
         <div class="color-inputs-row">
           <div class="color-input-item">
             <span>สีที่ 1</span>
-            <input type="color" id="customC1" value="#ff0055" onchange="updateCustomGradient()">
+            <input type="color" id="customC1" value="#ffffff" onchange="updateCustomGradient()">
           </div>
           <div class="color-input-item">
             <span>สีที่ 2</span>
-            <input type="color" id="customC2" value="#ff7700" onchange="updateCustomGradient()">
+            <input type="color" id="customC2" value="#ff0055" onchange="updateCustomGradient()">
           </div>
           <div class="color-input-item">
             <span>สีที่ 3</span>
-            <input type="color" id="customC3" value="#00ff66" onchange="updateCustomGradient()">
+            <input type="color" id="customC3" value="#ffd600" onchange="updateCustomGradient()">
           </div>
           <div class="color-input-item">
             <span>สีที่ 4</span>
@@ -1005,7 +979,7 @@ body.mode-solid-white .editor li {
             <input type="color" id="customC5" value="#9900ff" onchange="updateCustomGradient()">
           </div>
         </div>
-        <div id="customPreviewBar" style="height:18px;border-radius:4px;background:linear-gradient(90deg, #ff0055, #ff7700, #00ff66, #00e5ff, #9900ff, #ff0055);"></div>
+        <div id="customPreviewBar" style="height:18px;border-radius:4px;background:linear-gradient(90deg, #ffffff, #ff0055, #ffd600, #00e5ff, #9900ff, #ffffff);"></div>
         <button class="matte-btn" style="background:#0284c7;color:#fff;justify-content:center;" onclick="applyCustomGradient()">
           ✓ ใช้สีที่ผสมเองนี้ทันที
         </button>
@@ -1045,70 +1019,61 @@ body.mode-solid-white .editor li {
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   FLOWING COLOR THEMES PRESETS
+   FLOWING COLOR THEMES PRESETS (สีสดใส วิ่งไปมาชัดเจน)
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   rainbow: {
     name: 'Spectrum Rainbow',
     label: '🌈 Spectrum Rainbow',
-    pure: 'linear-gradient(90deg, #ff1744 0%, #ff6d00 14%, #ffd600 28%, #00e676 42%, #00e5ff 56%, #7c3aed 70%, #ec4899 84%, #ff1744 100%)',
-    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #ff1744 28%, #ffd600 42%, #00e5ff 56%, #ec4899 70%, #ffffff 85%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #ff1744 14%, #ff9100 28%, #ffd600 42%, #00e676 56%, #00e5ff 70%, #d500f9 84%, #ffffff 100%)'
   },
   cyber: {
     name: 'Cyber Neon',
     label: '⚡ Cyber Neon',
-    pure: 'linear-gradient(90deg, #00e5ff 0%, #7c3aed 25%, #ec4899 50%, #f43f5e 75%, #00e5ff 100%)',
-    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #00e5ff 30%, #7c3aed 50%, #ec4899 70%, #ffffff 85%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #00e5ff 25%, #7c3aed 50%, #ec4899 75%, #f43f5e 90%, #ffffff 100%)'
   },
   sunset: {
     name: 'Sunset Gold',
     label: '🌅 Sunset Gold',
-    pure: 'linear-gradient(90deg, #ff4b1f 0%, #ff9068 25%, #ffb347 50%, #ffcc33 75%, #ff4b1f 100%)',
-    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #ff4b1f 30%, #ffb347 50%, #ff9068 70%, #ffffff 85%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #ff4b1f 25%, #ff9068 50%, #ffb347 75%, #ffcc33 90%, #ffffff 100%)'
   },
   matrix: {
     name: 'Matrix Emerald',
     label: '🍃 Matrix Emerald',
-    pure: 'linear-gradient(90deg, #00e676 0%, #a3e635 25%, #34d399 50%, #10b981 75%, #00e676 100%)',
-    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #00e676 30%, #a3e635 50%, #34d399 70%, #ffffff 85%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #00e676 25%, #a3e635 50%, #34d399 75%, #10b981 90%, #ffffff 100%)'
   },
   ocean: {
     name: 'Ocean Cyan',
     label: '🌊 Ocean Cyan',
-    pure: 'linear-gradient(90deg, #00c6ff 0%, #0072ff 25%, #38bdf8 50%, #06b6d4 75%, #00c6ff 100%)',
-    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #00c6ff 30%, #0072ff 50%, #38bdf8 70%, #ffffff 85%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #00c6ff 25%, #0072ff 50%, #38bdf8 75%, #06b6d4 90%, #ffffff 100%)'
   },
   purple: {
     name: 'Galaxy Purple',
     label: '🔮 Galaxy Purple',
-    pure: 'linear-gradient(90deg, #9333ea 0%, #c084fc 25%, #f43f5e 50%, #db2777 75%, #9333ea 100%)',
-    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #9333ea 30%, #c084fc 50%, #f43f5e 70%, #ffffff 85%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #9333ea 25%, #c084fc 50%, #f43f5e 75%, #db2777 90%, #ffffff 100%)'
   },
   fire: {
     name: 'Lava Fire',
     label: '🔥 Lava Fire',
-    pure: 'linear-gradient(90deg, #ef4444 0%, #f97316 25%, #eab308 50%, #f59e0b 75%, #ef4444 100%)',
-    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #ef4444 30%, #f97316 50%, #eab308 70%, #ffffff 85%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #ef4444 25%, #f97316 50%, #eab308 75%, #f59e0b 90%, #ffffff 100%)'
   },
   aurora: {
     name: 'Aurora Hologram',
     label: '💎 Aurora Hologram',
-    pure: 'linear-gradient(90deg, #f472b6 0%, #38bdf8 25%, #4ade80 50%, #facc15 75%, #f472b6 100%)',
-    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #f472b6 30%, #38bdf8 50%, #4ade80 70%, #ffffff 85%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #f472b6 25%, #38bdf8 50%, #4ade80 75%, #facc15 90%, #ffffff 100%)'
   }
 };
 
 let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'rainbow';
-let currentFlowMode = localStorage.getItem('cn_flow_mode') || 'white-flow';
+let currentAnimStyle = localStorage.getItem('cn_anim_style') || 'wave';
+let currentFlowSpeed = localStorage.getItem('cn_flow_speed') || '3s';
 
-function setFlowingTheme(themeKey, customPure = null, customWhite = null) {
-  if (customPure) {
+function setFlowingTheme(themeKey, customGradient = null) {
+  if (customGradient) {
     currentFlowingTheme = 'custom';
     localStorage.setItem('cn_flowing_theme', 'custom');
-    localStorage.setItem('cn_custom_pure', customPure);
-    localStorage.setItem('cn_custom_white', customWhite);
-    document.documentElement.style.setProperty('--pure-flowing-gradient', customPure);
-    document.documentElement.style.setProperty('--white-flowing-gradient', customWhite);
+    localStorage.setItem('cn_custom_gradient', customGradient);
+    document.documentElement.style.setProperty('--flowing-gradient', customGradient);
     const status = document.getElementById('themeStatus');
     if (status) status.textContent = `🎨 โทนสีวิ่ง: ผสมเอง (Custom)`;
   } else {
@@ -1117,8 +1082,7 @@ function setFlowingTheme(themeKey, customPure = null, customWhite = null) {
     localStorage.setItem('cn_flowing_theme', themeKey);
 
     const t = COLOR_THEMES[themeKey];
-    document.documentElement.style.setProperty('--pure-flowing-gradient', t.pure);
-    document.documentElement.style.setProperty('--white-flowing-gradient', t.whiteWave);
+    document.documentElement.style.setProperty('--flowing-gradient', t.gradient);
 
     const status = document.getElementById('themeStatus');
     if (status) status.textContent = `🎨 โทนสีวิ่ง: ${t.name}`;
@@ -1127,12 +1091,20 @@ function setFlowingTheme(themeKey, customPure = null, customWhite = null) {
   renderStudioGrid();
 }
 
-function setFlowMode(mode) {
-  currentFlowMode = mode;
-  localStorage.setItem('cn_flow_mode', mode);
-  document.body.className = `mode-${mode}`;
-  const sel = document.getElementById('flowModeSelect');
-  if (sel) sel.value = mode;
+function setAnimStyle(style) {
+  currentAnimStyle = style;
+  localStorage.setItem('cn_anim_style', style);
+  document.body.className = style === 'continuous' ? 'anim-continuous' : '';
+  const sel = document.getElementById('animStyleSelect');
+  if (sel) sel.value = style;
+}
+
+function setFlowSpeed(speed) {
+  currentFlowSpeed = speed;
+  localStorage.setItem('cn_flow_speed', speed);
+  document.documentElement.style.setProperty('--flowing-speed', speed);
+  const sel = document.getElementById('speedSelect');
+  if (sel) sel.value = speed;
 }
 
 function renderQuickSwatches() {
@@ -1145,7 +1117,7 @@ function renderQuickSwatches() {
     const t = COLOR_THEMES[k];
     const pill = document.createElement('div');
     pill.className = 'swatch-pill' + (currentFlowingTheme === k ? ' active' : '');
-    pill.style.background = t.pure;
+    pill.style.background = t.gradient;
     pill.title = t.name;
     pill.textContent = t.name.split(' ')[0];
     pill.onclick = () => setFlowingTheme(k);
@@ -1162,7 +1134,7 @@ function renderStudioGrid() {
     const t = COLOR_THEMES[k];
     const card = document.createElement('div');
     card.className = 'studio-card' + (currentFlowingTheme === k ? ' active' : '');
-    card.style.setProperty('--card-gradient', t.pure);
+    card.style.setProperty('--card-gradient', t.gradient);
     card.innerHTML = `
       <div class="studio-card-preview"></div>
       <div class="studio-card-title">${t.label}</div>
@@ -1186,8 +1158,8 @@ function updateCustomGradient() {
   const c3 = document.getElementById('customC3').value;
   const c4 = document.getElementById('customC4').value;
   const c5 = document.getElementById('customC5').value;
-  const pureGrad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
-  document.getElementById('customPreviewBar').style.background = pureGrad;
+  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
+  document.getElementById('customPreviewBar').style.background = grad;
 }
 
 function applyCustomGradient() {
@@ -1196,9 +1168,8 @@ function applyCustomGradient() {
   const c3 = document.getElementById('customC3').value;
   const c4 = document.getElementById('customC4').value;
   const c5 = document.getElementById('customC5').value;
-  const pureGrad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
-  const whiteGrad = `linear-gradient(90deg, #ffffff 0%, #ffffff 15%, ${c1} 30%, ${c2} 50%, ${c4} 70%, #ffffff 85%, #ffffff 100%)`;
-  setFlowingTheme(null, pureGrad, whiteGrad);
+  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
+  setFlowingTheme(null, grad);
   closeModals();
 }
 
@@ -1492,7 +1463,6 @@ function renderTabsAndFiles() {
       <span class="tab-name" title="${n}">📄 ${n}</span>
       <span class="tab-close" title="ปิดไฟล์">✕</span>
     `;
-    // Reliable Click Handler for Tab
     tab.addEventListener('click', (e) => {
       if (e.target.closest('.tab-close')) {
         e.stopPropagation();
@@ -1516,7 +1486,6 @@ function renderTabsAndFiles() {
       </div>
       <span class="file-del" title="ลบไฟล์">✕</span>
     `;
-    // Reliable Click Handler for Sidebar Row
     row.addEventListener('click', (e) => {
       if (e.target.closest('.file-del')) {
         e.stopPropagation();
@@ -1530,7 +1499,6 @@ function renderTabsAndFiles() {
 }
 
 function openFile(n) {
-  // Always save current file content first
   if (currentFile && files[currentFile] !== undefined) {
     files[currentFile] = editor.innerHTML;
     try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
@@ -1663,21 +1631,6 @@ function executePowerShellCmd(input) {
       }
       break;
 
-    case 'mode':
-      if (arg === 'white' || arg === 'white-flow') {
-        setFlowMode('white-flow');
-        logCmd('เปลี่ยนโหมดเป็น: ตัวหนังสือสีขาว + สีวิ่งผ่าน', 'success');
-      } else if (arg === 'full' || arg === 'full-flow') {
-        setFlowMode('full-flow');
-        logCmd('เปลี่ยนโหมดเป็น: ตัวหนังสือสีวิ่งเต็มสี', 'success');
-      } else if (arg === 'solid' || arg === 'solid-white') {
-        setFlowMode('solid-white');
-        logCmd('เปลี่ยนโหมดเป็น: สีขาวล้วน + หัวข้อสีวิ่ง', 'success');
-      } else {
-        logCmd('Usage: mode white, mode full, mode solid', 'info');
-      }
-      break;
-
     case 'cat':
     case 'type':
     case 'gc':
@@ -1759,7 +1712,6 @@ function executePowerShellCmd(input) {
       logCmd(`คำสั่ง PowerShell CodeNote:
   • dir, ls              - แสดงรายชื่อโน้ตทั้งหมด
   • theme <ชื่อธีม>      - เปลี่ยนโทนสีวิ่ง (rainbow, cyber, sunset, matrix, ocean, purple, fire, aurora)
-  • mode white/full/solid - เปลี่ยนรูปแบบสีตัวหนังสือ
   • cat <ชื่อไฟล์>        - อ่านเนื้อหาของไฟล์
   • new <ชื่อไฟล์>        - สร้างไฟล์โน้ตใหม่
   • edit <ชื่อไฟล์>       - เปิดไฟล์ในตัวแก้ไข
@@ -1920,15 +1872,15 @@ if (Object.keys(files).length === 0) {
     '<h2># CodeNote Studio — Matte Black Terminal ⚡</h2>',
     '<p>&nbsp;</p>',
     '<p>ยินดีต้อนรับสู่ CodeNote ในธีม <b>พื้นหลังสีดำด้าน (Matte Black)</b></p>',
-    '<p>• <b>ตัวหนังสือสีขาวเป็นพื้นฐาน</b> คมกริบ อ่านง่าย ชัดเจน 100%</p>',
-    '<p>• <b>สีที่คุณเลือกจะวิ่งผ่านตัวหนังสือ</b> อย่างนุ่มนวลและต่อเนื่อง</p>',
+    '<p>• <b>ตัวหนังสือมีสีวิ่งไปมาอย่างสวยงาม ลื่นไหล และคมกริบ</b></p>',
+    '<p>• <b>เลือกสลับสีวิ่งได้ทันที</b> ที่แถบเม็ดสีด้านบน หรือกดสตูดิโอสี</p>',
     '<p>&nbsp;</p>',
     '<h3># ฟีเจอร์การใช้งาน:</h3>',
-    '<p>1. 🎨 <b>เลือกโทนสีวิ่ง:</b> กดเลือกโทนสีด้านบน หรือกด <b>"🎨 สตูดิโอสีวิ่ง"</b> เพื่อเลือก/ผสมสีเอง</p>',
-    '<p>2. ⚪ <b>รูปแบบตัวหนังสือ:</b> สลับระหว่าง <i>"สีขาว + สีวิ่งผ่าน"</i>, <i>"สีวิ่งเต็มสี"</i>, <i>"สีขาวล้วน + หัวข้อสีวิ่ง"</i> ได้ที่แถบด้านบน</p>',
+    '<p>1. 🎨 <b>เลือกโทนสีวิ่ง:</b> สลับสีรุ้ง, นีออน, ส้มทอง, เขียวมรกต, ฟ้าน้ำทะเล ฯลฯ ได้ใน 1 คลิก</p>',
+    '<p>2. ⚡ <b>การวิ่งไปมา (Wave Animation):</b> สีจะวิ่งพาดผ่านตัวหนังสือไป-มาอย่างนุ่มนวลตลอดเวลา</p>',
     '<p>3. 📂 <b>สลับแท็บได้ทันที:</b> กดคลิกแท็บด้านบนเพื่อสลับไฟล์และบันทึกอัตโนมัติ</p>',
-    '<p>4. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>theme cyber</code>, <code>mode white</code>, <code>dir</code> ที่ช่องด้านล่าง</p>',
-    '<p>5. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> 5 โปรไฟล์เสียงสมจริงระดับพรีเมียม</p>',
+    '<p>4. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>theme cyber</code>, <code>dir</code> ที่ช่องด้านล่าง</p>',
+    '<p>5. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> 5 โปรไฟล์เสียงสัมผัสระดับพรีเมียม</p>',
     '<p>&nbsp;</p>',
     '<p><strong># คีย์ลัด:</strong></p>',
     '<p>• <b>Ctrl+S:</b> บันทึก · <b>Ctrl+N:</b> สร้างโน้ตใหม่ · <b>Tab:</b> เว้นวรรคย่อหน้า</p>'
@@ -1936,14 +1888,14 @@ if (Object.keys(files).length === 0) {
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
 
-const savedPure = localStorage.getItem('cn_custom_pure');
-const savedWhite = localStorage.getItem('cn_custom_white');
-if (currentFlowingTheme === 'custom' && savedPure && savedWhite) {
-  setFlowingTheme(null, savedPure, savedWhite);
+const savedCustom = localStorage.getItem('cn_custom_gradient');
+if (currentFlowingTheme === 'custom' && savedCustom) {
+  setFlowingTheme(null, savedCustom);
 } else {
   setFlowingTheme(currentFlowingTheme);
 }
-setFlowMode(currentFlowMode);
+setAnimStyle(currentAnimStyle);
+setFlowSpeed(currentFlowSpeed);
 buildSfxPanel();
 openFile(Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1');
 </script>
