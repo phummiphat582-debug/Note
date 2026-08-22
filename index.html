@@ -24,7 +24,6 @@
   --text-dim: #475569;
   --text-sub: #8592a6;
   --base-text-color: #00ff66;
-  --neon-spark-color: #00ff66;
   --hacker-green: #00ff66;
   --accent-cyan: #00f0ff;
   --accent-red: #ff0055;
@@ -60,7 +59,7 @@ html,body {
 body.hide-rain #matrixCanvas { opacity: 0; }
 
 /* ═══════════════════════════════════════════════════════════════
-   CURSOR NEON SPARK PARTICLES CANVAS (ประกายแสงวิ่งตามเคอร์เซอร์)
+   CURSOR NEON SPARK PARTICLES CANVAS
    ═══════════════════════════════════════════════════════════════ */
 #sparkCanvas {
   position: absolute;
@@ -76,16 +75,14 @@ body.hide-rain #matrixCanvas { opacity: 0; }
    TEXT ENGINE: SOLID CLEAN CRISP HACKER TEXT
    ═══════════════════════════════════════════════════════════════ */
 .editor {
-  color: var(--base-text-color) !important;
-  -webkit-text-fill-color: var(--base-text-color) !important;
-  background: none !important;
+  color: var(--base-text-color, #00ff66);
+  caret-color: var(--base-text-color, #00ff66);
+  background: none;
 }
 
 .editor p, .editor div, .editor h1, .editor h2, .editor h3, .editor li {
   margin-bottom: 8px;
   line-height: 1.9;
-  color: var(--base-text-color) !important;
-  -webkit-text-fill-color: var(--base-text-color) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -182,8 +179,8 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 .matte-tab.active {
   background: #12121e;
-  color: #00ff66;
-  border-color: #00ff66;
+  color: var(--base-text-color, #00ff66);
+  border-color: var(--base-text-color, #00ff66);
   font-weight: 600;
   box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
 }
@@ -224,6 +221,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   align-items: center;
   gap: 6px;
   transition: all 0.15s;
+  position: relative;
 }
 .matte-btn:hover {
   background: #141420;
@@ -232,8 +230,8 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 .matte-btn.active {
   background: #161626;
-  border-color: #00ff66;
-  color: #00ff66;
+  border-color: var(--base-text-color, #00ff66);
+  color: var(--base-text-color, #00ff66);
 }
 
 .matte-select {
@@ -248,10 +246,10 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   outline: none;
 }
 .matte-select:focus {
-  border-color: #00ff66;
+  border-color: var(--base-text-color, #00ff66);
 }
 
-/* ── SECONDARY FORMATTING TOOLBAR (คลีน เรียบร้อย ไม่มีเม็ดสีรก) ── */
+/* ── SECONDARY FORMATTING TOOLBAR ── */
 .matte-toolbar {
   height: 44px;
   background: rgba(3, 3, 6, 0.96);
@@ -349,8 +347,8 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 .matte-file-row.active {
   background: var(--bg-matte-card);
-  color: #00ff66;
-  border-left-color: #00ff66;
+  color: var(--base-text-color, #00ff66);
+  border-left-color: var(--base-text-color, #00ff66);
   font-weight: 600;
 }
 .matte-file-row .file-del {
@@ -388,8 +386,8 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 .ps-prompt-tag {
   background: #006622;
-  color: #00ff66;
-  border: 1px solid #00ff66;
+  color: var(--base-text-color, #00ff66);
+  border: 1px solid var(--base-text-color, #00ff66);
   padding: 1px 7px;
   border-radius: 4px;
   font-weight: 700;
@@ -402,10 +400,10 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 .ps-prompt-file {
   font-weight: 700;
-  color: #00ff66;
+  color: var(--base-text-color, #00ff66);
 }
 .ps-prompt-arrow {
-  color: #00ff66;
+  color: var(--base-text-color, #00ff66);
   font-weight: 700;
   animation: blink 1s infinite;
 }
@@ -436,7 +434,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   font-family: var(--font-mono);
 }
 
-/* Main Text Canvas: Solid Crisp Hacker Text */
+/* Main Text Canvas */
 .editor {
   flex: 1;
   min-height: 100%;
@@ -450,14 +448,12 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   user-select: text;
   font-family: var(--font-thai);
   font-weight: 500;
-  caret-color: #00ff66;
   position: relative;
 }
 
 .editor:empty::before {
   content: attr(data-placeholder);
   color: #1f2430;
-  -webkit-text-fill-color: #1f2430;
   pointer-events: none;
 }
 
@@ -622,7 +618,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 .studio-card-preview {
   height: 18px;
   border-radius: 4px;
-  background: var(--card-gradient);
+  background: var(--card-color, #00ff66);
 }
 .studio-card-title {
   font-size: 12px;
@@ -644,20 +640,20 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 .color-inputs-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
 .color-input-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--text-dim);
 }
 .color-input-item input[type="color"] {
-  width: 36px;
-  height: 36px;
-  border: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-matte);
   border-radius: 6px;
   background: transparent;
   cursor: pointer;
@@ -761,7 +757,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
     display: none !important;
   }
   .app-container, .matte-viewport { background: #fff !important; color: #000 !important; }
-  .editor, .editor * { background: none !important; -webkit-text-fill-color: #000 !important; color: #000 !important; font-size: 14pt !important; }
+  .editor, .editor * { color: #000 !important; font-size: 14pt !important; }
 }
 </style>
 </head>
@@ -791,7 +787,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
         🌧️ Matrix Rain
       </button>
 
-      <!-- Open Color Studio Modal Button (หน้าต่างหลักสำหรับเลือกและเปลี่ยนธีมสี) -->
+      <!-- Open Color Studio Modal Button -->
       <button class="matte-btn" onclick="openColorStudio()" title="เปิดสตูดิโอเลือกสีแฮกเกอร์และสร้างสีเอง">
         🎨 สตูดิโอสี
       </button>
@@ -823,13 +819,22 @@ body.hide-rain #matrixCanvas { opacity: 0; }
     </div>
   </div>
 
-  <!-- ── SECONDARY FORMATTING TOOLBAR (สะอาดตา ไม่มีเม็ดสีเกะกะ) ── -->
+  <!-- ── SECONDARY FORMATTING TOOLBAR ── -->
   <div class="matte-toolbar">
     <div class="toolbar-cluster">
+      <!-- Quick Text Color Picker Button (กดแล้วเลือกสีเปลี่ยนตัวหนังสือได้ทันที) -->
+      <label class="matte-btn" style="cursor:pointer;" title="คลิกเพื่อเลือกสีตัวหนังสือตามใจชอบ">
+        <input type="color" id="quickTextColorInput" value="#00ff66" style="opacity:0;position:absolute;width:100%;height:100%;left:0;top:0;cursor:pointer;" oninput="changeGlobalTextColor(this.value)">
+        <span id="quickColorDot" style="width:11px;height:11px;border-radius:50%;background:#00ff66;display:inline-block;border:1px solid rgba(255,255,255,0.4);"></span>
+        <span>🎨 เปลี่ยนสีตัวหนังสือ</span>
+      </label>
+
+      <div class="toolbar-sep"></div>
+
       <!-- Spark Effect Toggle (ประกายแสงวิ่งตามเคอร์เซอร์) -->
       <label style="font-size:12px;color:#cbd5e1;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
         <input type="checkbox" id="sparkToggle" checked onchange="toggleSparks(this.checked)">
-        ✨ ประกายแสงตามเคอร์เซอร์
+        ✨ ประกายแสงเคอร์เซอร์
       </label>
 
       <div class="toolbar-sep"></div>
@@ -917,7 +922,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
     <span class="status-item" id="wordCount">0 คำ</span>
     <span class="status-item" id="charCount">0 ตัวอักษร</span>
     <span class="status-item" id="cursorPos">LN 1, COL 1</span>
-    <span class="status-item rgb-tag" id="themeStatus">💻 THE MATRIX (NEON SPARKS)</span>
+    <span class="status-item rgb-tag" id="themeStatus">💻 THE MATRIX</span>
     <span class="status-item" style="margin-left:auto;color:#00ff66;" id="sfxStatus">♪ Galaxy 100 V2</span>
   </div>
 </div>
@@ -928,38 +933,31 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 <div class="modal-overlay" id="colorStudioModal">
   <div class="studio-modal">
     <div class="matte-modal-head" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>💻 สตูดิโอเลือกสีแฮกเกอร์ (HOLLYWOOD CYBER STUDIO)</span>
+      <span>💻 สตูดิโอเลือกสีตัวหนังสือ (CYBER COLOR STUDIO)</span>
       <span style="cursor:pointer;font-size:16px;" onclick="closeModals()">✕</span>
     </div>
     <div class="matte-modal-body" style="max-height:75vh;overflow-y:auto;">
-      <!-- Category 1: Pure Cyber Hacker Themes -->
-      <div class="studio-cat-title">💻 ธีมสีนีออนไซเบอร์ (NEON CYBER THEMES):</div>
+      <!-- Category: Pure Cyber Hacker Themes -->
+      <div class="studio-cat-title">💻 เลือกสีตัวหนังสือแฮกเกอร์สำเร็จรูป (CYBER PALETTES):</div>
       <div class="studio-grid" id="hackerGrid"></div>
 
-      <!-- Category 2: Multicolor Waves -->
-      <div class="studio-cat-title">🌈 โทนสีรุ้งควอนตัม (QUANTUM SPECTRAL WAVES):</div>
-      <div class="studio-grid" id="rainbowGrid"></div>
-
       <!-- Custom Color Mixer -->
-      <div class="studio-cat-title">⚡ ผสมสีของคุณเองสดๆ (CUSTOM DECRYPTOR PALETTE):</div>
+      <div class="studio-cat-title">⚡ เลือกสีตัวหนังสืออิสระตามใจชอบ (CUSTOM COLOR):</div>
       <div class="custom-maker-box">
         <div class="color-inputs-row">
           <div class="color-input-item">
-            <span>สีตัวหนังสือ</span>
-            <input type="color" id="customC1" value="#00ff66" onchange="updateCustomGradient()">
+            <span>สีตัวหนังสือหลัก</span>
+            <input type="color" id="customC1" value="#00ff66" oninput="updateCustomPreview(this.value)">
           </div>
-          <div class="color-input-item">
-            <span>สีประกายแสง 1</span>
-            <input type="color" id="customC2" value="#39ff14" onchange="updateCustomGradient()">
-          </div>
-          <div class="color-input-item">
-            <span>สีประกายแสง 2</span>
-            <input type="color" id="customC3" value="#00e5ff" onchange="updateCustomGradient()">
+          <div style="flex:1;">
+            <div style="font-size:12px;color:#cbd5e1;margin-bottom:6px;">ตัวอย่างข้อความเมื่อเปลี่ยนสี:</div>
+            <div id="customColorPreviewText" style="font-size:18px;font-weight:600;color:#00ff66;font-family:var(--font-thai);">
+              // System Breach: Root Access Granted 100%
+            </div>
           </div>
         </div>
-        <div id="customPreviewBar" style="height:18px;border-radius:4px;background:linear-gradient(90deg, #00ff66 0%, #39ff14 50%, #00e5ff 100%);"></div>
-        <button class="matte-btn" style="background:#006622;color:#00ff66;border-color:#00ff66;justify-content:center;" onclick="applyCustomGradient()">
-          ✓ ใช้สีที่ผสมเองนี้ทันที
+        <button class="matte-btn" style="background:#006622;color:#00ff66;border-color:#00ff66;justify-content:center;margin-top:6px;" onclick="applyCustomColor()">
+          ✓ ใช้สีนี้เป็นสีตัวหนังสือทันที
         </button>
       </div>
     </div>
@@ -1139,11 +1137,11 @@ function spawnCursorSparks() {
   const coords = getCaretCoordinates();
   if (!coords) return;
 
-  const curTheme = COLOR_THEMES[currentFlowingTheme] || COLOR_THEMES['matrix-hacker'];
-  const palette = curTheme.sparkColors || ['#00ff66', '#39ff14', '#00e5ff'];
+  const curColor = getComputedStyle(document.documentElement).getPropertyValue('--base-text-color').trim() || '#00ff66';
+  const palette = [curColor, '#ffffff', '#00e5ff', '#39ff14'];
 
   // Spawn Shockwave Ring
-  rings.push(new ShockwaveRing(coords.x, coords.y, palette[0]));
+  rings.push(new ShockwaveRing(coords.x, coords.y, curColor));
 
   // Spawn 6-9 Neon Sparks
   const count = Math.floor(Math.random() * 4) + 6;
@@ -1182,7 +1180,6 @@ function getCaretCoordinates() {
   if (!sel || !sel.rangeCount) return null;
   const range = sel.getRangeAt(0).cloneRange();
   
-  // Try getClientRects
   if (range.getClientRects) {
     const rects = range.getClientRects();
     if (rects.length > 0) {
@@ -1191,7 +1188,6 @@ function getCaretCoordinates() {
     }
   }
 
-  // Fallback to getBoundingClientRect
   const rect = range.getBoundingClientRect();
   if (rect && (rect.width !== 0 || rect.height !== 0)) {
     return { x: rect.right || rect.left + 8, y: rect.top + (rect.height / 2) };
@@ -1200,89 +1196,123 @@ function getCaretCoordinates() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   COLOR THEMES
+   COLOR PALETTES & TEXT COLOR CONTROLLER (เปลี่ยนสีตัวหนังสือได้ 100%)
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   'matrix-hacker': {
-    category: 'hacker',
-    name: 'The Matrix (Emerald Green)',
+    name: 'The Matrix Emerald',
     label: '💚 The Matrix (เขียวนีออน)',
-    baseColor: '#00ff66',
-    sparkColors: ['#00ff66', '#39ff14', '#00e5ff', '#86efac'],
-    gradient: 'linear-gradient(90deg, #003b14 0%, #00ff66 50%, #39ff14 100%)'
+    color: '#00ff66'
   },
   'cyber-cyan': {
-    category: 'hacker',
-    name: 'Cyberpunk 2077 (Cyan-Pink)',
-    label: '💙 Cyberpunk (ฟ้า-ชมพู)',
-    baseColor: '#00f0ff',
-    sparkColors: ['#00f0ff', '#ff007f', '#7928ca', '#38bdf8'],
-    gradient: 'linear-gradient(90deg, #001f3f 0%, #00f0ff 50%, #ff007f 100%)'
+    name: 'Cyberpunk Cyan',
+    label: '💙 Cyberpunk (ฟ้าไซเบอร์)',
+    color: '#00f0ff'
+  },
+  'cyber-pink': {
+    name: 'Neon Magenta Pink',
+    label: '💖 Neon Pink (ชมพูมาเจนต้า)',
+    color: '#ff007f'
   },
   'mr-robot-amber': {
-    category: 'hacker',
-    name: 'Mr. Robot (Amber Gold)',
-    label: '💛 Mr. Robot (ส้มทอง)',
-    baseColor: '#ffb703',
-    sparkColors: ['#ffb703', '#ff8000', '#fde047', '#ffaa00'],
-    gradient: 'linear-gradient(90deg, #4d2600 0%, #ffb703 50%, #ff8000 100%)'
+    name: 'Mr. Robot Amber Gold',
+    label: '💛 Mr. Robot (ส้มทอง CRT)',
+    color: '#ffb703'
   },
   'red-breach': {
-    category: 'hacker',
-    name: 'Red Alert (Blood Exploit)',
+    name: 'Red Alert Blood',
     label: '❤️ Red Alert (แดงเพลิง)',
-    baseColor: '#ff0055',
-    sparkColors: ['#ff0055', '#ff3366', '#ef4444', '#fca5a5'],
-    gradient: 'linear-gradient(90deg, #3b0008 0%, #ff0055 50%, #ff3366 100%)'
+    color: '#ff0055'
   },
   'ghost-violet': {
-    category: 'hacker',
-    name: 'Ghost in the Shell (Violet)',
+    name: 'Ghost Violet',
     label: '💜 Ghost Violet (ม่วงนีออน)',
-    baseColor: '#c084fc',
-    sparkColors: ['#c084fc', '#d946ef', '#b300ff', '#e000ff'],
-    gradient: 'linear-gradient(90deg, #20003b 0%, #b300ff 50%, #e000ff 100%)'
+    color: '#c084fc'
   },
   'toxic-lime': {
-    category: 'hacker',
-    name: 'Toxic Biohazard (Lime Acid)',
-    label: '☣️ Toxic Acid (เขียวมะนาว)',
-    baseColor: '#a6ff00',
-    sparkColors: ['#a6ff00', '#ccff00', '#39ff14', '#e6ff00'],
-    gradient: 'linear-gradient(90deg, #1f2e00 0%, #a6ff00 50%, #ccff00 100%)'
+    name: 'Toxic Biohazard Acid',
+    label: '☣️ Toxic Acid (เขียวมะนาวกรด)',
+    color: '#a6ff00'
   },
-  'rainbow-decrypt': {
-    category: 'rainbow',
-    name: 'Quantum Spectral (Rainbow)',
-    label: '🌈 Quantum Spectral (รุ้ง)',
-    baseColor: '#f8fafc',
-    sparkColors: ['#ff0055', '#ffcc00', '#00ff66', '#00d4ff', '#a800ff'],
-    gradient: 'linear-gradient(90deg, #ff0055 0%, #00ff66 50%, #00d4ff 100%)'
+  'pure-white': {
+    name: 'Pure Arctic White',
+    label: '🤍 Pure White (ขาวสว่าง)',
+    color: '#f8fafc'
   }
 };
 
-let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'matrix-hacker';
+let currentTextColor = localStorage.getItem('cn_text_color') || '#00ff66';
+let currentThemeKey = localStorage.getItem('cn_theme_key') || 'matrix-hacker';
 
-function setFlowingTheme(themeKey, customData = null) {
-  if (customData) {
-    currentFlowingTheme = 'custom';
-    localStorage.setItem('cn_flowing_theme', 'custom');
-    localStorage.setItem('cn_custom_color', customData.baseColor);
-    document.documentElement.style.setProperty('--base-text-color', customData.baseColor);
-    const status = document.getElementById('themeStatus');
-    if (status) status.textContent = `💻 CUSTOM (NEON SPARKS)`;
-  } else {
-    if (!COLOR_THEMES[themeKey]) themeKey = 'matrix-hacker';
-    currentFlowingTheme = themeKey;
-    localStorage.setItem('cn_flowing_theme', themeKey);
+function applyTextColor(hexColor, name = '') {
+  currentTextColor = hexColor;
+  localStorage.setItem('cn_text_color', hexColor);
 
-    const t = COLOR_THEMES[themeKey];
-    document.documentElement.style.setProperty('--base-text-color', t.baseColor || '#00ff66');
-
-    const status = document.getElementById('themeStatus');
-    if (status) status.textContent = `💻 ${t.name.toUpperCase()} (NEON SPARKS)`;
+  // Apply directly to root variable and editor
+  document.documentElement.style.setProperty('--base-text-color', hexColor);
+  if (editor) {
+    editor.style.color = hexColor;
+    editor.style.caretColor = hexColor;
   }
+
+  // Update Toolbar Quick Dot
+  const dot = document.getElementById('quickColorDot');
+  if (dot) dot.style.background = hexColor;
+  const input = document.getElementById('quickTextColorInput');
+  if (input) input.value = hexColor;
+
+  // Update Status
+  const status = document.getElementById('themeStatus');
+  if (status) status.textContent = `💻 ${name ? name.toUpperCase() : hexColor.toUpperCase()}`;
+
   renderStudioGrid();
+}
+
+function changeGlobalTextColor(color) {
+  currentThemeKey = 'custom';
+  localStorage.setItem('cn_theme_key', 'custom');
+  applyTextColor(color, 'Custom Color');
+}
+
+function updateCustomPreview(color) {
+  const p = document.getElementById('customColorPreviewText');
+  if (p) p.style.color = color;
+}
+
+function applyCustomColor() {
+  const c = document.getElementById('customC1').value;
+  changeGlobalTextColor(c);
+  closeModals();
+}
+
+function renderStudioGrid() {
+  const container = document.getElementById('hackerGrid');
+  if (!container) return;
+  container.innerHTML = '';
+
+  Object.keys(COLOR_THEMES).forEach(k => {
+    const t = COLOR_THEMES[k];
+    const isAct = (currentTextColor.toLowerCase() === t.color.toLowerCase());
+    const card = document.createElement('div');
+    card.className = 'studio-card' + (isAct ? ' active' : '');
+    card.style.setProperty('--card-color', t.color);
+    card.innerHTML = `
+      <div class="studio-card-preview" style="background:${t.color};box-shadow:0 0 10px ${t.color}66;"></div>
+      <div class="studio-card-title">${t.label}</div>
+    `;
+    card.onclick = () => {
+      currentThemeKey = k;
+      localStorage.setItem('cn_theme_key', k);
+      applyTextColor(t.color, t.name);
+      closeModals();
+    };
+    container.appendChild(card);
+  });
+}
+
+function openColorStudio() {
+  renderStudioGrid();
+  document.getElementById('colorStudioModal').classList.add('show');
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1307,60 +1337,6 @@ function setFontFamily(font) {
   if (editor) editor.style.fontFamily = font;
   const sel = document.getElementById('fontFamilySelect');
   if (sel) sel.value = font;
-}
-
-function renderStudioGrid() {
-  const hackerContainer = document.getElementById('hackerGrid');
-  const rainbowContainer = document.getElementById('rainbowGrid');
-  if (!hackerContainer || !rainbowContainer) return;
-  hackerContainer.innerHTML = '';
-  rainbowContainer.innerHTML = '';
-
-  Object.keys(COLOR_THEMES).forEach(k => {
-    const t = COLOR_THEMES[k];
-    const card = document.createElement('div');
-    card.className = 'studio-card' + (currentFlowingTheme === k ? ' active' : '');
-    card.style.setProperty('--card-gradient', t.gradient);
-    card.innerHTML = `
-      <div class="studio-card-preview"></div>
-      <div class="studio-card-title">${t.label}</div>
-    `;
-    card.onclick = () => {
-      setFlowingTheme(k);
-      closeModals();
-    };
-    if (t.category === 'hacker') hackerContainer.appendChild(card);
-    else rainbowContainer.appendChild(card);
-  });
-}
-
-function openColorStudio() {
-  renderStudioGrid();
-  document.getElementById('colorStudioModal').classList.add('show');
-}
-
-function updateCustomGradient() {
-  const c1 = document.getElementById('customC1').value;
-  const c2 = document.getElementById('customC2').value;
-  const c3 = document.getElementById('customC3').value;
-  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 50%, ${c3} 100%)`;
-  document.getElementById('customPreviewBar').style.background = grad;
-}
-
-function applyCustomGradient() {
-  const c1 = document.getElementById('customC1').value;
-  const c2 = document.getElementById('customC2').value;
-  const c3 = document.getElementById('customC3').value;
-  COLOR_THEMES['custom'] = {
-    category: 'hacker',
-    name: 'Custom Palette',
-    label: '⚡ Custom Decryptor',
-    baseColor: c1,
-    sparkColors: [c1, c2, c3],
-    gradient: `linear-gradient(90deg, ${c1} 0%, ${c2} 50%, ${c3} 100%)`
-  };
-  setFlowingTheme('custom', COLOR_THEMES['custom']);
-  closeModals();
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1707,7 +1683,6 @@ editor.addEventListener('keydown', e => {
     document.execCommand('insertText', false, '    ');
   }
 
-  // Trigger neon sparks on keystrokes
   setTimeout(spawnCursorSparks, 10);
 });
 
@@ -1816,16 +1791,15 @@ function executePowerShellCmd(input) {
       });
       break;
 
-    case 'theme':
     case 'color':
-    case 'rgb':
+    case 'theme':
       if (!arg) {
-        logCmd(`ธีมที่เลือกได้:\n` + Object.keys(COLOR_THEMES).map(k => `  • ${k} (${COLOR_THEMES[k].name})`).join('\n'), 'info');
+        logCmd(`สีที่เลือกได้:\n` + Object.keys(COLOR_THEMES).map(k => `  • ${k} (${COLOR_THEMES[k].name})`).join('\n'), 'info');
       } else if (COLOR_THEMES[arg]) {
-        setFlowingTheme(arg);
-        logCmd(`เปลี่ยนธีมเป็น: ${COLOR_THEMES[arg].name}`, 'success');
+        applyTextColor(COLOR_THEMES[arg].color, COLOR_THEMES[arg].name);
+        logCmd(`เปลี่ยนสีตัวหนังสือเป็น: ${COLOR_THEMES[arg].name}`, 'success');
       } else {
-        logCmd(`ไม่พบธีม '${arg}' (พิมพ์ theme เพื่อดูรายชื่อ)`, 'error');
+        logCmd(`ไม่พบสี '${arg}'`, 'error');
       }
       break;
 
@@ -1890,20 +1864,6 @@ function executePowerShellCmd(input) {
       cmdLog.classList.remove('open');
       break;
 
-    case 'sfx':
-      if (!arg) {
-        logCmd(`โปรไฟล์เสียงคีย์บอร์ดที่เลือกได้:\n` + SFX_PROFILES.map(p => `  • ${p.id} (${p.name})`).join('\n'), 'info');
-      } else {
-        const target = SFX_PROFILES.find(p => p.id === arg || p.name.toLowerCase().includes(arg));
-        if (target) {
-          selectProfile(target.id, true);
-          logCmd(`เปลี่ยนเสียงคีย์บอร์ดเป็น: ${target.name}`, 'success');
-        } else {
-          logCmd(`ไม่พบเสียงคีย์บอร์ด '${arg}'`, 'error');
-        }
-      }
-      break;
-
     case 'help':
     case 'get-help':
     case '?':
@@ -1911,7 +1871,7 @@ function executePowerShellCmd(input) {
   • hack, breach         - รันเอฟเฟกต์แฮกเจาะระบบฮอลลีวูด!
   • matrix, rain         - เปิด/ปิด ฝนโค้ด Matrix ด้านหลัง
   • dir, ls              - แสดงรายชื่อโน้ตทั้งหมด
-  • theme <ชื่อธีม>      - เปลี่ยนธีมสีแฮกเกอร์ (matrix-hacker, cyber-cyan, mr-robot-amber, red-breach...)
+  • color <ชื่อสี>       - เปลี่ยนสีตัวหนังสือ (matrix-hacker, cyber-cyan, cyber-pink, mr-robot-amber, red-breach...)
   • cat <ชื่อไฟล์>        - อ่านเนื้อหาของไฟล์
   • new <ชื่อไฟล์>        - สร้างไฟล์โน้ตใหม่
   • edit <ชื่อไฟล์>       - เปิดไฟล์ในตัวแก้ไข
@@ -2082,10 +2042,9 @@ if (Object.keys(files).length === 0) {
   files['ยินดีต้อนรับ.ps1'] = [
     '<h2>// HOLLYWOOD HACKER TERMINAL — NEON SPARK ENGINE ⚡</h2>',
     '<p>&nbsp;</p>',
-    '<p>ยินดีต้อนรับสู่ระบบ CodeNote ในธีม <b>ประกายแสงนีออนวิ่งตามเคอร์เซอร์ (Neon Spark Trail)</b></p>',
-    '<p>• 🟢 <b>ตัวหนังสือ:</b> เป็นสีไซเบอร์เนื้อแน่นคมชัด สบายตา อ่านง่าย ไม่กระตุก</p>',
-    '<p>• ✨ <b>เวลาพิมพ์:</b> จะมีลำแสงและประกายดาวนีออนพุ่งกระจายวิ่งตามท้ายเคอร์เซอร์แบบเรียลไทม์</p>',
-    '<p>• 🎨 <b>ปุ่มเลือกสี:</b> ซ่อนเก็บไว้ในปุ่ม <code>🎨 สตูดิโอสี</code> ด้านบนขวา กดเพื่อเปิดหน้าต่างเลือกสี</p>',
+    '<p>ยินดีต้อนรับสู่ระบบ CodeNote</p>',
+    '<p>• 🎨 <b>เปลี่ยนสีตัวหนังสือ:</b> สามารถกดปุ่ม <b>"🎨 เปลี่ยนสีตัวหนังสือ"</b> บนแถบเครื่องมือ หรือเปิด <b>"🎨 สตูดิโอสี"</b> ด้านบนขวาเพื่อเลือกสีที่ต้องการได้ทันที</p>',
+    '<p>• ✨ <b>ประกายแสง:</b> เวลาพิมพ์จะมีประกายแสงนีออนพุ่งกระจายวิ่งตามเคอร์เซอร์</p>',
     '<p>&nbsp;</p>',
     '<p><strong># คีย์ลัด:</strong></p>',
     '<p>• <b>Ctrl+S:</b> บันทึก · <b>Ctrl+N:</b> สร้างโน้ตใหม่ · <b>Tab:</b> เว้นวรรคย่อหน้า</p>'
@@ -2093,12 +2052,7 @@ if (Object.keys(files).length === 0) {
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
 
-const savedCustom = localStorage.getItem('cn_custom_color');
-if (currentFlowingTheme === 'custom' && savedCustom) {
-  setFlowingTheme('custom', { baseColor: savedCustom });
-} else {
-  setFlowingTheme(currentFlowingTheme);
-}
+applyTextColor(currentTextColor);
 setFontSize(currentFontSize);
 setFontFamily(currentFontFamily);
 buildSfxPanel();
