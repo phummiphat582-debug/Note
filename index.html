@@ -3,328 +3,1058 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote</title>
+<title>PowerShell — CodeNote</title>
 <link rel="manifest" href="/Note/manifest.json">
-<meta name="theme-color" content="#0e639c">
+<meta name="theme-color" content="#012456">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,300..700;1,300..700&family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#1a1a1b;font-family:Consolas,'SF Mono',monospace;overflow:hidden}
-.app{display:flex;height:100vh}
-
-/* sidebar */
-.sidebar{width:220px;background:#202021;color:#ccc;display:flex;flex-direction:column;border-right:1px solid #333;flex-shrink:0}
-.sidebar-top{padding:10px 12px 6px;display:flex;align-items:center;justify-content:space-between}
-.sidebar-top span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#666}
-.file-list{flex:1;overflow-y:auto;overflow-x:hidden}
-.file-list::-webkit-scrollbar{width:4px}
-.file-list::-webkit-scrollbar-thumb{background:#444;border-radius:2px}
-.file-item{display:flex;align-items:center;padding:7px 10px;cursor:pointer;gap:6px;transition:background .12s;border-left:2px solid transparent}
-.file-item:hover{background:#2a2a2b}
-.file-item.active{background:#2e2e30;border-left-color:#0e639c;color:#fff}
-.file-item .name{flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.file-item .del{opacity:0;color:#666;font-size:11px;padding:2px 4px;border-radius:3px;transition:opacity .15s;cursor:pointer;flex-shrink:0}
-.file-item:hover .del{opacity:1}
-.file-item .del:hover{color:#ef4444;background:#2f1515}
-.new-btn{margin:8px;padding:7px 10px;background:#0e639c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;transition:background .15s;text-align:left;display:flex;align-items:center;gap:6px}
-.new-btn:hover{background:#1177b0}
-.new-btn:active{transform:scale(.98)}
-
-/* main */
-.main{flex:1;display:flex;flex-direction:column;min-width:0}
-
-/* topbar */
-.topbar{height:40px;background:#202021;display:flex;align-items:center;justify-content:space-between;padding:0 10px;border-bottom:1px solid #2e2e30;flex-shrink:0;gap:8px}
-.tab-name{font-size:12.5px;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
-.toolbar{display:flex;align-items:center;gap:4px;flex-shrink:0}
-.tb-btn{background:transparent;color:#aaa;border:none;padding:4px 7px;border-radius:4px;cursor:pointer;font-size:12px;transition:background .12s,color .12s;white-space:nowrap}
-.tb-btn:hover{background:#2e2e30;color:#fff}
-.tb-btn:active{transform:scale(.96)}
-.tb-sep{width:1px;height:16px;background:#333;margin:0 2px}
-.tb-select{background:#2e2e30;color:#ccc;border:1px solid #3a3a3c;padding:3px 5px;border-radius:4px;font-size:11.5px;cursor:pointer;font-family:inherit}
-.tb-select:focus{outline:none;border-color:#0e639c}
-.tb-color{width:26px;height:22px;border:1px solid #3a3a3c;border-radius:4px;cursor:pointer;padding:1px;background:#2e2e30}
-
-/* statusbar */
-.statusbar{height:22px;background:#0e639c;display:flex;align-items:center;padding:0 12px;gap:16px;flex-shrink:0}
-.status-item{font-size:11px;color:rgba(255,255,255,.75);white-space:nowrap}
-.status-item.save-ok{color:#7ee787}
-.status-item.saving{color:#fbbf24}
-
-/* editor area */
-.editor-wrap{flex:1;overflow:auto;position:relative}
-.editor-wrap::-webkit-scrollbar{width:8px}
-.editor-wrap::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
-.editor-wrap::-webkit-scrollbar-thumb:hover{background:#444}
-.editor{min-height:100%;padding:28px 36px;color:#d4d4d4;font-size:14px;outline:none;white-space:pre-wrap;line-height:1.8;caret-color:#0e639c;word-break:break-word}
-.editor:empty::before{content:attr(data-placeholder);color:#444;pointer-events:none}
-.editor-wrap.dragover{outline:2px dashed #0e639c;outline-offset:-4px}
-
-/* image */
-.img-box{display:inline-block;position:relative;vertical-align:middle;margin:2px}
-.img-box img{display:block;border-radius:4px}
-.img-box .handle{position:absolute;right:-5px;bottom:-5px;width:11px;height:11px;background:#0e639c;cursor:nwse-resize;border-radius:50%;opacity:.8}
-.img-box .handle:hover{opacity:1}
-.img-box .del-img{position:absolute;top:-6px;right:-6px;width:14px;height:14px;background:#ef4444;color:#fff;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s;line-height:1}
-.img-box:hover .del-img{opacity:1}
-
-/* ── SOUND PICKER PANEL ─────────────────── */
-.sfx-wrap{position:relative;display:inline-flex;align-items:center}
-
-.sfx-btn{
-  display:flex;align-items:center;gap:5px;
-  background:transparent;color:#aaa;border:none;
-  padding:4px 8px;border-radius:4px;cursor:pointer;
-  font-size:12px;font-family:inherit;
-  transition:background .12s,color .12s;
-  white-space:nowrap;
-}
-.sfx-btn:hover{background:#2e2e30;color:#fff}
-.sfx-btn.on{color:#7ee787}
-.sfx-btn.on .sfx-dot{background:#7ee787;box-shadow:0 0 5px #7ee78799}
-
-.sfx-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:#555;flex-shrink:0;
-  transition:background .2s,box-shadow .2s;
+:root{
+  --ps-bg: #012456;
+  --ps-bg-dark: #001737;
+  --ps-bg-deeper: #000f24;
+  --ps-bg-panel: #011b40;
+  --ps-border: #0a3a78;
+  --ps-border-bright: #17549c;
+  --ps-text: #f1f5f9;
+  --ps-text-dim: #94a3b8;
+  --ps-prompt-user: #38bdf8;
+  --ps-prompt-path: #fbbf24;
+  --ps-prompt-arrow: #34d399;
+  --ps-accent: #0078d7;
+  --ps-success: #4ade80;
+  --ps-warning: #facc15;
+  --ps-danger: #f87171;
+  --ps-magenta: #e879f9;
+  --ps-cyan: #22d3ee;
+  --ps-font: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, 'SF Mono', 'Noto Sans Thai', monospace;
 }
 
-/* dropdown panel */
-.sfx-panel{
-  display:none;position:absolute;top:calc(100% + 6px);right:0;
-  width:300px;
-  background:#1c1c1e;border:1px solid #3a3a3c;border-radius:10px;
-  box-shadow:0 8px 32px #0008;
-  z-index:9000;overflow:hidden;
-  animation:sfxPop .14s ease;
-}
-.sfx-panel.open{display:block}
-@keyframes sfxPop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-
-.sfx-panel-head{
-  padding:10px 14px 8px;
-  font-size:10px;letter-spacing:.12em;text-transform:uppercase;
-  color:#555;border-bottom:1px solid #2a2a2c;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.sfx-panel-head span{color:#888}
-
-/* profile list */
-.sfx-profiles{padding:6px 0}
-
-.sfx-profile{
-  display:flex;align-items:center;gap:10px;
-  padding:8px 14px;cursor:pointer;
-  transition:background .1s;
-  border-left:2px solid transparent;
-}
-.sfx-profile:hover{background:#252528}
-.sfx-profile.active{
-  background:#1e2a1e;
-  border-left-color:var(--pfx-color, #7ee787);
+html,body{
+  height:100%;
+  background: var(--ps-bg-deeper);
+  color: var(--ps-text);
+  font-family: var(--ps-font);
+  overflow: hidden;
+  user-select: none;
 }
 
-.sfx-profile-icon{
-  width:28px;height:28px;border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;flex-shrink:0;
-}
-.sfx-profile-info{flex:1;min-width:0}
-.sfx-profile-name{font-size:12px;color:#ddd;font-weight:600;font-family:inherit}
-.sfx-profile-desc{font-size:10px;color:#555;margin-top:1px;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sfx-profile-badge{
-  font-size:9px;padding:1px 6px;border-radius:100px;
-  font-family:inherit;letter-spacing:.05em;flex-shrink:0;
-  border:1px solid currentColor;opacity:.7;
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATED RAINBOW / FLOWING RGB TEXT STYLES
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes rainbowFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* volume row */
-.sfx-footer{
-  border-top:1px solid #2a2a2c;padding:8px 14px 10px;
-  display:flex;align-items:center;gap:8px;
-}
-.sfx-footer label{font-size:10px;color:#555;white-space:nowrap}
-.sfx-footer input[type=range]{
-  flex:1;height:3px;
-  -webkit-appearance:none;background:#333;border-radius:2px;outline:none;cursor:pointer;
-}
-.sfx-footer input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:13px;height:13px;
-  border-radius:50%;background:#0e639c;cursor:pointer;
-}
-.sfx-vol-val{font-size:10px;color:#888;min-width:28px;text-align:right;font-family:inherit}
-
-/* toggle row */
-.sfx-toggle-row{
-  padding:6px 14px 8px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid #2a2a2c;
-}
-.sfx-toggle-label{font-size:11px;color:#aaa}
-.sfx-switch{
-  position:relative;width:34px;height:18px;cursor:pointer;
-}
-.sfx-switch input{opacity:0;width:0;height:0;position:absolute}
-.sfx-slider-track{
-  position:absolute;inset:0;background:#333;border-radius:9px;
-  transition:background .2s;
-}
-.sfx-switch input:checked + .sfx-slider-track{background:#0e639c}
-.sfx-slider-thumb{
-  position:absolute;top:2px;left:2px;
-  width:14px;height:14px;border-radius:50%;
-  background:#888;transition:transform .2s,background .2s;
-}
-.sfx-switch input:checked ~ .sfx-slider-thumb{
-  transform:translateX(16px);background:#fff;
+@keyframes rainbowFlowLinear {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
 }
 
-/* modal */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(2px)}
-.overlay.show{display:flex}
-.modal{background:#252526;border:1px solid #3a3a3c;border-radius:10px;width:360px;animation:popIn .15s ease}
-@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
-.modal-head{padding:14px 16px 10px;font-size:13px;font-weight:600;color:#e5e5e5;border-bottom:1px solid #333}
-.modal-body{padding:14px 16px}
-.modal-body input{width:100%;padding:9px 11px;background:#1e1e1f;color:#e5e5e5;border:1px solid #3a3a3c;border-radius:6px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
-.modal-body input:focus{border-color:#0e639c}
-.modal-foot{padding:10px 16px 14px;display:flex;justify-content:flex-end;gap:8px}
-.mbtn{padding:6px 14px;border:none;cursor:pointer;border-radius:6px;font-size:12px;transition:opacity .12s,transform .1s;font-family:inherit}
-.mbtn:hover{opacity:.85}
-.mbtn:active{transform:scale(.97)}
-.mbtn-ok{background:#0e639c;color:#fff}
-.mbtn-del{background:#dc2626;color:#fff}
-.mbtn-cancel{background:#3a3a3c;color:#ccc}
+@keyframes neonGlowPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6)) drop-shadow(0 0 10px rgba(168, 85, 247, 0.4)); }
+  50% { filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.8)) drop-shadow(0 0 16px rgba(59, 130, 246, 0.6)); }
+}
 
-@media print{
-  .sidebar,.topbar,.statusbar{display:none!important}
-  .app,.main{display:block!important}
-  .editor{color:#000!important;font-size:12pt!important;padding:30px!important;white-space:pre-wrap!important}
+@keyframes cursorBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes terminalFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Flowing RGB Classes */
+.rainbow-mode-spectrum .editor,
+.rainbow-mode-spectrum .editor *,
+.rainbow-mode-spectrum .ps-flow-target {
+  background: linear-gradient(90deg, #ff0055, #ff5500, #ffcc00, #33ff00, #00ffff, #0066ff, #9900ff, #ff007f, #ff0055) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: rainbowFlowLinear 4s linear infinite !important;
+  text-shadow: none !important;
+}
+
+.rainbow-mode-neon .editor,
+.rainbow-mode-neon .editor *,
+.rainbow-mode-neon .ps-flow-target {
+  background: linear-gradient(90deg, #00f0ff, #7000ff, #ff007b, #ffb800, #00f0ff) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: rainbowFlowLinear 3.5s linear infinite !important;
+}
+
+.rainbow-mode-matrix .editor,
+.rainbow-mode-matrix .editor *,
+.rainbow-mode-matrix .ps-flow-target {
+  background: linear-gradient(90deg, #00ff66, #adff2f, #00e676, #69f0ae, #00ff66) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: rainbowFlowLinear 3s linear infinite !important;
+}
+
+.rainbow-mode-sunset .editor,
+.rainbow-mode-sunset .editor *,
+.rainbow-mode-sunset .ps-flow-target {
+  background: linear-gradient(90deg, #ff416c, #ff4b2b, #ffb88c, #de6262, #ff416c) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: rainbowFlowLinear 4s linear infinite !important;
+}
+
+.rainbow-mode-cyberpunk .editor,
+.rainbow-mode-cyberpunk .editor *,
+.rainbow-mode-cyberpunk .ps-flow-target {
+  background: linear-gradient(90deg, #ffe600, #ff0055, #00ffff, #ffe600) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: rainbowFlowLinear 3s linear infinite !important;
+}
+
+.rainbow-mode-classic .editor {
+  color: #f1f5f9 !important;
+}
+
+/* Specific flowing badge */
+.badge-rgb-glow {
+  background: linear-gradient(90deg, #ff0055, #ff7700, #ffea00, #00ff88, #00d4ff, #7928ca, #ff0055);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbowFlowLinear 3s linear infinite;
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APP WINDOW & TERMINAL SHELL
+   ═══════════════════════════════════════════════════════════════ */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at 50% 0%, #02387d 0%, #012456 50%, #00122e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Windows Terminal Title Bar */
+.window-titlebar {
+  height: 38px;
+  background: #001533;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #0a3366;
+  flex-shrink: 0;
+  padding: 0 4px 0 10px;
+  z-index: 50;
+}
+
+.terminal-tabs {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.terminal-tabs::-webkit-scrollbar { display: none; }
+
+.terminal-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 12px;
+  background: #011e47;
+  border: 1px solid #0b3d7a;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  font-size: 11.5px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s;
+  max-width: 180px;
+  white-space: nowrap;
+}
+.terminal-tab:hover {
+  background: #012b63;
+  color: #e2e8f0;
+}
+.terminal-tab.active {
+  background: var(--ps-bg);
+  color: #ffffff;
+  border-color: #17549c;
+  border-bottom: 1px solid var(--ps-bg);
+  font-weight: 600;
+  box-shadow: 0 -2px 8px rgba(0, 120, 215, 0.25);
+}
+.terminal-tab .tab-icon {
+  font-size: 13px;
+  color: var(--ps-cyan);
+}
+.terminal-tab .tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.terminal-tab .tab-close {
+  font-size: 10px;
+  opacity: 0;
+  color: #94a3b8;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 0.15s;
+}
+.terminal-tab:hover .tab-close { opacity: 1; }
+.terminal-tab .tab-close:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.tab-add-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.15s;
+}
+.tab-add-btn:hover {
+  background: #012659;
+  color: #38bdf8;
+}
+
+.window-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.win-btn {
+  width: 44px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.win-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.win-btn.close:hover { background: #e81123; color: #fff; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TERMINAL TOOLBAR (POWERSHELL RIBBON)
+   ═══════════════════════════════════════════════════════════════ */
+.ps-toolbar {
+  background: #011b40;
+  border-bottom: 1px solid #093874;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.ps-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ps-btn {
+  background: #012b63;
+  color: #cbd5e1;
+  border: 1px solid #0f488e;
+  border-radius: 4px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+.ps-btn:hover {
+  background: #023d8a;
+  color: #fff;
+  border-color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
+}
+.ps-btn.active {
+  background: #0078d7;
+  color: #fff;
+  border-color: #38bdf8;
+}
+
+.ps-select {
+  background: #012b63;
+  color: #cbd5e1;
+  border: 1px solid #0f488e;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+}
+.ps-select:focus {
+  border-color: #38bdf8;
+}
+
+.ps-sep {
+  width: 1px;
+  height: 18px;
+  background: #0b3d7a;
+  margin: 0 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN WORKSPACE: SIDEBAR + TERMINAL & EDITOR
+   ═══════════════════════════════════════════════════════════════ */
+.workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* PowerShell File Explorer Sidebar */
+.ps-sidebar {
+  width: 240px;
+  background: #001a3d;
+  border-right: 1px solid #093874;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: width 0.2s ease;
+}
+.ps-sidebar.collapsed {
+  width: 0;
+  overflow: hidden;
+  border-right: none;
+}
+
+.sidebar-header {
+  padding: 10px 12px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #072a57;
+}
+.sidebar-header span {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.sidebar-files {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+.sidebar-files::-webkit-scrollbar { width: 4px; }
+.sidebar-files::-webkit-scrollbar-thumb { background: #0c3e7a; border-radius: 2px; }
+
+.ps-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.12s;
+  margin-bottom: 2px;
+  border-left: 2px solid transparent;
+}
+.ps-file-row:hover {
+  background: #012859;
+  color: #e2e8f0;
+}
+.ps-file-row.active {
+  background: #013577;
+  color: #ffffff;
+  border-left-color: var(--ps-prompt-arrow);
+  font-weight: 600;
+}
+.ps-file-row .file-info {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
+.ps-file-row .file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ps-file-row .file-del {
+  opacity: 0;
+  color: #64748b;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 0.15s;
+}
+.ps-file-row:hover .file-del { opacity: 1; }
+.ps-file-row .file-del:hover {
+  color: #fff;
+  background: #dc2626;
+}
+
+.sidebar-footer {
+  padding: 8px;
+  border-top: 1px solid #072a57;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TERMINAL & NOTE EDITOR VIEWPORT
+   ═══════════════════════════════════════════════════════════════ */
+.ps-viewport {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--ps-bg);
+  position: relative;
+}
+
+/* Terminal Header Banner (PowerShell copyright style) */
+.ps-banner {
+  padding: 14px 20px 8px;
+  color: #94a3b8;
+  font-size: 12.5px;
+  line-height: 1.5;
+  border-bottom: 1px dashed rgba(255,255,255,0.06);
+  user-select: text;
+}
+.ps-banner strong { color: #f8fafc; }
+.ps-banner .ps-version { color: var(--ps-cyan); font-weight: 600; }
+.ps-banner a { color: var(--ps-prompt-user); text-decoration: none; }
+.ps-banner a:hover { text-decoration: underline; }
+
+/* Interactive PowerShell Prompt Bar */
+.ps-prompt-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px 4px;
+  font-size: 13px;
+  flex-wrap: wrap;
+  user-select: none;
+}
+.ps-badge-user {
+  background: #0284c7;
+  color: #fff;
+  padding: 1px 8px;
+  border-radius: 3px 0 0 3px;
+  font-weight: 700;
+  font-size: 11px;
+}
+.ps-badge-path {
+  background: #d97706;
+  color: #fff;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ps-badge-git {
+  background: #059669;
+  color: #fff;
+  padding: 1px 8px;
+  border-radius: 0 3px 3px 0;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ps-prompt-symbol {
+  color: var(--ps-prompt-arrow);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Editor Main Body */
+.editor-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+}
+.editor-container::-webkit-scrollbar { width: 8px; }
+.editor-container::-webkit-scrollbar-thumb { background: #0c3e7a; border-radius: 4px; }
+.editor-container::-webkit-scrollbar-thumb:hover { background: #1656a4; }
+
+/* Line Numbers */
+.line-numbers {
+  padding: 18px 10px;
+  width: 50px;
+  color: #475569;
+  font-size: 13.5px;
+  line-height: 1.8;
+  text-align: right;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  user-select: none;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+/* Editable Area */
+.editor {
+  flex: 1;
+  min-height: 100%;
+  padding: 18px 24px;
+  color: var(--ps-text);
+  font-size: 14px;
+  line-height: 1.8;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+  font-family: inherit;
+  caret-color: #38bdf8;
+  position: relative;
+}
+.editor:empty::before {
+  content: attr(data-placeholder);
+  color: #475569;
+  pointer-events: none;
+}
+
+/* Interactive Image Box */
+.img-box {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  margin: 4px;
+  border: 1px solid #0f488e;
+  border-radius: 6px;
+  padding: 2px;
+  background: #011b40;
+}
+.img-box img {
+  display: block;
+  border-radius: 4px;
+  max-width: 100%;
+}
+.img-box .handle {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 12px;
+  height: 12px;
+  background: #38bdf8;
+  cursor: nwse-resize;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #38bdf8;
+}
+.img-box .del-img {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.img-box:hover .del-img { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TERMINAL COMMAND CONSOLE (BOTTOM DRAWER)
+   ═══════════════════════════════════════════════════════════════ */
+.ps-cmd-console {
+  background: #00122e;
+  border-top: 1px solid #0a3a78;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.cmd-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cmd-prompt-label {
+  color: var(--ps-prompt-arrow);
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.cmd-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #f8fafc;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+.cmd-input::placeholder {
+  color: #475569;
+}
+.cmd-log {
+  max-height: 140px;
+  overflow-y: auto;
+  font-size: 12px;
+  color: #94a3b8;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 0;
+  border-top: 1px dashed rgba(255,255,255,0.06);
+}
+.cmd-log.open { display: flex; }
+.cmd-log-row {
+  line-height: 1.4;
+  white-space: pre-wrap;
+  font-family: inherit;
+}
+.cmd-log-row.success { color: var(--ps-success); }
+.cmd-log-row.error { color: var(--ps-danger); }
+.cmd-log-row.warning { color: var(--ps-warning); }
+.cmd-log-row.info { color: var(--ps-cyan); }
+
+/* ═══════════════════════════════════════════════════════════════
+   STATUS BAR (POWERSHELL BOTTOM BAR)
+   ═══════════════════════════════════════════════════════════════ */
+.ps-statusbar {
+  height: 24px;
+  background: #00183b;
+  border-top: 1px solid #072a57;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 16px;
+  font-size: 11px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+.status-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.status-item.save-ok { color: var(--ps-success); }
+.status-item.saving { color: var(--ps-warning); }
+.status-item.rgb-active {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SOUND PROFILE DROPDOWN PANEL
+   ═══════════════════════════════════════════════════════════════ */
+.sfx-panel {
+  display: none;
+  position: absolute;
+  top: 76px;
+  right: 14px;
+  width: 320px;
+  background: #01183b;
+  border: 1px solid #0f488e;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  z-index: 9999;
+  overflow: hidden;
+  animation: terminalFadeIn 0.15s ease;
+}
+.sfx-panel.open { display: block; }
+.sfx-panel-head {
+  padding: 10px 14px 8px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #64748b;
+  border-bottom: 1px solid #072a57;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sfx-profiles { padding: 6px 0; max-height: 280px; overflow-y: auto; }
+.sfx-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-left: 2px solid transparent;
+}
+.sfx-profile:hover { background: #012859; }
+.sfx-profile.active {
+  background: #013577;
+  border-left-color: var(--pfx-color, #38bdf8);
+}
+.sfx-profile-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.sfx-profile-info { flex: 1; min-width: 0; }
+.sfx-profile-name { font-size: 12px; color: #f1f5f9; font-weight: 600; }
+.sfx-profile-desc { font-size: 10.5px; color: #64748b; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sfx-profile-badge {
+  font-size: 9.5px;
+  padding: 1px 6px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  border: 1px solid currentColor;
+}
+.sfx-footer {
+  border-top: 1px solid #072a57;
+  padding: 8px 14px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sfx-footer label { font-size: 10px; color: #64748b; }
+.sfx-footer input[type=range] {
+  flex: 1;
+  height: 3px;
+  background: #0c3e7a;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+/* Modals */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 15, 36, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(3px);
+}
+.overlay.show { display: flex; }
+.modal {
+  background: #011b40;
+  border: 1px solid #0f488e;
+  border-radius: 8px;
+  width: 380px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.7);
+  animation: terminalFadeIn 0.15s ease;
+}
+.modal-head {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f1f5f9;
+  border-bottom: 1px solid #072a57;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-body { padding: 14px 16px; }
+.modal-body input {
+  width: 100%;
+  padding: 8px 12px;
+  background: #00122e;
+  color: #fff;
+  border: 1px solid #0f488e;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+.modal-body input:focus { border-color: #38bdf8; }
+.modal-foot {
+  padding: 10px 16px 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Keystroke Rainbow Sparks Canvas */
+#sparkCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99999;
+}
+
+@media print {
+  .window-titlebar, .ps-toolbar, .ps-sidebar, .ps-cmd-console, .ps-statusbar, .line-numbers, .ps-banner, .ps-prompt-line {
+    display: none !important;
+  }
+  .app-container, .ps-viewport { background: #fff !important; color: #000 !important; }
+  .editor { color: #000 !important; font-size: 12pt !important; padding: 20px !important; }
 }
 </style>
 </head>
-<body>
-<div class="app">
-  <div class="sidebar">
-    <div class="sidebar-top"><span>Files</span></div>
-    <div class="file-list" id="fileList"></div>
-    <button class="new-btn" onclick="openCreate()">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      New File
-    </button>
+
+<body class="rainbow-mode-spectrum">
+<canvas id="sparkCanvas"></canvas>
+
+<div class="app-container">
+  <!-- Windows Terminal Title Bar -->
+  <div class="window-titlebar">
+    <div class="terminal-tabs" id="terminalTabs"></div>
+    <button class="tab-add-btn" onclick="openCreate()" title="New Tab / New File (Ctrl+N)">+</button>
+    <div class="window-controls">
+      <button class="win-btn" title="Minimize" onclick="toggleSidebar()">🗕</button>
+      <button class="win-btn" title="Maximize" onclick="toggleFullScreen()">🗖</button>
+      <button class="win-btn close" title="Close" onclick="closeCurrentTab()">✕</button>
+    </div>
   </div>
 
-  <div class="main">
-    <div class="topbar">
-      <div class="tab-name" id="tabName">note</div>
-      <div class="toolbar">
-        <select class="tb-select" onchange="setFontSize(this.value)" title="Font size">
-          <option value="">Size</option>
-          <option value="11px">11</option><option value="12px">12</option>
-          <option value="14px">14</option><option value="16px">16</option>
-          <option value="18px">18</option><option value="22px">22</option>
-          <option value="28px">28</option><option value="36px">36</option>
-        </select>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" onclick="cmd('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
-        <button class="tb-btn" onclick="cmd('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
-        <button class="tb-btn" onclick="cmd('underline')" title="Underline (Ctrl+U)"><u>U</u></button>
-        <button class="tb-btn" onclick="cmd('strikeThrough')" title="Strikethrough"><s>S</s></button>
-        <button class="tb-btn" onclick="doHighlight()" title="Highlight">HL</button>
-        <input class="tb-color" type="color" onchange="setColor(this.value)" title="Text color" value="#ff6b6b">
-        <div class="tb-sep"></div>
-        <button class="tb-btn" onclick="cmd('insertUnorderedList')" title="Bullet list">• List</button>
-        <button class="tb-btn" onclick="addImage()" title="Insert image">IMG</button>
-        <button class="tb-btn" onclick="printPage()" title="Print / Save PDF">PDF</button>
-        <div class="tb-sep"></div>
+  <!-- PowerShell Toolbar -->
+  <div class="ps-toolbar">
+    <div class="ps-tool-group">
+      <button class="ps-btn" onclick="toggleSidebar()" title="Toggle File Tree">
+        📁 <span id="sidebarToggleLabel">Tree</span>
+      </button>
+      <button class="ps-btn" onclick="openCreate()" title="New File (Ctrl+N)">
+        ⚡ New Note
+      </button>
+      <div class="ps-sep"></div>
 
-        <!-- ── SOUND BUTTON ── -->
-        <div class="sfx-wrap" id="sfxWrap">
-          <button class="sfx-btn" id="sfxBtn" onclick="toggleSfxPanel(event)" title="Keyboard Sound Settings">
-            <span class="sfx-dot" id="sfxDot"></span>
-            <span id="sfxLabel">SFX</span>
-          </button>
-          <div class="sfx-panel" id="sfxPanel">
-            <!-- toggle -->
-            <div class="sfx-toggle-row">
-              <span class="sfx-toggle-label">Keyboard Sound</span>
-              <label class="sfx-switch">
-                <input type="checkbox" id="sfxToggle" onchange="onSfxToggle(this.checked)">
-                <span class="sfx-slider-track"></span>
-                <span class="sfx-slider-thumb"></span>
-              </label>
-            </div>
-            <!-- head -->
-            <div class="sfx-panel-head">
-              Sound Profile
-              <span id="sfxActiveName">—</span>
-            </div>
-            <!-- profile list -->
-            <div class="sfx-profiles" id="sfxProfiles"></div>
-            <!-- volume -->
-            <div class="sfx-footer">
-              <label>VOL</label>
-              <input type="range" id="sfxVol" min="0" max="100" value="80" oninput="onVolChange(this.value)">
-              <span class="sfx-vol-val" id="sfxVolVal">80%</span>
-            </div>
-          </div>
+      <!-- Rainbow Mode Selector -->
+      <span style="font-size:11px;color:#94a3b8;">🌈 RGB Mode:</span>
+      <select class="ps-select" id="rainbowModeSelect" onchange="setRainbowMode(this.value)">
+        <option value="spectrum" selected>Spectrum Wave (RGB หลายสีวิ่ง)</option>
+        <option value="neon">Cyber Neon Pulse</option>
+        <option value="sunset">Sunset Glow</option>
+        <option value="matrix">Matrix Green Stream</option>
+        <option value="cyberpunk">Cyberpunk Yellow-Pink</option>
+        <option value="classic">Classic PowerShell</option>
+      </select>
+
+      <div class="ps-sep"></div>
+      <button class="ps-btn" onclick="cmd('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
+      <button class="ps-btn" onclick="cmd('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
+      <button class="ps-btn" onclick="cmd('underline')" title="Underline (Ctrl+U)"><u>U</u></button>
+      <button class="ps-btn" onclick="cmd('strikeThrough')" title="Strikethrough"><s>S</s></button>
+      <button class="ps-btn" onclick="cmd('insertUnorderedList')" title="Bullet List">• List</button>
+      <button class="ps-btn" onclick="addImage()" title="Insert Image">🖼️ IMG</button>
+    </div>
+
+    <div class="ps-tool-group">
+      <button class="ps-btn" onclick="printPage()" title="Print / Export PDF">🖨️ PDF</button>
+
+      <!-- Sound FX Button -->
+      <button class="ps-btn" id="sfxBtn" onclick="toggleSfxPanel(event)" title="Mechanical Keyboard SFX">
+        <span id="sfxDot" style="width:7px;height:7px;border-radius:50%;background:#38bdf8;box-shadow:0 0 6px #38bdf8;"></span>
+        <span id="sfxLabel">SFX</span>
+      </button>
+
+      <div class="sfx-panel" id="sfxPanel">
+        <div class="sfx-panel-head">
+          <span>Keyboard Sound</span>
+          <label style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+            <input type="checkbox" id="sfxToggle" checked onchange="onSfxToggle(this.checked)"> ON
+          </label>
         </div>
-        <!-- ── END SOUND ── -->
+        <div class="sfx-profiles" id="sfxProfiles"></div>
+        <div class="sfx-footer">
+          <label>VOL</label>
+          <input type="range" id="sfxVol" min="0" max="100" value="85" oninput="onVolChange(this.value)">
+          <span id="sfxVolVal" style="font-size:10px;color:#94a3b8;min-width:28px;">85%</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Workspace: Sidebar + Editor -->
+  <div class="workspace">
+    <!-- File Sidebar -->
+    <div class="ps-sidebar" id="psSidebar">
+      <div class="sidebar-header">
+        <span>PS FILESYSTEM</span>
+        <span style="font-size:10px;color:var(--ps-cyan);" id="fileCountBadge">0 files</span>
+      </div>
+      <div class="sidebar-files" id="fileList"></div>
+      <div class="sidebar-footer">
+        <button class="ps-btn" style="width:100%;justify-content:center;" onclick="openCreate()">
+          + Add New Note
+        </button>
       </div>
     </div>
 
-    <div class="editor-wrap" id="editorWrap">
-      <div id="editor" class="editor" contenteditable="true"
-           data-placeholder="เริ่มพิมพ์ได้เลย... (Ctrl+B Bold · Ctrl+I Italic · Ctrl+S Save · Ctrl+N ไฟล์ใหม่)">
+    <!-- PowerShell Terminal & Note Viewport -->
+    <div class="ps-viewport">
+      <!-- PowerShell Welcome Banner -->
+      <div class="ps-banner">
+        <div><strong>Windows PowerShell</strong> · CodeNote Studio <span class="ps-version">v7.4.0</span></div>
+        <div style="font-size:11.5px;color:#64748b;margin-top:2px;">
+          Type note content with <span class="badge-rgb-glow">Flowing Multi-Color RGB Text</span> or use terminal commands below.
+        </div>
+      </div>
+
+      <!-- PowerShell Interactive Prompt Line -->
+      <div class="ps-prompt-line">
+        <span class="ps-badge-user">PS</span>
+        <span class="ps-badge-path">C:\Users\CodeNote</span>
+        <span class="ps-badge-git" id="currentFileBadge">📄 note.ps1</span>
+        <span class="ps-prompt-symbol">&gt;</span>
+      </div>
+
+      <!-- Editor Body with Line Numbers -->
+      <div class="editor-container" id="editorContainer">
+        <div class="line-numbers" id="lineNumbers">1</div>
+        <div id="editor" class="editor" contenteditable="true" spellcheck="false"
+             data-placeholder="เริ่มพิมพ์ข้อความหรือโค้ดที่นี่... (ตัวหนังสือ RGB วิ่งอัตโนมัติ · Ctrl+S บันทึก · Ctrl+N ไฟล์ใหม่)">
+        </div>
+      </div>
+
+      <!-- PowerShell Interactive Command Console -->
+      <div class="ps-cmd-console">
+        <div class="cmd-log" id="cmdLog"></div>
+        <div class="cmd-input-wrap">
+          <span class="cmd-prompt-label">PS &gt;</span>
+          <input type="text" class="cmd-input" id="cmdInput" placeholder="พิมพ์คำสั่ง: dir, cat, new &lt;name&gt;, edit &lt;name&gt;, rgb, cls, help..." autocomplete="off">
+          <button class="ps-btn" onclick="runCommandFromInput()" style="padding:2px 8px;font-size:11px;">Run ↵</button>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="statusbar">
-      <span class="status-item save-ok" id="saveStatus">Saved</span>
-      <span class="status-item" id="wordCount">0 words</span>
-      <span class="status-item" id="cursorPos">Ln 1</span>
-      <span class="status-item" id="charCount">0 chars</span>
-      <span class="status-item" id="sfxStatus" style="margin-left:auto"></span>
-    </div>
+  <!-- PowerShell Status Bar -->
+  <div class="ps-statusbar">
+    <span class="status-item save-ok" id="saveStatus">● Saved</span>
+    <span class="status-item" id="wordCount">0 words</span>
+    <span class="status-item" id="charCount">0 chars</span>
+    <span class="status-item" id="cursorPos">Ln 1, Col 1</span>
+    <span class="status-item rgb-active" id="rgbStatus">🌈 RGB: Spectrum Wave</span>
+    <span class="status-item" style="margin-left:auto;color:#38bdf8;" id="sfxStatus">♪ Galaxy 100 V2</span>
   </div>
 </div>
 
 <input type="file" id="imageInput" accept="image/*" hidden multiple>
 
-<!-- Create modal -->
+<!-- Create Modal -->
 <div class="overlay" id="createModal">
   <div class="modal">
-    <div class="modal-head">สร้างไฟล์ใหม่</div>
-    <div class="modal-body"><input id="nameInput" placeholder="ชื่อไฟล์" autocomplete="off"></div>
+    <div class="modal-head"><span>⚡</span> สร้างไฟล์ Note ใหม่</div>
+    <div class="modal-body">
+      <input id="nameInput" placeholder="เช่น project-notes.ps1 หรือ my-todo" autocomplete="off">
+    </div>
     <div class="modal-foot">
-      <button class="mbtn mbtn-cancel" onclick="closeModals()">ยกเลิก</button>
-      <button class="mbtn mbtn-ok" onclick="confirmCreate()">ตกลง</button>
+      <button class="ps-btn" onclick="closeModals()">ยกเลิก</button>
+      <button class="ps-btn active" onclick="confirmCreate()">ตกลง</button>
     </div>
   </div>
 </div>
 
-<!-- Delete modal -->
+<!-- Delete Modal -->
 <div class="overlay" id="deleteModal">
   <div class="modal">
-    <div class="modal-head">ยืนยันการลบ</div>
-    <div class="modal-body" id="deleteText" style="color:#ccc;font-size:13px;line-height:1.6"></div>
+    <div class="modal-head" style="color:var(--ps-danger)"><span>⚠️</span> ยืนยันการลบไฟล์</div>
+    <div class="modal-body" id="deleteText" style="color:#cbd5e1;font-size:13px;line-height:1.6"></div>
     <div class="modal-foot">
-      <button class="mbtn mbtn-cancel" onclick="closeModals()">ยกเลิก</button>
-      <button class="mbtn mbtn-del" onclick="confirmDelete()">ลบ</button>
+      <button class="ps-btn" onclick="closeModals()">ยกเลิก</button>
+      <button class="ps-btn" style="background:#dc2626;border-color:#ef4444;color:#fff;" onclick="confirmDelete()">ลบไฟล์</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   MULTI-PROFILE AUDIO ENGINE
+   RAINBOW PARTICLES & SPARKS ENGINE
+   ═══════════════════════════════════════════════════════════════ */
+const sparkCanvas = document.getElementById('sparkCanvas');
+const sctx = sparkCanvas.getContext('2d');
+let sparks = [];
+
+function resizeCanvas() {
+  sparkCanvas.width = window.innerWidth;
+  sparkCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function addSpark(x, y) {
+  const colors = ['#ff0055', '#ff7700', '#ffea00', '#00ff88', '#00d4ff', '#7928ca', '#f43f5e'];
+  for (let i = 0; i < 6; i++) {
+    sparks.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 4,
+      vy: (Math.random() - 0.5) * 4 - 1,
+      size: Math.random() * 3.5 + 1.5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1,
+      decay: Math.random() * 0.04 + 0.02
+    });
+  }
+}
+
+function renderSparks() {
+  sctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+  for (let i = sparks.length - 1; i >= 0; i--) {
+    const p = sparks[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.alpha -= p.decay;
+    if (p.alpha <= 0) {
+      sparks.splice(i, 1);
+      continue;
+    }
+    sctx.save();
+    sctx.globalAlpha = p.alpha;
+    sctx.fillStyle = p.color;
+    sctx.shadowColor = p.color;
+    sctx.shadowBlur = 8;
+    sctx.beginPath();
+    sctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    sctx.fill();
+    sctx.restore();
+  }
+  requestAnimationFrame(renderSparks);
+}
+renderSparks();
+
+/* ═══════════════════════════════════════════════════════════════
+   MULTI-PROFILE KEYBOARD AUDIO ENGINE
    ═══════════════════════════════════════════════════════════════ */
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let actx = null;
-let masterGain = null;
-let masterVol = 0.80;
+let actx = null, masterGain = null, masterVol = 0.85;
 
 function getACtx() {
   if (!actx) {
@@ -337,175 +1067,83 @@ function getACtx() {
   return actx;
 }
 
-/* ── SOUND PROFILES ──────────────────────────────────────────── */
 const SFX_PROFILES = [
   {
-    id: 'galaxy',
-    name: 'Dekey Galaxy 100 V2',
-    desc: 'Gasket · Linear · Foam — deep thock',
-    icon: '🌌', badge: 'THOCK', badgeColor: '#7ee787',
+    id: 'galaxy', name: 'Dekey Galaxy 100 V2', desc: 'Gasket · Linear · Deep Thock',
+    icon: '🌌', badge: 'THOCK', badgeColor: '#4ade80',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
-      // Sub-thud
-      sine(ctx, dest, t, isSpecial?58:(72+rnd(18)), 0.55*pitch, 0.003, 0.058, 0.52*vel, 0.55);
-      // Noise body
-      noise(ctx, dest, t, 0.035, isSpecial?140:170, isSpecial?320:(380+rnd(80)), 0.9, 0.002, 0.036, 0.38*vel);
-      // Triangle mid
-      tri(ctx, dest, t, isSpecial?210:(260+rnd(60)), 0.75*pitch, 0.004, 0.048, 0.18*vel, pitch);
-      // Case ping
-      sine(ctx, dest, t, 2500, 1200, 0.001, 0.020, 0.045*vel, 1, true);
-      if (isSpecial) stabRattle(ctx, dest, t, 280, 0.12*vel);
+      sine(ctx, dest, t, isSpecial ? 58 : (72 + rnd(18)), 0.55 * pitch, 0.003, 0.058, 0.52 * vel, 0.55);
+      noise(ctx, dest, t, 0.035, isSpecial ? 140 : 170, isSpecial ? 320 : (380 + rnd(80)), 0.9, 0.002, 0.036, 0.38 * vel);
+      tri(ctx, dest, t, isSpecial ? 210 : (260 + rnd(60)), 0.75 * pitch, 0.004, 0.048, 0.18 * vel, pitch);
+      sine(ctx, dest, t, 2500, 1200, 0.001, 0.020, 0.045 * vel, 1, true);
+      if (isSpecial) stabRattle(ctx, dest, t, 280, 0.12 * vel);
     }
   },
   {
-    id: 'holy_panda',
-    name: 'Holy Pandas',
-    desc: 'Tactile bump · Round thock · POM plate',
+    id: 'holy_panda', name: 'Holy Pandas', desc: 'Tactile bump · Round thock',
     icon: '🐼', badge: 'TACTILE', badgeColor: '#60a5fa',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
-      // Tactile mid-freq body
-      sine(ctx, dest, t, isSpecial?80:(95+rnd(15)), 0.6*pitch, 0.002, 0.07, 0.48*vel, 0.5);
-      // Pre-travel snap (the tactile click layer)
-      sine(ctx, dest, t, 1800, 900, 0.0005, 0.012, 0.12*vel, 1, true);
-      // Bottom-out thud
-      noise(ctx, dest, t, 0.030, 200, 450, 1.2, 0.002, 0.030, 0.42*vel);
-      // Mid warmth
-      tri(ctx, dest, t, isSpecial?180:(220+rnd(40)), 0.8*pitch, 0.005, 0.055, 0.22*vel, pitch);
-      if (isSpecial) stabRattle(ctx, dest, t, 260, 0.10*vel);
+      sine(ctx, dest, t, isSpecial ? 80 : (95 + rnd(15)), 0.6 * pitch, 0.002, 0.07, 0.48 * vel, 0.5);
+      sine(ctx, dest, t, 1800, 900, 0.0005, 0.012, 0.12 * vel, 1, true);
+      noise(ctx, dest, t, 0.030, 200, 450, 1.2, 0.002, 0.030, 0.42 * vel);
+      tri(ctx, dest, t, isSpecial ? 180 : (220 + rnd(40)), 0.8 * pitch, 0.005, 0.055, 0.22 * vel, pitch);
+      if (isSpecial) stabRattle(ctx, dest, t, 260, 0.10 * vel);
     }
   },
   {
-    id: 'topre',
-    name: 'HHKB Topre 45g',
-    desc: 'Electrostatic capacitive · Soft dome thock',
+    id: 'topre', name: 'HHKB Topre 45g', desc: 'Electrostatic · Soft Dome Thock',
     icon: '⌨️', badge: 'TOPRE', badgeColor: '#c084fc',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
-      // Dome collapse — soft low thud
-      sine(ctx, dest, t, isSpecial?65:(78+rnd(10)), 0.5*pitch, 0.001, 0.10, 0.44*vel, 0.45);
-      // Dome snap — subtle mid crack
-      noise(ctx, dest, t, 0.018, 300, 600, 2.0, 0.001, 0.018, 0.22*vel);
-      // PCB resonance
-      sine(ctx, dest, t, 3200, 1400, 0.0005, 0.015, 0.06*vel, 1, true);
-      // Case thud
-      tri(ctx, dest, t, isSpecial?170:(200+rnd(30)), 0.7*pitch, 0.004, 0.065, 0.20*vel, pitch);
+      sine(ctx, dest, t, isSpecial ? 65 : (78 + rnd(10)), 0.5 * pitch, 0.001, 0.10, 0.44 * vel, 0.45);
+      noise(ctx, dest, t, 0.018, 300, 600, 2.0, 0.001, 0.018, 0.22 * vel);
+      sine(ctx, dest, t, 3200, 1400, 0.0005, 0.015, 0.06 * vel, 1, true);
+      tri(ctx, dest, t, isSpecial ? 170 : (200 + rnd(30)), 0.7 * pitch, 0.004, 0.065, 0.20 * vel, pitch);
     }
   },
   {
-    id: 'mx_blue',
-    name: 'Cherry MX Blue',
-    desc: 'Click bar · Sharp clack · Classic gaming',
+    id: 'mx_blue', name: 'Cherry MX Blue', desc: 'Click bar · Sharp clack',
     icon: '🔵', badge: 'CLICKY', badgeColor: '#38bdf8',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
-      // Click bar snap — sharp transient
-      sine(ctx, dest, t, 4200, 2200, 0.0003, 0.010, 0.55*vel, 1, true);
-      // Body thud
-      sine(ctx, dest, t, isSpecial?100:(110+rnd(20)), 0.55*pitch, 0.002, 0.045, 0.35*vel, 0.5);
-      // Noise burst (the "clack")
-      noise(ctx, dest, t, 0.020, 400, 3000, 0.6, 0.001, 0.020, 0.40*vel);
-      // Bottom-out
-      tri(ctx, dest, t, isSpecial?240:(280+rnd(50)), 0.8*pitch, 0.003, 0.035, 0.15*vel, pitch);
-      if (isSpecial) stabRattle(ctx, dest, t, 200, 0.18*vel);
+      sine(ctx, dest, t, 4200, 2200, 0.0003, 0.010, 0.55 * vel, 1, true);
+      sine(ctx, dest, t, isSpecial ? 100 : (110 + rnd(20)), 0.55 * pitch, 0.002, 0.045, 0.35 * vel, 0.5);
+      noise(ctx, dest, t, 0.020, 400, 3000, 0.6, 0.001, 0.020, 0.40 * vel);
+      tri(ctx, dest, t, isSpecial ? 240 : (280 + rnd(50)), 0.8 * pitch, 0.003, 0.035, 0.15 * vel, pitch);
+      if (isSpecial) stabRattle(ctx, dest, t, 200, 0.18 * vel);
     }
   },
   {
-    id: 'alpaca',
-    name: 'Alpacas Lubed',
-    desc: 'Buttery linear · Brass plate · POM housing',
-    icon: '🦙', badge: 'LINEAR', badgeColor: '#fb923c',
-    play(ctx, dest, isSpecial, vel, pitch) {
-      const t = ctx.currentTime;
-      // Very soft bottom-out
-      sine(ctx, dest, t, isSpecial?60:(68+rnd(12)), 0.45*pitch, 0.003, 0.090, 0.38*vel, 0.4);
-      // Smooth noise body (lubed = minimal friction noise)
-      noise(ctx, dest, t, 0.028, 180, 360, 0.7, 0.003, 0.028, 0.28*vel);
-      // Brass plate resonance — subtle ping
-      sine(ctx, dest, t, 2200, 1600, 0.001, 0.025, 0.08*vel, 1, true);
-      // Warmth
-      tri(ctx, dest, t, isSpecial?190:(230+rnd(40)), 0.7*pitch, 0.005, 0.070, 0.25*vel, pitch);
-    }
-  },
-  {
-    id: 'boba_u4',
-    name: 'Boba U4 Silent',
-    desc: 'Silent tactile · Dampened bump · Office-safe',
-    icon: '🫧', badge: 'SILENT', badgeColor: '#a3e635',
-    play(ctx, dest, isSpecial, vel, pitch) {
-      const t = ctx.currentTime;
-      // Muffled thud — silenced bottom-out
-      sine(ctx, dest, t, isSpecial?70:(82+rnd(10)), 0.4*pitch, 0.004, 0.120, 0.35*vel, 0.35);
-      // Minimal noise — dampening pads absorb most
-      noise(ctx, dest, t, 0.022, 150, 280, 0.5, 0.004, 0.022, 0.15*vel);
-      // Very soft tactile bump at ~10ms
-      const osc = actx.createOscillator();
-      const g = actx.createGain();
-      osc.type = 'sine'; osc.frequency.value = 1400;
-      g.gain.setValueAtTime(0, t+0.010);
-      g.gain.linearRampToValueAtTime(0.06*vel, t+0.012);
-      g.gain.exponentialRampToValueAtTime(0.001, t+0.018);
-      osc.connect(g); g.connect(dest);
-      osc.start(t+0.010); osc.stop(t+0.022);
-      // Body
-      tri(ctx, dest, t, isSpecial?160:(190+rnd(30)), 0.6*pitch, 0.006, 0.090, 0.18*vel, pitch);
-    }
-  },
-  {
-    id: 'ibm_model_m',
-    name: 'IBM Model M',
-    desc: 'Buckling spring · Vintage legend · Loud & proud',
+    id: 'ibm_model_m', name: 'IBM Model M', desc: 'Buckling spring vintage legend',
     icon: '🏛️', badge: 'BUCKLING', badgeColor: '#fbbf24',
     play(ctx, dest, isSpecial, vel, pitch) {
       const t = ctx.currentTime;
-      // Spring ping — the signature "clack"
-      sine(ctx, dest, t, 5500, 2800, 0.0003, 0.008, 0.65*vel, 1, true);
-      // Heavy barrel thud
-      sine(ctx, dest, t, isSpecial?85:(100+rnd(20)), 0.5*pitch, 0.001, 0.050, 0.50*vel, 0.5);
-      // Loud noise burst
-      noise(ctx, dest, t, 0.025, 300, 4000, 0.5, 0.001, 0.025, 0.55*vel);
-      // Metal barrel resonance
-      tri(ctx, dest, t, isSpecial?280:(320+rnd(60)), 0.75*pitch, 0.002, 0.038, 0.28*vel, pitch);
-      if (isSpecial) stabRattle(ctx, dest, t, 220, 0.22*vel);
+      sine(ctx, dest, t, 5500, 2800, 0.0003, 0.008, 0.65 * vel, 1, true);
+      sine(ctx, dest, t, isSpecial ? 85 : (100 + rnd(20)), 0.5 * pitch, 0.001, 0.050, 0.50 * vel, 0.5);
+      noise(ctx, dest, t, 0.025, 300, 4000, 0.5, 0.001, 0.025, 0.55 * vel);
+      tri(ctx, dest, t, isSpecial ? 280 : (320 + rnd(60)), 0.75 * pitch, 0.002, 0.038, 0.28 * vel, pitch);
+      if (isSpecial) stabRattle(ctx, dest, t, 220, 0.22 * vel);
     }
-  },
-  {
-    id: 'gateron_yellow',
-    name: 'Gateron Yellow Lubed',
-    desc: 'Hyper-smooth linear · Low spring weight',
-    icon: '🟡', badge: 'LINEAR', badgeColor: '#facc15',
-    play(ctx, dest, isSpecial, vel, pitch) {
-      const t = ctx.currentTime;
-      // Very minimal — smooth and quiet
-      sine(ctx, dest, t, isSpecial?55:(65+rnd(12)), 0.4*pitch, 0.004, 0.100, 0.32*vel, 0.38);
-      noise(ctx, dest, t, 0.020, 160, 300, 0.6, 0.004, 0.020, 0.20*vel);
-      sine(ctx, dest, t, 1800, 1200, 0.001, 0.018, 0.04*vel, 1, true);
-      tri(ctx, dest, t, isSpecial?175:(210+rnd(35)), 0.65*pitch, 0.005, 0.075, 0.22*vel, pitch);
-    }
-  },
+  }
 ];
 
-/* ── SHARED AUDIO PRIMITIVES ──────────────────────────────────── */
-function rnd(n){ return Math.random()*n; }
-
+function rnd(n){ return Math.random() * n; }
 function sine(ctx, dest, t, freqStart, freqEnd, attack, decay, vol, pitchMod, hiFreq=false){
-  const osc = ctx.createOscillator();
-  const g   = ctx.createGain();
-  osc.type = hiFreq ? 'sine' : 'sine';
+  const osc = ctx.createOscillator(), g = ctx.createGain();
+  osc.type = 'sine';
   osc.frequency.setValueAtTime(freqStart * pitchMod, t);
-  if(freqEnd !== freqStart)
-    osc.frequency.exponentialRampToValueAtTime(Math.max(20, freqEnd * pitchMod), t + (hiFreq ? decay : decay*0.6));
+  if(freqEnd !== freqStart) osc.frequency.exponentialRampToValueAtTime(Math.max(20, freqEnd * pitchMod), t + (hiFreq ? decay : decay * 0.6));
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(vol, t + attack);
   g.gain.exponentialRampToValueAtTime(0.001, t + decay);
   osc.connect(g); g.connect(dest);
   osc.start(t); osc.stop(t + decay + 0.01);
 }
-
 function tri(ctx, dest, t, freq, freqRatio, attack, decay, vol, pitchMod){
-  const osc = ctx.createOscillator();
-  const g   = ctx.createGain();
-  osc.type  = 'triangle';
+  const osc = ctx.createOscillator(), g = ctx.createGain();
+  osc.type = 'triangle';
   osc.frequency.setValueAtTime(freq * pitchMod, t);
   osc.frequency.exponentialRampToValueAtTime(Math.max(20, freq * pitchMod * freqRatio), t + decay);
   g.gain.setValueAtTime(0, t);
@@ -514,61 +1152,53 @@ function tri(ctx, dest, t, freq, freqRatio, attack, decay, vol, pitchMod){
   osc.connect(g); g.connect(dest);
   osc.start(t); osc.stop(t + decay + 0.01);
 }
-
 function noise(ctx, dest, t, dur, hpFreq, lpFreq, lpQ, attack, decay, vol){
-  const bufLen = Math.floor(ctx.sampleRate * dur);
-  const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-  const d   = buf.getChannelData(0);
-  for(let i=0;i<bufLen;i++) d[i] = Math.random()*2-1;
+  const bufLen = Math.floor(ctx.sampleRate * dur), buf = ctx.createBuffer(1, bufLen, ctx.sampleRate), d = buf.getChannelData(0);
+  for(let i=0;i<bufLen;i++) d[i] = Math.random() * 2 - 1;
   const src = ctx.createBufferSource(); src.buffer = buf;
-  const hp  = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=hpFreq;
-  const lp  = ctx.createBiquadFilter(); lp.type='lowpass';  lp.frequency.value=lpFreq; lp.Q.value=lpQ;
-  const g   = ctx.createGain();
+  const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = hpFreq;
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = lpFreq; lp.Q.value = lpQ;
+  const g = ctx.createGain();
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(vol, t + attack);
   g.gain.exponentialRampToValueAtTime(0.001, t + decay);
   src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(dest);
   src.start(t); src.stop(t + dur + 0.01);
 }
-
 function stabRattle(ctx, dest, t, lpFreq, vol){
-  const bufS = ctx.createBuffer(1, Math.floor(ctx.sampleRate*0.028), ctx.sampleRate);
-  const dS   = bufS.getChannelData(0);
-  for(let i=0;i<dS.length;i++) dS[i] = (Math.random()*2-1)*0.6;
-  const ns  = ctx.createBufferSource(); ns.buffer = bufS;
-  const lpf = ctx.createBiquadFilter(); lpf.type='lowpass'; lpf.frequency.value=lpFreq;
-  const g   = ctx.createGain();
-  g.gain.setValueAtTime(0, t+0.004);
-  g.gain.linearRampToValueAtTime(vol, t+0.008);
-  g.gain.exponentialRampToValueAtTime(0.001, t+0.032);
+  const bufS = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.028), ctx.sampleRate), dS = bufS.getChannelData(0);
+  for(let i=0;i<dS.length;i++) dS[i] = (Math.random() * 2 - 1) * 0.6;
+  const ns = ctx.createBufferSource(); ns.buffer = bufS;
+  const lpf = ctx.createBiquadFilter(); lpf.type = 'lowpass'; lpf.frequency.value = lpFreq;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, t + 0.004);
+  g.gain.linearRampToValueAtTime(vol, t + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.032);
   ns.connect(lpf); lpf.connect(g); g.connect(dest);
-  ns.start(t+0.004); ns.stop(t+0.036);
+  ns.start(t + 0.004); ns.stop(t + 0.036);
 }
 
-/* ── PLAY KEY ───────────────────────────────────────────────────── */
 let soundOn = localStorage.getItem('cn_sfx') !== 'off';
 let activeProfileId = localStorage.getItem('cn_sfx_profile') || 'galaxy';
 
-function playKey(isSpecial) {
+function playKey(isSpecial, e) {
   if (!soundOn) return;
   try {
     const ctx = getACtx();
-    const vel   = 0.78 + Math.random()*0.22;
-    const pitch = 1 + (Math.random()-0.5)*0.08;
-    const prof  = SFX_PROFILES.find(p=>p.id===activeProfileId) || SFX_PROFILES[0];
+    const vel = 0.78 + Math.random() * 0.22;
+    const pitch = 1 + (Math.random() - 0.5) * 0.08;
+    const prof = SFX_PROFILES.find(p => p.id === activeProfileId) || SFX_PROFILES[0];
     prof.play(ctx, masterGain, isSpecial, vel, pitch);
-  } catch(e) { /* silent fail */ }
+  } catch(err) {}
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SOUND PANEL UI
-   ═══════════════════════════════════════════════════════════════ */
 function buildSfxPanel() {
   const container = document.getElementById('sfxProfiles');
+  if(!container) return;
+  container.innerHTML = '';
   SFX_PROFILES.forEach(p => {
     const el = document.createElement('div');
-    el.className = 'sfx-profile' + (p.id===activeProfileId?' active':'');
-    el.id = 'sfxp-' + p.id;
+    el.className = 'sfx-profile' + (p.id === activeProfileId ? ' active' : '');
     el.style.setProperty('--pfx-color', p.badgeColor);
     el.innerHTML = `
       <div class="sfx-profile-icon" style="background:${p.badgeColor}18">${p.icon}</div>
@@ -587,16 +1217,12 @@ function buildSfxPanel() {
 function selectProfile(id, preview=false) {
   activeProfileId = id;
   localStorage.setItem('cn_sfx_profile', id);
-  document.querySelectorAll('.sfx-profile').forEach(el=>{
-    const pid = el.id.replace('sfxp-','');
-    const p   = SFX_PROFILES.find(x=>x.id===pid);
-    el.classList.toggle('active', pid===id);
-    if(p) el.style.setProperty('--pfx-color', p.badgeColor);
+  document.querySelectorAll('.sfx-profile').forEach(el => {
+    el.classList.toggle('active', el.querySelector('.sfx-profile-name')?.textContent === SFX_PROFILES.find(x => x.id === id)?.name);
   });
   updateSfxUI();
   if (preview && soundOn) {
-    // play 3 preview taps
-    [0, 80, 150].forEach(d => setTimeout(()=>playKey(false), d));
+    [0, 70, 140].forEach(d => setTimeout(() => playKey(false), d));
   }
 }
 
@@ -608,28 +1234,28 @@ function onSfxToggle(checked) {
 }
 
 function onVolChange(val) {
-  masterVol = val/100;
+  masterVol = val / 100;
   document.getElementById('sfxVolVal').textContent = val + '%';
   if (masterGain) masterGain.gain.value = masterVol;
 }
 
 function updateSfxUI() {
-  const prof = SFX_PROFILES.find(p=>p.id===activeProfileId) || SFX_PROFILES[0];
-  const btn  = document.getElementById('sfxBtn');
-  const dot  = document.getElementById('sfxDot');
-  const lbl  = document.getElementById('sfxLabel');
-  const tog  = document.getElementById('sfxToggle');
-  const activeName = document.getElementById('sfxActiveName');
-  const statusEl   = document.getElementById('sfxStatus');
+  const prof = SFX_PROFILES.find(p => p.id === activeProfileId) || SFX_PROFILES[0];
+  const tog = document.getElementById('sfxToggle');
+  const dot = document.getElementById('sfxDot');
+  const lbl = document.getElementById('sfxLabel');
+  const statusEl = document.getElementById('sfxStatus');
 
-  tog.checked = soundOn;
-  dot.style.background = soundOn ? prof.badgeColor : '#555';
-  dot.style.boxShadow  = soundOn ? `0 0 5px ${prof.badgeColor}88` : 'none';
-  btn.classList.toggle('on', soundOn);
-  lbl.textContent = soundOn ? prof.icon + ' SFX' : 'SFX';
-  activeName.textContent = soundOn ? prof.name : 'OFF';
-  statusEl.textContent   = soundOn ? `♪ ${prof.name}` : '';
-  statusEl.style.color   = soundOn ? prof.badgeColor+'cc' : '';
+  if (tog) tog.checked = soundOn;
+  if (dot) {
+    dot.style.background = soundOn ? prof.badgeColor : '#475569';
+    dot.style.boxShadow = soundOn ? `0 0 6px ${prof.badgeColor}` : 'none';
+  }
+  if (lbl) lbl.textContent = soundOn ? prof.icon + ' ' + prof.badge : 'SFX OFF';
+  if (statusEl) {
+    statusEl.textContent = soundOn ? `♪ ${prof.name}` : '♪ Muted';
+    statusEl.style.color = soundOn ? prof.badgeColor : '#64748b';
+  }
 }
 
 let sfxPanelOpen = false;
@@ -638,16 +1264,38 @@ function toggleSfxPanel(e) {
   sfxPanelOpen = !sfxPanelOpen;
   document.getElementById('sfxPanel').classList.toggle('open', sfxPanelOpen);
 }
-
 document.addEventListener('click', e => {
-  if (sfxPanelOpen && !document.getElementById('sfxWrap').contains(e.target)) {
+  if (sfxPanelOpen && !document.getElementById('sfxPanel').contains(e.target) && e.target.id !== 'sfxBtn') {
     sfxPanelOpen = false;
     document.getElementById('sfxPanel').classList.remove('open');
   }
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   FILE SYSTEM
+   RAINBOW / FLOWING RGB MODE CONTROLLER
+   ═══════════════════════════════════════════════════════════════ */
+let currentRainbowMode = localStorage.getItem('cn_rainbow_mode') || 'spectrum';
+
+function setRainbowMode(mode) {
+  currentRainbowMode = mode;
+  localStorage.setItem('cn_rainbow_mode', mode);
+  document.body.className = `rainbow-mode-${mode}`;
+  const select = document.getElementById('rainbowModeSelect');
+  if (select) select.value = mode;
+  const status = document.getElementById('rgbStatus');
+  const labels = {
+    spectrum: '🌈 RGB: Spectrum Wave',
+    neon: '⚡ RGB: Cyber Neon',
+    sunset: '🌅 RGB: Sunset Glow',
+    matrix: '📟 RGB: Matrix Stream',
+    cyberpunk: '🔥 RGB: Cyberpunk',
+    classic: '💻 PowerShell Classic'
+  };
+  if (status) status.textContent = labels[mode] || '🌈 RGB: Flowing';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FILE SYSTEM & TABS
    ═══════════════════════════════════════════════════════════════ */
 let files = {};
 try { files = JSON.parse(localStorage.getItem('cn_files') || '{}'); } catch(e) { files = {}; }
@@ -656,230 +1304,491 @@ let deleteTarget = null;
 let saveTimer = null;
 let isDirty = false;
 
-const editor     = document.getElementById('editor');
-const fileList   = document.getElementById('fileList');
-const tabName    = document.getElementById('tabName');
-const imageInput = document.getElementById('imageInput');
+const editor = document.getElementById('editor');
+const fileList = document.getElementById('fileList');
+const terminalTabs = document.getElementById('terminalTabs');
 const saveStatus = document.getElementById('saveStatus');
+const imageInput = document.getElementById('imageInput');
 
 function scheduleSave() {
-  isDirty = true; setStatus('saving');
+  isDirty = true;
+  setStatus('saving');
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(doSave, 800);
+  saveTimer = setTimeout(doSave, 600);
 }
+
 function doSave() {
   if (!currentFile || !isDirty) return;
   files[currentFile] = editor.innerHTML;
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) { setStatus('error'); return; }
-  isDirty = false; setStatus('saved');
-}
-function setStatus(s) {
-  if (s==='saving') { saveStatus.textContent='Saving...'; saveStatus.className='status-item saving'; }
-  else if (s==='error') { saveStatus.textContent='Save failed'; saveStatus.className='status-item'; saveStatus.style.color='#ef4444'; }
-  else { saveStatus.textContent='Saved'; saveStatus.className='status-item save-ok'; }
+  isDirty = false;
+  setStatus('saved');
 }
 
-let metricsTimer = null;
-function scheduleMetrics() {
-  if (metricsTimer) return;
-  metricsTimer = setTimeout(() => { updateMetrics(); metricsTimer=null; }, 250);
+function setStatus(s) {
+  if (s === 'saving') { saveStatus.textContent = '● Saving...'; saveStatus.className = 'status-item saving'; }
+  else if (s === 'error') { saveStatus.textContent = '● Save failed'; saveStatus.className = 'status-item'; saveStatus.style.color = '#ef4444'; }
+  else { saveStatus.textContent = '● Saved'; saveStatus.className = 'status-item save-ok'; }
 }
+
+function updateLineNumbers() {
+  const text = editor.innerText || '';
+  const lines = text.split('\n').length || 1;
+  const nums = Array.from({length: lines}, (_, i) => i + 1).join('\n');
+  document.getElementById('lineNumbers').textContent = nums;
+}
+
 function updateMetrics() {
-  const text  = editor.innerText || '';
+  const text = editor.innerText || '';
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
   document.getElementById('wordCount').textContent = words.toLocaleString() + ' words';
   document.getElementById('charCount').textContent = text.length.toLocaleString() + ' chars';
+  updateLineNumbers();
 }
 
-function renderFiles() {
+function renderTabsAndFiles() {
+  const names = Object.keys(files);
+  document.getElementById('fileCountBadge').textContent = `${names.length} files`;
+
+  // Render Tabs
+  terminalTabs.innerHTML = '';
+  names.forEach(n => {
+    const tab = document.createElement('div');
+    tab.className = 'terminal-tab' + (n === currentFile ? ' active' : '');
+    tab.innerHTML = `
+      <span class="tab-icon">⚡</span>
+      <span class="tab-title" title="${n}">${n}</span>
+      <span class="tab-close" onclick="event.stopPropagation(); askDelete('${n.replace(/'/g, "\\'")}')" title="Close">✕</span>
+    `;
+    tab.onclick = () => openFile(n);
+    terminalTabs.appendChild(tab);
+  });
+
+  // Render Sidebar
   fileList.innerHTML = '';
-  Object.keys(files).forEach(n => {
-    const d = document.createElement('div');
-    d.className = 'file-item' + (n===currentFile?' active':'');
-    const s = n.replace(/'/g,"\\'");
-    d.innerHTML = `<span class="name" title="${n}" onclick="openFile('${s}')">📄 ${n}</span>
-                   <span class="del" onclick="askDelete('${s}')" title="ลบ">✕</span>`;
-    fileList.appendChild(d);
+  names.forEach(n => {
+    const row = document.createElement('div');
+    row.className = 'ps-file-row' + (n === currentFile ? ' active' : '');
+    row.innerHTML = `
+      <div class="file-info" onclick="openFile('${n.replace(/'/g, "\\'")}')">
+        <span style="color:var(--ps-cyan);">📄</span>
+        <span class="file-name" title="${n}">${n}</span>
+      </div>
+      <span class="file-del" onclick="askDelete('${n.replace(/'/g, "\\'")}')" title="ลบ">✕</span>
+    `;
+    fileList.appendChild(row);
   });
 }
+
 function openFile(n) {
-  if (n===currentFile) return;
-  doSave(); currentFile=n;
-  editor.innerHTML = files[n]||'';
-  tabName.textContent = n; isDirty=false; setStatus('saved');
-  renderFiles(); attachResizeAll(); updateMetrics(); editor.focus();
+  if (n === currentFile && editor.innerHTML) return;
+  doSave();
+  currentFile = n;
+  editor.innerHTML = files[n] || '';
+  document.getElementById('currentFileBadge').textContent = `📄 ${n}`;
+  isDirty = false;
+  setStatus('saved');
+  renderTabsAndFiles();
+  attachResizeAll();
+  updateMetrics();
+  editor.focus();
 }
 
-/* ─── KEYBOARD ─────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   KEYSTROKES & TYPING EFFECTS
+   ═══════════════════════════════════════════════════════════════ */
 editor.addEventListener('keydown', e => {
-  const special = e.key==='Enter'||e.key==='Backspace'||e.key==='Delete'||e.key===' ';
+  const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ';
   playKey(special);
-  if (e.key==='Tab') { e.preventDefault(); document.execCommand('insertText',false,'    '); }
+
+  // Rainbow Spark Particle at Cursor
+  try {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount) {
+      const rect = sel.getRangeAt(0).getBoundingClientRect();
+      if (rect.x > 0 && rect.y > 0) addSpark(rect.x, rect.y + 10);
+    }
+  } catch(err) {}
+
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    document.execCommand('insertText', false, '    ');
+  }
 });
-editor.addEventListener('input', () => { scheduleSave(); scheduleMetrics(); });
+
+editor.addEventListener('input', () => {
+  scheduleSave();
+  updateMetrics();
+});
 
 document.addEventListener('keydown', e => {
-  const mod = e.ctrlKey||e.metaKey;
-  if (mod&&e.key==='s') { e.preventDefault(); doSave(); }
-  if (mod&&e.key==='n') { e.preventDefault(); openCreate(); }
-  if (e.key==='Escape') { closeModals(); sfxPanelOpen=false; document.getElementById('sfxPanel').classList.remove('open'); }
-  if (e.key==='Enter' && document.getElementById('createModal').classList.contains('show')) { e.preventDefault(); confirmCreate(); }
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && e.key === 's') { e.preventDefault(); doSave(); logCmd('File saved: ' + currentFile, 'success'); }
+  if (mod && e.key === 'n') { e.preventDefault(); openCreate(); }
+  if (e.key === 'Escape') { closeModals(); sfxPanelOpen = false; document.getElementById('sfxPanel').classList.remove('open'); }
+  if (e.key === 'Enter' && document.getElementById('createModal').classList.contains('show')) { e.preventDefault(); confirmCreate(); }
 });
 
 document.addEventListener('selectionchange', () => {
   try {
     const sel = window.getSelection();
-    if (!sel||!sel.rangeCount) return;
+    if (!sel || !sel.rangeCount) return;
     const r = sel.getRangeAt(0).cloneRange();
     r.selectNodeContents(editor);
     r.setEnd(sel.getRangeAt(0).startContainer, sel.getRangeAt(0).startOffset);
-    document.getElementById('cursorPos').textContent = 'Ln ' + r.toString().split('\n').length;
+    const lines = r.toString().split('\n');
+    const ln = lines.length;
+    const col = lines[lines.length - 1].length + 1;
+    document.getElementById('cursorPos').textContent = `Ln ${ln}, Col ${col}`;
   } catch(e) {}
 });
 
-/* ─── TEXT FORMATTING ──────────────────────────────────── */
-function cmd(c) { editor.focus(); document.execCommand(c,false,null); }
-function setFontSize(size) {
-  if (!size) return;
-  const sel = window.getSelection();
-  if (!sel||!sel.rangeCount||sel.getRangeAt(0).collapsed) return;
-  const span = document.createElement('span'); span.style.fontSize=size;
-  try { sel.getRangeAt(0).surroundContents(span); scheduleSave(); } catch(e) {}
-}
-function setColor(color) {
-  const sel = window.getSelection();
-  if (!sel||!sel.rangeCount||sel.getRangeAt(0).collapsed) return;
-  const span = document.createElement('span'); span.style.color=color;
-  try { sel.getRangeAt(0).surroundContents(span); scheduleSave(); } catch(e) {}
-}
-function doHighlight() {
-  const sel = window.getSelection();
-  if (!sel||!sel.rangeCount||sel.getRangeAt(0).collapsed) return;
-  const mark = document.createElement('mark');
-  mark.style.cssText='background:#fef08a;color:#1a1a1b;border-radius:2px;padding:0 1px';
-  try { sel.getRangeAt(0).surroundContents(mark); scheduleSave(); } catch(e) {}
+/* ═══════════════════════════════════════════════════════════════
+   INTERACTIVE POWERSHELL COMMAND CONSOLE
+   ═══════════════════════════════════════════════════════════════ */
+const cmdInput = document.getElementById('cmdInput');
+const cmdLog = document.getElementById('cmdLog');
+let cmdHistory = [], historyIndex = -1;
+
+function logCmd(msg, type = 'info') {
+  cmdLog.classList.add('open');
+  const row = document.createElement('div');
+  row.className = `cmd-log-row ${type}`;
+  row.textContent = msg;
+  cmdLog.appendChild(row);
+  cmdLog.scrollTop = cmdLog.scrollHeight;
 }
 
-/* ─── IMAGE HANDLING ──────────────────────────────────── */
-function addImage() { editor.focus(); imageInput.value=''; imageInput.click(); }
+function runCommandFromInput() {
+  const val = cmdInput.value.trim();
+  if (!val) return;
+  cmdHistory.push(val);
+  historyIndex = cmdHistory.length;
+  cmdInput.value = '';
+  executePowerShellCmd(val);
+}
+
+cmdInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    runCommandFromInput();
+  } else if (e.key === 'ArrowUp') {
+    if (historyIndex > 0) {
+      historyIndex--;
+      cmdInput.value = cmdHistory[historyIndex] || '';
+    }
+  } else if (e.key === 'ArrowDown') {
+    if (historyIndex < cmdHistory.length - 1) {
+      historyIndex++;
+      cmdInput.value = cmdHistory[historyIndex] || '';
+    } else {
+      historyIndex = cmdHistory.length;
+      cmdInput.value = '';
+    }
+  }
+});
+
+function executePowerShellCmd(input) {
+  logCmd(`PS C:\\Users\\CodeNote> ${input}`, 'info');
+  const parts = input.split(/\s+/);
+  const cmd = parts[0].toLowerCase();
+  const arg = parts.slice(1).join(' ');
+
+  switch(cmd) {
+    case 'ls':
+    case 'dir':
+    case 'gci':
+      logCmd(`    Directory: C:\\Users\\CodeNote\nMode                LastWriteTime         Length Name\n----                -------------         ------ ----`, 'info');
+      Object.keys(files).forEach(name => {
+        const len = (files[name] || '').length;
+        logCmd(`-a----         8/22/2026   5:00 PM         ${len.toString().padStart(6, ' ')} ${name}`, 'info');
+      });
+      break;
+
+    case 'cat':
+    case 'type':
+    case 'gc':
+      if (!arg) { logCmd('Usage: cat <filename>', 'error'); break; }
+      if (files[arg] !== undefined) {
+        const temp = document.createElement('div');
+        temp.innerHTML = files[arg];
+        logCmd(temp.innerText || '(empty file)', 'info');
+      } else {
+        logCmd(`Cannot find path '${arg}' because it does not exist.`, 'error');
+      }
+      break;
+
+    case 'new':
+    case 'ni':
+    case 'touch':
+      if (!arg) { openCreate(); break; }
+      if (files[arg] !== undefined) { logCmd(`File '${arg}' already exists.`, 'warning'); }
+      else {
+        files[arg] = '';
+        localStorage.setItem('cn_files', JSON.stringify(files));
+        openFile(arg);
+        logCmd(`Created new note file: ${arg}`, 'success');
+      }
+      break;
+
+    case 'edit':
+    case 'code':
+    case 'notepad':
+    case 'open':
+      if (!arg) { logCmd('Usage: edit <filename>', 'error'); break; }
+      if (files[arg] !== undefined) {
+        openFile(arg);
+        logCmd(`Opened '${arg}' in editor.`, 'success');
+      } else {
+        logCmd(`File '${arg}' not found. Creating new file...`, 'warning');
+        files[arg] = '';
+        localStorage.setItem('cn_files', JSON.stringify(files));
+        openFile(arg);
+      }
+      break;
+
+    case 'rm':
+    case 'del':
+    case 'remove-item':
+      if (!arg) { logCmd('Usage: rm <filename>', 'error'); break; }
+      if (files[arg] !== undefined) {
+        deleteTarget = arg;
+        confirmDelete();
+        logCmd(`Removed note file: ${arg}`, 'success');
+      } else {
+        logCmd(`Cannot find file '${arg}'.`, 'error');
+      }
+      break;
+
+    case 'clear':
+    case 'cls':
+      cmdLog.innerHTML = '';
+      cmdLog.classList.remove('open');
+      break;
+
+    case 'rgb':
+    case 'rainbow':
+      if (!arg) {
+        const modes = ['spectrum', 'neon', 'sunset', 'matrix', 'cyberpunk', 'classic'];
+        const next = modes[(modes.indexOf(currentRainbowMode) + 1) % modes.length];
+        setRainbowMode(next);
+        logCmd(`Switched RGB mode to: ${next}`, 'success');
+      } else {
+        setRainbowMode(arg);
+        logCmd(`Set RGB mode to: ${arg}`, 'success');
+      }
+      break;
+
+    case 'sfx':
+      if (!arg) {
+        logCmd(`Available Sound Profiles:\n` + SFX_PROFILES.map(p => `  • ${p.id} (${p.name})`).join('\n'), 'info');
+      } else {
+        const target = SFX_PROFILES.find(p => p.id === arg || p.name.toLowerCase().includes(arg.toLowerCase()));
+        if (target) {
+          selectProfile(target.id, true);
+          logCmd(`Switched SFX profile to: ${target.name}`, 'success');
+        } else {
+          logCmd(`SFX profile '${arg}' not found.`, 'error');
+        }
+      }
+      break;
+
+    case 'help':
+    case 'get-help':
+    case '?':
+      logCmd(`PowerShell CodeNote Commands:
+  • dir, ls              - แสดงรายชื่อโน้ตทั้งหมด
+  • cat <name>           - อ่านเนื้อหาของไฟล์
+  • new <name>           - สร้างไฟล์โน้ตใหม่
+  • edit <name>          - เปิดไฟล์ในตัวแก้ไข
+  • rm <name>            - ลบไฟล์
+  • rgb [mode]           - เปลี่ยนโหมดตัวหนังสือวิ่งหลายสี (spectrum, neon, sunset, matrix, cyberpunk, classic)
+  • sfx [profile]        - เปลี่ยนเสียงคีย์บอร์ด (galaxy, holy_panda, topre, mx_blue, ibm_model_m)
+  • cls, clear           - ล้างข้อความ Terminal`, 'info');
+      break;
+
+    default:
+      logCmd(`The term '${cmd}' is not recognized as the name of a cmdlet. Type 'help' for command list.`, 'error');
+      break;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UI ACTIONS & TOOLBAR
+   ═══════════════════════════════════════════════════════════════ */
+function cmd(c) { editor.focus(); document.execCommand(c, false, null); }
+
+function toggleSidebar() {
+  const sb = document.getElementById('psSidebar');
+  sb.classList.toggle('collapsed');
+  document.getElementById('sidebarToggleLabel').textContent = sb.classList.contains('collapsed') ? 'Tree ▷' : 'Tree ◁';
+}
+
+function toggleFullScreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen().catch(()=>{});
+}
+
+function closeCurrentTab() {
+  if (currentFile) askDelete(currentFile);
+}
+
+function addImage() { editor.focus(); imageInput.value = ''; imageInput.click(); }
 imageInput.onchange = e => Array.from(e.target.files).forEach(insertImageFile);
+
 function insertImageFile(file) {
   const r = new FileReader();
-  r.onload = () => insertImageSrc(r.result,'180px');
+  r.onload = () => insertImageSrc(r.result, '240px');
   r.readAsDataURL(file);
 }
-function insertImageSrc(src, width) {
-  width = width||'180px';
-  const box = buildImgBox(src,width);
+
+function insertImageSrc(src, width = '240px') {
+  const box = buildImgBox(src, width);
   const sel = window.getSelection();
-  if (sel&&sel.rangeCount) { const range=sel.getRangeAt(0); range.collapse(false); range.insertNode(box); }
-  else editor.appendChild(box);
+  if (sel && sel.rangeCount) {
+    const range = sel.getRangeAt(0);
+    range.collapse(false);
+    range.insertNode(box);
+  } else {
+    editor.appendChild(box);
+  }
   enableResize(box.querySelector('img'), box.querySelector('.handle'));
   scheduleSave();
 }
-function buildImgBox(src,width) {
-  const box = document.createElement('span'); box.className='img-box'; box.contentEditable='false';
-  const img = document.createElement('img'); img.src=src; img.style.width=width; img.style.maxWidth='100%';
-  const handle = document.createElement('span'); handle.className='handle'; handle.title='ลากเพื่อปรับขนาด';
-  const del = document.createElement('span'); del.className='del-img'; del.textContent='✕'; del.title='ลบรูป';
+
+function buildImgBox(src, width) {
+  const box = document.createElement('span');
+  box.className = 'img-box';
+  box.contentEditable = 'false';
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.width = width;
+  const handle = document.createElement('span');
+  handle.className = 'handle';
+  handle.title = 'Drag to resize';
+  const del = document.createElement('span');
+  del.className = 'del-img';
+  del.textContent = '✕';
   del.onclick = () => { box.remove(); scheduleSave(); };
-  box.appendChild(img); box.appendChild(handle); box.appendChild(del);
+  box.appendChild(img);
+  box.appendChild(handle);
+  box.appendChild(del);
   return box;
 }
+
 function enableResize(img, handle) {
   handle.onmousedown = e => {
     e.preventDefault();
-    const startX=e.clientX, startW=img.offsetWidth;
-    const onMove = ev => img.style.width = Math.max(40, startW+(ev.clientX-startX))+'px';
-    const onUp   = () => { document.removeEventListener('mousemove',onMove); document.removeEventListener('mouseup',onUp); scheduleSave(); };
-    document.addEventListener('mousemove',onMove);
-    document.addEventListener('mouseup',onUp);
+    const startX = e.clientX, startW = img.offsetWidth;
+    const onMove = ev => img.style.width = Math.max(50, startW + (ev.clientX - startX)) + 'px';
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      scheduleSave();
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
   };
 }
+
 function attachResizeAll() {
   document.querySelectorAll('.img-box').forEach(b => enableResize(b.querySelector('img'), b.querySelector('.handle')));
 }
 
-/* ─── DRAG & DROP ─────────────────────────────────────── */
-const editorWrap = document.getElementById('editorWrap');
-editorWrap.addEventListener('dragover', e => { e.preventDefault(); editorWrap.classList.add('dragover'); });
-editorWrap.addEventListener('dragleave', e => { if(!editorWrap.contains(e.relatedTarget)) editorWrap.classList.remove('dragover'); });
-editorWrap.addEventListener('drop', e => {
-  e.preventDefault(); editorWrap.classList.remove('dragover');
-  const imgs = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
-  imgs.forEach(insertImageFile);
-  if (!imgs.length) {
-    const url = e.dataTransfer.getData('text/uri-list')||e.dataTransfer.getData('text/plain');
-    if (url&&/\.(png|jpe?g|gif|webp|svg|bmp)(\?.*)?$/i.test(url)) insertImageSrc(url,'200px');
-  }
-});
-editor.addEventListener('paste', e => {
-  const items = e.clipboardData&&e.clipboardData.items;
-  if (!items) return;
-  for (const item of items) { if (item.type.startsWith('image/')) { e.preventDefault(); insertImageFile(item.getAsFile()); return; } }
-});
-
-/* ─── MODALS ──────────────────────────────────────────── */
+/* Modals */
 function openCreate() {
   document.getElementById('createModal').classList.add('show');
-  setTimeout(() => { const i=document.getElementById('nameInput'); i.value=''; i.style.borderColor=''; i.focus(); }, 60);
+  setTimeout(() => {
+    const i = document.getElementById('nameInput');
+    i.value = '';
+    i.focus();
+  }, 60);
 }
+
 function askDelete(n) {
   deleteTarget = n;
-  document.getElementById('deleteText').innerHTML = `ลบไฟล์ <b style="color:#fff">"${n}"</b> ?<br><span style="color:#888;font-size:12px">การกระทำนี้ไม่สามารถย้อนกลับได้</span>`;
+  document.getElementById('deleteText').innerHTML = `ต้องการลบไฟล์ <strong style="color:var(--ps-prompt-arrow)">"${n}"</strong> หรือไม่?<br><span style="color:#64748b;font-size:12px;">ไฟล์นี้จะถูกลบออกจากระบบและไม่สามารถกู้คืนได้</span>`;
   document.getElementById('deleteModal').classList.add('show');
 }
+
 function closeModals() {
   document.getElementById('createModal').classList.remove('show');
   document.getElementById('deleteModal').classList.remove('show');
 }
-['createModal','deleteModal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', function(e) { if(e.target===this) closeModals(); });
-});
+
 function confirmCreate() {
-  const inp=document.getElementById('nameInput'), n=inp.value.trim();
-  if (!n) { inp.style.borderColor='#ef4444'; inp.focus(); return; }
-  if (files[n]!==undefined) { inp.style.borderColor='#f59e0b'; inp.focus(); return; }
-  files[n]=''; try { localStorage.setItem('cn_files',JSON.stringify(files)); } catch(e) {}
-  closeModals(); openFile(n);
+  const inp = document.getElementById('nameInput');
+  let n = inp.value.trim();
+  if (!n) { inp.style.borderColor = '#ef4444'; inp.focus(); return; }
+  if (!n.includes('.')) n += '.ps1';
+  if (files[n] !== undefined) { inp.style.borderColor = '#f59e0b'; inp.focus(); return; }
+  files[n] = '';
+  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
+  closeModals();
+  openFile(n);
+  logCmd(`Created and opened new file: ${n}`, 'success');
 }
+
 function confirmDelete() {
   if (!deleteTarget) return;
-  delete files[deleteTarget]; try { localStorage.setItem('cn_files',JSON.stringify(files)); } catch(e) {}
+  delete files[deleteTarget];
+  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
   closeModals();
-  const keys=Object.keys(files);
+  const keys = Object.keys(files);
   if (keys.length) openFile(keys[0]);
-  else { currentFile=null; editor.innerHTML=''; tabName.textContent=''; renderFiles(); setStatus('saved'); updateMetrics(); }
+  else {
+    currentFile = null;
+    editor.innerHTML = '';
+    document.getElementById('currentFileBadge').textContent = '📄 (no file)';
+    renderTabsAndFiles();
+    setStatus('saved');
+    updateMetrics();
+  }
 }
 
 function printPage() { doSave(); window.print(); }
 
-/* ─── PWA ─────────────────────────────────────────────── */
+/* ── Drag & Drop Images ── */
+const editorContainer = document.getElementById('editorContainer');
+editorContainer.addEventListener('dragover', e => e.preventDefault());
+editorContainer.addEventListener('drop', e => {
+  e.preventDefault();
+  const imgs = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  imgs.forEach(insertImageFile);
+});
+
+/* ── PWA ── */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/Note/sw.js').catch(()=>{}));
 }
 
-/* ─── INIT ────────────────────────────────────────────── */
-if (Object.keys(files).length===0) {
-  files['note'] = [
-    '<p><b>ยินดีต้อนรับสู่ CodeNote ✦</b></p>',
-    '<p>เสียงคีบอร์ดหลายโปรไฟล์ — คลิก <b>SFX</b> ที่แถบบน เพื่อเลือกเสียง</p>',
+/* ═══════════════════════════════════════════════════════════════
+   INITIALIZATION
+   ═══════════════════════════════════════════════════════════════ */
+if (Object.keys(files).length === 0) {
+  files['Welcome.ps1'] = [
+    '<p><strong># ===================================================</strong></p>',
+    '<p><strong># PowerShell CodeNote Studio — Flowing RGB Edition ✦</strong></p>',
+    '<p><strong># ===================================================</strong></p>',
     '<p>&nbsp;</p>',
-    '<p><b>Sound Profiles ที่มี:</b></p>',
-    '<p>🌌 Dekey Galaxy 100 V2 · 🐼 Holy Pandas · ⌨️ HHKB Topre</p>',
-    '<p>🔵 Cherry MX Blue · 🦙 Alpacas Lubed · 🫧 Boba U4 Silent</p>',
-    '<p>🏛️ IBM Model M · 🟡 Gateron Yellow</p>',
+    '<p>Write-Host "ยินดีต้อนรับสู่ CodeNote ในธีม PowerShell Terminal!" -ForegroundColor Cyan</p>',
+    '<p>Write-Host "✨ ตัวหนังสือมีสีรุ้ง RGB วิ่งอัตโนมัติ สวยงาม ลื่นไหล" -ForegroundColor Magenta</p>',
     '<p>&nbsp;</p>',
-    '<p><b>Shortcuts:</b></p>',
-    '<p>• <b>Ctrl+B/I/U</b> — Bold / Italic / Underline</p>',
-    '<p>• <b>Ctrl+S</b> — Save · <b>Ctrl+N</b> — ไฟล์ใหม่ · <b>Tab</b> — indent</p>',
-    '<p>• ลากรูปมาวางได้โดยตรง 📷</p>'
+    '<p><strong># ฟีเจอร์เด่น:</strong></p>',
+    '<p>1. 🌈 <b>Flowing Multi-Color RGB Text:</b> ตัวหนังสือวิ่งหลายสีตลอดเวลา ปรับโหมดได้ที่แถบบน</p>',
+    '<p>2. ⌨️ <b>PowerShell Command Console:</b> พิมพ์คำสั่ง <code>dir</code>, <code>cat</code>, <code>new</code>, <code>rgb</code>, <code>sfx</code> ที่ช่องด้านล่าง</p>',
+    '<p>3. 🔊 <b>Mechanical Keyboard Sound:</b> เสียงคีย์บอร์ด 5 โปรไฟล์เสียงสัมผัสระดับเทพ</p>',
+    '<p>4. ⚡ <b>Multi-Tab Windows Terminal Style:</b> เปิดหลายแท็บ สลับไฟล์ได้ง่ายดาย</p>',
+    '<p>&nbsp;</p>',
+    '<p><strong># Shortcuts:</strong></p>',
+    '<p>• <b>Ctrl+S:</b> Save · <b>Ctrl+N:</b> New Note · <b>Tab:</b> 4 Spaces Indent</p>'
   ].join('');
-  try { localStorage.setItem('cn_files',JSON.stringify(files)); } catch(e) {}
+  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
 
 buildSfxPanel();
-openFile(Object.keys(files)[0]);
+setRainbowMode(currentRainbowMode);
+openFile(Object.keys(files)[0] || 'Welcome.ps1');
 </script>
 </body>
 </html>
