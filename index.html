@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote — Active Sentence Hacker Glow</title>
+<title>CodeNote — Neon Cursor Trail & Hacker Terminal</title>
 <link rel="manifest" href="/Note/manifest.json">
 <meta name="theme-color" content="#030305">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,17 +24,13 @@
   --text-dim: #475569;
   --text-sub: #8592a6;
   --base-text-color: #00ff66;
+  --neon-spark-color: #00ff66;
   --hacker-green: #00ff66;
   --accent-cyan: #00f0ff;
   --accent-red: #ff0055;
   --accent-yellow: #ffb703;
   --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', sans-serif;
   --font-mono: 'Share Tech Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
-
-  /* Dynamic Flow Variables */
-  --flowing-gradient: linear-gradient(90deg, #003b14 0%, #008f39 20%, #00ff66 40%, #00f59b 50%, #00e5ff 65%, #008f39 85%, #003b14 100%);
-  --flow-bg-pos: 0px 0;
-  --flow-bg-size: 500px 100%;
 }
 
 html,body {
@@ -48,7 +44,7 @@ html,body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MATRIX DIGITAL RAIN BACKGROUND CANVAS
+   MATRIX DIGITAL RAIN CANVAS
    ═══════════════════════════════════════════════════════════════ */
 #matrixCanvas {
   position: absolute;
@@ -64,7 +60,20 @@ html,body {
 body.hide-rain #matrixCanvas { opacity: 0; }
 
 /* ═══════════════════════════════════════════════════════════════
-   TEXT ENGINE: SOLID CLEAN BASE TEXT + FLASHING ACTIVE SENTENCE
+   CURSOR NEON SPARK PARTICLES CANVAS (ประกายแสงวิ่งตามเคอร์เซอร์)
+   ═══════════════════════════════════════════════════════════════ */
+#sparkCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEXT ENGINE: SOLID CLEAN CRISP HACKER TEXT
    ═══════════════════════════════════════════════════════════════ */
 .editor {
   color: var(--base-text-color) !important;
@@ -77,46 +86,6 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   line-height: 1.9;
   color: var(--base-text-color) !important;
   -webkit-text-fill-color: var(--base-text-color) !important;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-/* เฉพาะประโยค/บรรทัดล่าสุดที่กำลังพิมพ์: สีจะวิ่งกระพริบเป็นคลื่นไซเบอร์! */
-.editor .typing-active,
-.editor p.typing-active,
-.editor div.typing-active,
-.editor h1.typing-active,
-.editor h2.typing-active,
-.editor h3.typing-active,
-.editor li.typing-active {
-  background-image: var(--flowing-gradient) !important;
-  background-size: var(--flow-bg-size, 500px 100%) !important;
-  background-position: var(--flow-bg-pos, 0px 0) !important;
-  background-repeat: repeat-x !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  animation: cyberSentenceBlink 0.75s infinite alternate ease-in-out !important;
-  text-shadow: none !important;
-}
-
-@keyframes cyberSentenceBlink {
-  0% {
-    filter: brightness(1.05) contrast(1.1);
-    opacity: 0.88;
-  }
-  100% {
-    filter: brightness(1.55) contrast(1.3) drop-shadow(0 0 5px rgba(0, 255, 102, 0.45));
-    opacity: 1;
-  }
-}
-
-.hud-title-rainbow {
-  background-image: var(--flowing-gradient) !important;
-  background-size: var(--flow-bg-size, 500px 100%) !important;
-  background-position: var(--flow-bg-pos, 0px 0) !important;
-  background-repeat: repeat-x !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -255,7 +224,6 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   align-items: center;
   gap: 6px;
   transition: all 0.15s;
-  position: relative;
 }
 .matte-btn:hover {
   background: #141420;
@@ -283,7 +251,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   border-color: #00ff66;
 }
 
-/* ── SECONDARY TOOLBAR WITH THEME POPUP ── */
+/* ── SECONDARY FORMATTING TOOLBAR (คลีน เรียบร้อย ไม่มีเม็ดสีรก) ── */
 .matte-toolbar {
   height: 44px;
   background: rgba(3, 3, 6, 0.96);
@@ -295,7 +263,6 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   padding: 0 16px;
   flex-shrink: 0;
   gap: 8px;
-  position: relative;
 }
 
 .toolbar-cluster {
@@ -310,68 +277,6 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   height: 18px;
   background: var(--border-matte);
   margin: 0 4px;
-}
-
-/* ── THEME QUICK POPUP (ซ่อนไว้ กดแล้วค่อยเด้งขึ้นมา) ── */
-.theme-popup-panel {
-  display: none;
-  position: absolute;
-  top: 48px;
-  left: 16px;
-  width: 310px;
-  background: var(--bg-matte-panel);
-  border: 1px solid var(--border-matte-active);
-  border-radius: 8px;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.85);
-  z-index: 99999;
-  padding: 10px;
-}
-.theme-popup-panel.open { display: block; }
-.theme-popup-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--text-sub);
-  margin-bottom: 8px;
-  font-family: var(--font-mono);
-}
-.theme-popup-list {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.theme-pop-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: 6px;
-  background: var(--bg-matte-card);
-  cursor: pointer;
-  transition: all 0.12s;
-  border: 1px solid transparent;
-}
-.theme-pop-row:hover {
-  background: #151522;
-  border-color: #00ff66;
-}
-.theme-pop-row.active {
-  border-color: #00ff66;
-  background: #141424;
-}
-.theme-pop-preview {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-.theme-pop-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  flex: 1;
 }
 
 /* ── MAIN WORKSPACE ── */
@@ -531,7 +436,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   font-family: var(--font-mono);
 }
 
-/* Main Text Canvas: Solid Crisp Text + Active Sentence Flow */
+/* Main Text Canvas: Solid Crisp Hacker Text */
 .editor {
   flex: 1;
   min-height: 100%;
@@ -675,7 +580,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 .studio-modal {
   background: var(--bg-matte-panel);
   border: 1px solid #00ff66;
-  box-shadow: 0 20px 70px rgba(0, 255, 102, 0.15);
+  box-shadow: 0 20px 70px rgba(0, 255, 102, 0.2);
   border-radius: 10px;
   width: 620px;
   max-width: 95vw;
@@ -852,7 +757,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 
 @media print {
-  .matte-topbar, .matte-toolbar, .matte-sidebar, .matte-console-drawer, .matte-statusbar, .editor-line-numbers, .ps-prompt-banner, #matrixCanvas {
+  .matte-topbar, .matte-toolbar, .matte-sidebar, .matte-console-drawer, .matte-statusbar, .editor-line-numbers, .ps-prompt-banner, #matrixCanvas, #sparkCanvas {
     display: none !important;
   }
   .app-container, .matte-viewport { background: #fff !important; color: #000 !important; }
@@ -862,8 +767,9 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 </head>
 
 <body>
-<!-- ── MATRIX DIGITAL RAIN CANVAS ── -->
+<!-- ── CANVAS LAYERS ── -->
 <canvas id="matrixCanvas"></canvas>
+<canvas id="sparkCanvas"></canvas>
 
 <div class="app-container">
   <!-- ── TOP MATTE HUD BAR ── -->
@@ -885,9 +791,9 @@ body.hide-rain #matrixCanvas { opacity: 0; }
         🌧️ Matrix Rain
       </button>
 
-      <!-- Open Color Studio Modal Button -->
+      <!-- Open Color Studio Modal Button (หน้าต่างหลักสำหรับเลือกและเปลี่ยนธีมสี) -->
       <button class="matte-btn" onclick="openColorStudio()" title="เปิดสตูดิโอเลือกสีแฮกเกอร์และสร้างสีเอง">
-        🎨 สตูดิโอแฮกเกอร์
+        🎨 สตูดิโอสี
       </button>
 
       <button class="matte-btn" onclick="toggleSidebar()" title="เปิด/ปิด แถบไฟล์">📁 Tree</button>
@@ -917,34 +823,14 @@ body.hide-rain #matrixCanvas { opacity: 0; }
     </div>
   </div>
 
-  <!-- ── SECONDARY FORMATTING TOOLBAR WITH THEME QUICK-PICK POPUP ── -->
+  <!-- ── SECONDARY FORMATTING TOOLBAR (สะอาดตา ไม่มีเม็ดสีเกะกะ) ── -->
   <div class="matte-toolbar">
     <div class="toolbar-cluster">
-      <!-- Theme Quick-Picker Button (ซ่อนไว้ กดแล้วเด้งป็อปอัป) -->
-      <button class="matte-btn" id="themePopBtn" onclick="toggleThemePopup(event)" title="คลิกเพื่อเลือกธีมสี">
-        <span id="currentThemeDot" style="width:8px;height:8px;border-radius:50%;background:#00ff66;"></span>
-        <span id="currentThemeLabel">🎨 ธีมสี: The Matrix</span>
-        <span style="font-size:9px;opacity:0.7;">▼</span>
-      </button>
-
-      <!-- Theme Popup Dropdown Panel -->
-      <div class="theme-popup-panel" id="themePopupPanel">
-        <div class="theme-popup-head">
-          <span>⚡ เลือกธีมสีไซเบอร์</span>
-          <span style="cursor:pointer;font-size:14px;" onclick="closeThemePopup()">✕</span>
-        </div>
-        <div class="theme-popup-list" id="themePopupList"></div>
-      </div>
-
-      <div class="toolbar-sep"></div>
-
-      <!-- Speed Selector -->
-      <span style="font-size:11.5px;color:var(--text-dim);">ความเร็วกระพริบ:</span>
-      <select class="matte-select" id="speedSelect" onchange="setFlowSpeed(this.value)">
-        <option value="fast">เร็วสะใจ ⚡</option>
-        <option value="normal" selected>มาตรฐาน 🌊</option>
-        <option value="chill">ชิลล์ๆ นุ่มนวล 🍃</option>
-      </select>
+      <!-- Spark Effect Toggle (ประกายแสงวิ่งตามเคอร์เซอร์) -->
+      <label style="font-size:12px;color:#cbd5e1;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+        <input type="checkbox" id="sparkToggle" checked onchange="toggleSparks(this.checked)">
+        ✨ ประกายแสงตามเคอร์เซอร์
+      </label>
 
       <div class="toolbar-sep"></div>
 
@@ -1001,7 +887,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
         <span class="ps-prompt-tag">ROOT 7.4</span>
         <span class="ps-prompt-path">C:\Users\Administrator\CyberConsole</span>
         <span style="color:var(--text-dim);">❯</span>
-        <span class="ps-prompt-file hud-title-rainbow" id="currentFileBadge">ยินดีต้อนรับ.ps1</span>
+        <span class="ps-prompt-file" id="currentFileBadge">ยินดีต้อนรับ.ps1</span>
         <span class="ps-prompt-arrow">█</span>
       </div>
 
@@ -1009,7 +895,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
       <div class="editor-main-area" id="editorContainer">
         <div class="editor-line-numbers" id="lineNumbers">1</div>
         <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-             data-placeholder="// เริ่มพิมพ์ข้อความที่นี่... (สีวิ่งกระพริบจะปรากฏเฉพาะประโยคล่าสุดที่กำลังพิมพ์เท่านั้น)">
+             data-placeholder="// เริ่มพิมพ์ข้อความที่นี่... (ประกายแสงนีออนจะพุ่งวิ่งตามท้ายตัวหนังสือที่กำลังพิมพ์ทันที)">
         </div>
       </div>
 
@@ -1031,7 +917,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
     <span class="status-item" id="wordCount">0 คำ</span>
     <span class="status-item" id="charCount">0 ตัวอักษร</span>
     <span class="status-item" id="cursorPos">LN 1, COL 1</span>
-    <span class="status-item rgb-tag" id="themeStatus">💻 THE MATRIX (ACTIVE GLOW)</span>
+    <span class="status-item rgb-tag" id="themeStatus">💻 THE MATRIX (NEON SPARKS)</span>
     <span class="status-item" style="margin-left:auto;color:#00ff66;" id="sfxStatus">♪ Galaxy 100 V2</span>
   </div>
 </div>
@@ -1047,7 +933,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
     </div>
     <div class="matte-modal-body" style="max-height:75vh;overflow-y:auto;">
       <!-- Category 1: Pure Cyber Hacker Themes -->
-      <div class="studio-cat-title">💻 ธีมสีกระพริบประโยคล่าสุด (ACTIVE GLOW PALETTES):</div>
+      <div class="studio-cat-title">💻 ธีมสีนีออนไซเบอร์ (NEON CYBER THEMES):</div>
       <div class="studio-grid" id="hackerGrid"></div>
 
       <!-- Category 2: Multicolor Waves -->
@@ -1059,23 +945,19 @@ body.hide-rain #matrixCanvas { opacity: 0; }
       <div class="custom-maker-box">
         <div class="color-inputs-row">
           <div class="color-input-item">
-            <span>สีพื้นลึก</span>
-            <input type="color" id="customC1" value="#003b14" onchange="updateCustomGradient()">
+            <span>สีตัวหนังสือ</span>
+            <input type="color" id="customC1" value="#00ff66" onchange="updateCustomGradient()">
           </div>
           <div class="color-input-item">
-            <span>สีเขียวนีออน</span>
-            <input type="color" id="customC2" value="#00ff66" onchange="updateCustomGradient()">
+            <span>สีประกายแสง 1</span>
+            <input type="color" id="customC2" value="#39ff14" onchange="updateCustomGradient()">
           </div>
           <div class="color-input-item">
-            <span>สีฟ้านีออน</span>
+            <span>สีประกายแสง 2</span>
             <input type="color" id="customC3" value="#00e5ff" onchange="updateCustomGradient()">
           </div>
-          <div class="color-input-item">
-            <span>สีพื้นลึก</span>
-            <input type="color" id="customC4" value="#003b14" onchange="updateCustomGradient()">
-          </div>
         </div>
-        <div id="customPreviewBar" style="height:18px;border-radius:4px;background:linear-gradient(90deg, #003b14 0%, #00ff66 35%, #00e5ff 65%, #003b14 100%);"></div>
+        <div id="customPreviewBar" style="height:18px;border-radius:4px;background:linear-gradient(90deg, #00ff66 0%, #39ff14 50%, #00e5ff 100%);"></div>
         <button class="matte-btn" style="background:#006622;color:#00ff66;border-color:#00ff66;justify-content:center;" onclick="applyCustomGradient()">
           ✓ ใช้สีที่ผสมเองนี้ทันที
         </button>
@@ -1117,25 +999,25 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 /* ═══════════════════════════════════════════════════════════════
    MATRIX DIGITAL RAIN CANVAS ENGINE (ฝนโค้ด Matrix ในหนัง)
    ═══════════════════════════════════════════════════════════════ */
-const canvas = document.getElementById('matrixCanvas');
-const ctx = canvas.getContext('2d');
+const matrixCanvas = document.getElementById('matrixCanvas');
+const mCtx = matrixCanvas.getContext('2d');
 let rainOn = localStorage.getItem('cn_matrix_rain') !== 'off';
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+function resizeMatrix() {
+  matrixCanvas.width = window.innerWidth;
+  matrixCanvas.height = window.innerHeight;
 }
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+resizeMatrix();
+window.addEventListener('resize', resizeMatrix);
 
 const katakana = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF$#@%&*<>{}[]=+/\\';
 const chars = katakana.split('');
 const fontSize = 14;
-let columns = Math.floor(canvas.width / fontSize);
+let columns = Math.floor(matrixCanvas.width / fontSize);
 let drops = [];
 
 function initDrops() {
-  columns = Math.floor(canvas.width / fontSize);
+  columns = Math.floor(matrixCanvas.width / fontSize);
   drops = [];
   for (let x = 0; x < columns; x++) {
     drops[x] = Math.floor(Math.random() * -50);
@@ -1146,21 +1028,21 @@ window.addEventListener('resize', initDrops);
 
 function drawMatrixRain() {
   if (!rainOn) return;
-  ctx.fillStyle = 'rgba(3, 3, 5, 0.08)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  mCtx.fillStyle = 'rgba(3, 3, 5, 0.08)';
+  mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
 
-  ctx.fillStyle = '#00ff66';
-  ctx.font = fontSize + 'px monospace';
+  mCtx.fillStyle = '#00ff66';
+  mCtx.font = fontSize + 'px monospace';
 
   for (let i = 0; i < drops.length; i++) {
     const text = chars[Math.floor(Math.random() * chars.length)];
     const x = i * fontSize;
     const y = drops[i] * fontSize;
 
-    ctx.fillStyle = '#39ff14';
-    ctx.fillText(text, x, y);
+    mCtx.fillStyle = '#39ff14';
+    mCtx.fillText(text, x, y);
 
-    if (y > canvas.height && Math.random() > 0.975) {
+    if (y > matrixCanvas.height && Math.random() > 0.975) {
       drops[i] = 0;
     }
     drops[i]++;
@@ -1173,204 +1055,235 @@ function toggleMatrixRain() {
   localStorage.setItem('cn_matrix_rain', rainOn ? 'on' : 'off');
   document.body.classList.toggle('hide-rain', !rainOn);
   document.getElementById('rainBtn').classList.toggle('active', rainOn);
-  if (!rainOn) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!rainOn) mCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
 }
 if (!rainOn) document.body.classList.add('hide-rain');
 
 /* ═══════════════════════════════════════════════════════════════
-   COLOR THEMES (กำหนดสีพื้นฐาน + สีที่วิ่งกระพริบ)
+   NEON CURSOR SPARKS & COMET TRAIL ENGINE (ประกายแสงวิ่งตามเคอร์เซอร์)
+   ═══════════════════════════════════════════════════════════════ */
+const sparkCanvas = document.getElementById('sparkCanvas');
+const sCtx = sparkCanvas.getContext('2d');
+let sparksEnabled = localStorage.getItem('cn_sparks') !== 'off';
+
+function resizeSparkCanvas() {
+  sparkCanvas.width = window.innerWidth;
+  sparkCanvas.height = window.innerHeight;
+}
+resizeSparkCanvas();
+window.addEventListener('resize', resizeSparkCanvas);
+
+let particles = [];
+let rings = [];
+
+class SparkParticle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.vx = (Math.random() - 0.5) * 6;
+    this.vy = (Math.random() - 0.7) * 5;
+    this.size = Math.random() * 3.5 + 1.5;
+    this.life = 1.0;
+    this.decay = Math.random() * 0.04 + 0.025;
+    this.color = color;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vx *= 0.94;
+    this.vy *= 0.94;
+    this.life -= this.decay;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.life);
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+class ShockwaveRing {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.radius = 2;
+    this.maxRadius = Math.random() * 16 + 12;
+    this.life = 1.0;
+    this.color = color;
+  }
+  update() {
+    this.radius += (this.maxRadius - this.radius) * 0.18;
+    this.life -= 0.06;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.life * 0.8);
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function spawnCursorSparks() {
+  if (!sparksEnabled) return;
+  const coords = getCaretCoordinates();
+  if (!coords) return;
+
+  const curTheme = COLOR_THEMES[currentFlowingTheme] || COLOR_THEMES['matrix-hacker'];
+  const palette = curTheme.sparkColors || ['#00ff66', '#39ff14', '#00e5ff'];
+
+  // Spawn Shockwave Ring
+  rings.push(new ShockwaveRing(coords.x, coords.y, palette[0]));
+
+  // Spawn 6-9 Neon Sparks
+  const count = Math.floor(Math.random() * 4) + 6;
+  for (let i = 0; i < count; i++) {
+    const col = palette[Math.floor(Math.random() * palette.length)];
+    particles.push(new SparkParticle(coords.x, coords.y, col));
+  }
+}
+
+function renderSparksLoop() {
+  sCtx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+
+  for (let i = rings.length - 1; i >= 0; i--) {
+    rings[i].update();
+    rings[i].draw(sCtx);
+    if (rings[i].life <= 0) rings.splice(i, 1);
+  }
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    particles[i].draw(sCtx);
+    if (particles[i].life <= 0) particles.splice(i, 1);
+  }
+
+  requestAnimationFrame(renderSparksLoop);
+}
+requestAnimationFrame(renderSparksLoop);
+
+function toggleSparks(checked) {
+  sparksEnabled = checked;
+  localStorage.setItem('cn_sparks', checked ? 'on' : 'off');
+}
+
+function getCaretCoordinates() {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return null;
+  const range = sel.getRangeAt(0).cloneRange();
+  
+  // Try getClientRects
+  if (range.getClientRects) {
+    const rects = range.getClientRects();
+    if (rects.length > 0) {
+      const r = rects[rects.length - 1];
+      return { x: r.right || r.left + 8, y: r.top + (r.height / 2) };
+    }
+  }
+
+  // Fallback to getBoundingClientRect
+  const rect = range.getBoundingClientRect();
+  if (rect && (rect.width !== 0 || rect.height !== 0)) {
+    return { x: rect.right || rect.left + 8, y: rect.top + (rect.height / 2) };
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COLOR THEMES
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   'matrix-hacker': {
     category: 'hacker',
-    name: 'The Matrix (Green)',
-    label: '💚 The Matrix (เขียว)',
+    name: 'The Matrix (Emerald Green)',
+    label: '💚 The Matrix (เขียวนีออน)',
     baseColor: '#00ff66',
-    dotColor: '#00ff66',
-    gradient: 'linear-gradient(90deg, #003b14 0%, #008f39 20%, #00ff66 40%, #00f59b 50%, #00e5ff 65%, #008f39 85%, #003b14 100%)'
+    sparkColors: ['#00ff66', '#39ff14', '#00e5ff', '#86efac'],
+    gradient: 'linear-gradient(90deg, #003b14 0%, #00ff66 50%, #39ff14 100%)'
   },
   'cyber-cyan': {
     category: 'hacker',
-    name: 'Cyberpunk (Cyan-Pink)',
+    name: 'Cyberpunk 2077 (Cyan-Pink)',
     label: '💙 Cyberpunk (ฟ้า-ชมพู)',
     baseColor: '#00f0ff',
-    dotColor: '#00f0ff',
-    gradient: 'linear-gradient(90deg, #001f3f 0%, #0074d9 20%, #00f0ff 40%, #ff007f 55%, #7928ca 75%, #0074d9 90%, #001f3f 100%)'
+    sparkColors: ['#00f0ff', '#ff007f', '#7928ca', '#38bdf8'],
+    gradient: 'linear-gradient(90deg, #001f3f 0%, #00f0ff 50%, #ff007f 100%)'
   },
   'mr-robot-amber': {
     category: 'hacker',
-    name: 'Mr. Robot (Amber CRT)',
+    name: 'Mr. Robot (Amber Gold)',
     label: '💛 Mr. Robot (ส้มทอง)',
     baseColor: '#ffb703',
-    dotColor: '#ffb703',
-    gradient: 'linear-gradient(90deg, #4d2600 0%, #994d00 20%, #ff8000 40%, #ffaa00 55%, #ffcc00 70%, #994d00 85%, #4d2600 100%)'
+    sparkColors: ['#ffb703', '#ff8000', '#fde047', '#ffaa00'],
+    gradient: 'linear-gradient(90deg, #4d2600 0%, #ffb703 50%, #ff8000 100%)'
   },
   'red-breach': {
     category: 'hacker',
     name: 'Red Alert (Blood Exploit)',
     label: '❤️ Red Alert (แดงเพลิง)',
     baseColor: '#ff0055',
-    dotColor: '#ff0055',
-    gradient: 'linear-gradient(90deg, #3b0008 0%, #800014 20%, #ff0033 40%, #ff3366 55%, #ff0055 70%, #800014 85%, #3b0008 100%)'
+    sparkColors: ['#ff0055', '#ff3366', '#ef4444', '#fca5a5'],
+    gradient: 'linear-gradient(90deg, #3b0008 0%, #ff0055 50%, #ff3366 100%)'
   },
   'ghost-violet': {
     category: 'hacker',
     name: 'Ghost in the Shell (Violet)',
     label: '💜 Ghost Violet (ม่วงนีออน)',
     baseColor: '#c084fc',
-    dotColor: '#c084fc',
-    gradient: 'linear-gradient(90deg, #20003b 0%, #580099 20%, #b300ff 40%, #e000ff 55%, #ff00b3 70%, #580099 85%, #20003b 100%)'
+    sparkColors: ['#c084fc', '#d946ef', '#b300ff', '#e000ff'],
+    gradient: 'linear-gradient(90deg, #20003b 0%, #b300ff 50%, #e000ff 100%)'
   },
   'toxic-lime': {
     category: 'hacker',
-    name: 'Toxic Biohazard (Lime)',
+    name: 'Toxic Biohazard (Lime Acid)',
     label: '☣️ Toxic Acid (เขียวมะนาว)',
     baseColor: '#a6ff00',
-    dotColor: '#a6ff00',
-    gradient: 'linear-gradient(90deg, #1f2e00 0%, #5c8a00 20%, #a6ff00 40%, #ccff00 55%, #e6ff00 70%, #5c8a00 85%, #1f2e00 100%)'
+    sparkColors: ['#a6ff00', '#ccff00', '#39ff14', '#e6ff00'],
+    gradient: 'linear-gradient(90deg, #1f2e00 0%, #a6ff00 50%, #ccff00 100%)'
   },
   'rainbow-decrypt': {
     category: 'rainbow',
     name: 'Quantum Spectral (Rainbow)',
     label: '🌈 Quantum Spectral (รุ้ง)',
     baseColor: '#f8fafc',
-    dotColor: '#ff0055',
-    gradient: 'linear-gradient(90deg, #ff0055 0%, #ff5500 16%, #ffcc00 33%, #00ff66 50%, #00d4ff 66%, #a800ff 83%, #ff0055 100%)'
+    sparkColors: ['#ff0055', '#ffcc00', '#00ff66', '#00d4ff', '#a800ff'],
+    gradient: 'linear-gradient(90deg, #ff0055 0%, #00ff66 50%, #00d4ff 100%)'
   }
 };
 
 let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'matrix-hacker';
-let speedMultiplier = 1.0;
-let themePopupOpen = false;
 
-function setFlowingTheme(themeKey, customGradient = null) {
-  if (customGradient) {
+function setFlowingTheme(themeKey, customData = null) {
+  if (customData) {
     currentFlowingTheme = 'custom';
     localStorage.setItem('cn_flowing_theme', 'custom');
-    localStorage.setItem('cn_custom_gradient', customGradient);
-    document.documentElement.style.setProperty('--flowing-gradient', customGradient);
-    document.documentElement.style.setProperty('--base-text-color', '#00ff66');
-    const lbl = document.getElementById('currentThemeLabel');
-    if (lbl) lbl.textContent = `🎨 ธีมสี: ผสมเอง`;
+    localStorage.setItem('cn_custom_color', customData.baseColor);
+    document.documentElement.style.setProperty('--base-text-color', customData.baseColor);
     const status = document.getElementById('themeStatus');
-    if (status) status.textContent = `💻 CUSTOM (ACTIVE GLOW)`;
+    if (status) status.textContent = `💻 CUSTOM (NEON SPARKS)`;
   } else {
     if (!COLOR_THEMES[themeKey]) themeKey = 'matrix-hacker';
     currentFlowingTheme = themeKey;
     localStorage.setItem('cn_flowing_theme', themeKey);
 
     const t = COLOR_THEMES[themeKey];
-    document.documentElement.style.setProperty('--flowing-gradient', t.gradient);
     document.documentElement.style.setProperty('--base-text-color', t.baseColor || '#00ff66');
 
-    const dot = document.getElementById('currentThemeDot');
-    if (dot) dot.style.background = t.dotColor || '#00ff66';
-    const lbl = document.getElementById('currentThemeLabel');
-    if (lbl) lbl.textContent = `🎨 ธีมสี: ${t.name}`;
     const status = document.getElementById('themeStatus');
-    if (status) status.textContent = `💻 ${t.name.toUpperCase()} (ACTIVE GLOW)`;
+    if (status) status.textContent = `💻 ${t.name.toUpperCase()} (NEON SPARKS)`;
   }
-  buildThemePopupList();
   renderStudioGrid();
 }
-
-function setFlowSpeed(speedKey) {
-  if (speedKey === 'fast') speedMultiplier = 2.0;
-  else if (speedKey === 'chill') speedMultiplier = 0.5;
-  else speedMultiplier = 1.0;
-  localStorage.setItem('cn_flow_speed_key', speedKey);
-  const sel = document.getElementById('speedSelect');
-  if (sel) sel.value = speedKey;
-}
-
-/* ── THEME POPUP DROPDOWN ── */
-function toggleThemePopup(e) {
-  e.stopPropagation();
-  themePopupOpen = !themePopupOpen;
-  document.getElementById('themePopupPanel').classList.toggle('open', themePopupOpen);
-  if (themePopupOpen) buildThemePopupList();
-}
-
-function closeThemePopup() {
-  themePopupOpen = false;
-  document.getElementById('themePopupPanel').classList.remove('open');
-}
-
-document.addEventListener('click', e => {
-  if (themePopupOpen && !document.getElementById('themePopupPanel').contains(e.target) && e.target.id !== 'themePopBtn') {
-    closeThemePopup();
-  }
-});
-
-function buildThemePopupList() {
-  const container = document.getElementById('themePopupList');
-  if (!container) return;
-  container.innerHTML = '';
-  Object.keys(COLOR_THEMES).forEach(k => {
-    const t = COLOR_THEMES[k];
-    const row = document.createElement('div');
-    row.className = 'theme-pop-row' + (currentFlowingTheme === k ? ' active' : '');
-    row.innerHTML = `
-      <div class="theme-pop-preview" style="background:${t.gradient}"></div>
-      <div class="theme-pop-name">${t.label}</div>
-    `;
-    row.onclick = () => {
-      setFlowingTheme(k);
-      closeThemePopup();
-    };
-    container.appendChild(row);
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   DYNAMIC ACTIVE SENTENCE / TYPING HIGHLIGHT TRACKER
-   (วิ่งเฉพาะประโยคล่าสุดที่กำลังพิมพ์)
-   ═══════════════════════════════════════════════════════════════ */
-let activeSentenceTimer = null;
-
-function highlightActiveSentence() {
-  const sel = window.getSelection();
-  if (!sel || !sel.rangeCount) return;
-  
-  let node = sel.anchorNode;
-  if (!node) return;
-  if (node.nodeType === 3) node = node.parentNode; // text node -> parent element
-
-  // เดินขึ้นไปหา block container ภายใน editor
-  let targetBlock = node;
-  while (targetBlock && targetBlock !== editor && targetBlock.parentNode !== editor) {
-    targetBlock = targetBlock.parentNode;
-  }
-
-  // เคลียร์ typing-active จากบรรทัดอื่นทั้งหมด
-  editor.querySelectorAll('.typing-active').forEach(el => {
-    if (el !== targetBlock) el.classList.remove('typing-active');
-  });
-
-  if (targetBlock && targetBlock !== editor) {
-    targetBlock.classList.add('typing-active');
-  }
-
-  // เมื่อหยุดพิมพ์ 4 วินาที ให้คงสถานะไว้หรือค่อยๆ ผ่อนคลาย
-  clearTimeout(activeSentenceTimer);
-  activeSentenceTimer = setTimeout(() => {
-    // ยังคงให้ประโยคที่เคอร์เซอร์อยู่เรืองแสงไว้
-  }, 4000);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   60FPS FLUID MOTION ENGINE (สำหรับประโยคที่กำลังพิมพ์)
-   ═══════════════════════════════════════════════════════════════ */
-let flowPosPx = 0;
-
-function hackerFlowTick() {
-  flowPosPx += (2.4 * speedMultiplier);
-  if (flowPosPx >= 100000) flowPosPx = 0;
-
-  document.documentElement.style.setProperty('--flow-bg-pos', `${flowPosPx.toFixed(1)}px 0`);
-  requestAnimationFrame(hackerFlowTick);
-}
-requestAnimationFrame(hackerFlowTick);
 
 /* ═══════════════════════════════════════════════════════════════
    FONT PERSISTENCE ENGINE (บันทึกขนาดและฟอนต์ถาวร)
@@ -1430,8 +1343,7 @@ function updateCustomGradient() {
   const c1 = document.getElementById('customC1').value;
   const c2 = document.getElementById('customC2').value;
   const c3 = document.getElementById('customC3').value;
-  const c4 = document.getElementById('customC4').value;
-  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 35%, ${c3} 65%, ${c4} 100%)`;
+  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 50%, ${c3} 100%)`;
   document.getElementById('customPreviewBar').style.background = grad;
 }
 
@@ -1439,9 +1351,15 @@ function applyCustomGradient() {
   const c1 = document.getElementById('customC1').value;
   const c2 = document.getElementById('customC2').value;
   const c3 = document.getElementById('customC3').value;
-  const c4 = document.getElementById('customC4').value;
-  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 35%, ${c3} 65%, ${c4} 100%)`;
-  setFlowingTheme(null, grad);
+  COLOR_THEMES['custom'] = {
+    category: 'hacker',
+    name: 'Custom Palette',
+    label: '⚡ Custom Decryptor',
+    baseColor: c1,
+    sparkColors: [c1, c2, c3],
+    gradient: `linear-gradient(90deg, ${c1} 0%, ${c2} 50%, ${c3} 100%)`
+  };
+  setFlowingTheme('custom', COLOR_THEMES['custom']);
   closeModals();
 }
 
@@ -1776,11 +1694,10 @@ function openFile(n) {
   renderTabsAndFiles();
   attachResizeAll();
   updateMetrics();
-  highlightActiveSentence();
   editor.focus();
 }
 
-/* ── Keystrokes ── */
+/* ── Keystrokes & Typing Spark Trigger ── */
 editor.addEventListener('keydown', e => {
   const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ';
   playKey(special);
@@ -1789,27 +1706,22 @@ editor.addEventListener('keydown', e => {
     e.preventDefault();
     document.execCommand('insertText', false, '    ');
   }
+
+  // Trigger neon sparks on keystrokes
+  setTimeout(spawnCursorSparks, 10);
 });
 
 editor.addEventListener('input', () => {
   scheduleSave();
   updateMetrics();
-  highlightActiveSentence();
-});
-
-editor.addEventListener('click', () => {
-  highlightActiveSentence();
-});
-
-editor.addEventListener('keyup', () => {
-  highlightActiveSentence();
+  spawnCursorSparks();
 });
 
 document.addEventListener('keydown', e => {
   const mod = e.ctrlKey || e.metaKey;
   if (mod && e.key === 's') { e.preventDefault(); doSave(); logCmd('// FILE ENCRYPTED & SAVED: ' + currentFile, 'success'); }
   if (mod && e.key === 'n') { e.preventDefault(); openCreate(); }
-  if (e.key === 'Escape') { closeModals(); sfxPanelOpen = false; document.getElementById('sfxPanel').classList.remove('open'); closeThemePopup(); }
+  if (e.key === 'Escape') { closeModals(); sfxPanelOpen = false; document.getElementById('sfxPanel').classList.remove('open'); }
   if (e.key === 'Enter' && document.getElementById('createModal').classList.contains('show')) { e.preventDefault(); confirmCreate(); }
 });
 
@@ -2168,12 +2080,12 @@ if ('serviceWorker' in navigator) {
    ═══════════════════════════════════════════════════════════════ */
 if (Object.keys(files).length === 0) {
   files['ยินดีต้อนรับ.ps1'] = [
-    '<h2>// CYBERPUNK TERMINAL — ACTIVE SENTENCE GLOW ⚡</h2>',
+    '<h2>// HOLLYWOOD HACKER TERMINAL — NEON SPARK ENGINE ⚡</h2>',
     '<p>&nbsp;</p>',
-    '<p>ยินดีต้อนรับสู่ระบบ CodeNote โหมด <b>สีวิ่งกระพริบเฉพาะประโยคล่าสุดที่พิมพ์</b></p>',
-    '<p>• 💡 <b>ข้อความทั่วไป:</b> เป็นสีไซเบอร์คมชัด สบายตา อ่านง่าย</p>',
-    '<p>• ✨ <b>ประโยคที่กำลังพิมพ์:</b> สีจะวิ่งเป็นคลื่นไซเบอร์กระพริบตามจังหวะพิมพ์อย่างโดดเด่น</p>',
-    '<p>• 🎨 <b>ปุ่มเปลี่ยนธีมสีด่วน:</b> ซ่อนไว้เรียบร้อย กดที่ปุ่ม <code>🎨 ธีมสี</code> บนแถบเพื่อเปิดป็อปอัป</p>',
+    '<p>ยินดีต้อนรับสู่ระบบ CodeNote ในธีม <b>ประกายแสงนีออนวิ่งตามเคอร์เซอร์ (Neon Spark Trail)</b></p>',
+    '<p>• 🟢 <b>ตัวหนังสือ:</b> เป็นสีไซเบอร์เนื้อแน่นคมชัด สบายตา อ่านง่าย ไม่กระตุก</p>',
+    '<p>• ✨ <b>เวลาพิมพ์:</b> จะมีลำแสงและประกายดาวนีออนพุ่งกระจายวิ่งตามท้ายเคอร์เซอร์แบบเรียลไทม์</p>',
+    '<p>• 🎨 <b>ปุ่มเลือกสี:</b> ซ่อนเก็บไว้ในปุ่ม <code>🎨 สตูดิโอสี</code> ด้านบนขวา กดเพื่อเปิดหน้าต่างเลือกสี</p>',
     '<p>&nbsp;</p>',
     '<p><strong># คีย์ลัด:</strong></p>',
     '<p>• <b>Ctrl+S:</b> บันทึก · <b>Ctrl+N:</b> สร้างโน้ตใหม่ · <b>Tab:</b> เว้นวรรคย่อหน้า</p>'
@@ -2181,16 +2093,14 @@ if (Object.keys(files).length === 0) {
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
 
-const savedCustom = localStorage.getItem('cn_custom_gradient');
+const savedCustom = localStorage.getItem('cn_custom_color');
 if (currentFlowingTheme === 'custom' && savedCustom) {
-  setFlowingTheme(null, savedCustom);
+  setFlowingTheme('custom', { baseColor: savedCustom });
 } else {
   setFlowingTheme(currentFlowingTheme);
 }
 setFontSize(currentFontSize);
 setFontFamily(currentFontFamily);
-const savedSpeed = localStorage.getItem('cn_flow_speed_key') || 'normal';
-setFlowSpeed(savedSpeed);
 buildSfxPanel();
 openFile(Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1');
 </script>
