@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote — Matte Black Terminal</title>
+<title>CodeNote — Matte Black White & Flowing Colors</title>
 <link rel="manifest" href="/Note/manifest.json">
-<meta name="theme-color" content="#0e0e11">
+<meta name="theme-color" content="#0c0c0f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&family=Cascadia+Code:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
   --bg-matte-card: #16161c;
   --border-matte: #22222a;
   --border-matte-active: #383846;
-  --text-green-bright: #4ade80;
+  --text-white: #f8fafc;
   --text-dim: #64748b;
   --text-sub: #94a3b8;
   --accent-cyan: #06b6d4;
@@ -30,8 +30,12 @@
   --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', sans-serif;
   --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 
-  /* Dynamic Flowing Gradient Preset (Default Rainbow) */
-  --flowing-gradient: linear-gradient(90deg, #ff1744 0%, #ff6d00 14%, #ffd600 28%, #00e676 42%, #00e5ff 56%, #7c3aed 70%, #ec4899 84%, #ff1744 100%);
+  /* Flowing Gradient for Headings & Accents */
+  --pure-flowing-gradient: linear-gradient(90deg, #ff1744 0%, #ff6d00 14%, #ffd600 28%, #00e676 42%, #00e5ff 56%, #7c3aed 70%, #ec4899 84%, #ff1744 100%);
+  
+  /* White Base with Flowing Color Wave Gradient */
+  --white-flowing-gradient: linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #ff1744 28%, #ffd600 42%, #00e5ff 56%, #ec4899 70%, #ffffff 85%, #ffffff 100%);
+  
   --flowing-speed: 4s;
 }
 
@@ -39,62 +43,85 @@ html,body {
   height: 100%;
   width: 100%;
   background: var(--bg-matte-base);
-  color: #f1f5f9;
+  color: var(--text-white);
   font-family: var(--font-thai);
   overflow: hidden;
   user-select: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CRISP ANIMATED FLOWING GRADIENT TEXT (ไม่มีแสงฟุ้ง ไม่เบลอ)
+   CRISP ANIMATED FLOWING GRADIENT (ไม่มีแสงฟุ้ง ไม่เบลอ ไม่ทับซ้อน)
    ═══════════════════════════════════════════════════════════════ */
 @keyframes rainbowFlowSharp {
   0%   { background-position: 0% 50%; }
   100% { background-position: 300% 50%; }
 }
 
-/* ── Mode 1: Full Flowing Text (ตัวหนังสือทุกตัววิ่งสีรุ้งสดใส) ── */
-body.mode-full-flow .editor,
-body.mode-full-flow .editor *,
-.rainbow-sharp,
-.hud-title-rainbow {
-  background: var(--flowing-gradient) !important;
+/* ── Mode 1: White Base with Continuous Flowing Color Beam (ตัวหนังสือสีขาว พร้อมสีวิ่งผ่านตลอดเวลา) ── */
+body.mode-white-flow .editor,
+body.mode-white-flow .editor p,
+body.mode-white-flow .editor div,
+body.mode-white-flow .editor li {
+  background: var(--white-flowing-gradient) !important;
   background-size: 300% 100% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
   text-shadow: none !important;
   filter: none !important;
-}
-
-body.mode-full-flow .editor p,
-body.mode-full-flow .editor div,
-body.mode-full-flow .editor h1,
-body.mode-full-flow .editor h2,
-body.mode-full-flow .editor h3,
-body.mode-full-flow .editor li {
-  background: inherit;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   display: block !important;
   margin-bottom: 8px;
 }
 
-/* ── Mode 2: Hybrid Mode (เนื้อหาเขียว + หัวข้อสีวิ่ง) ── */
-body.mode-hybrid-flow .editor {
-  color: var(--text-green-bright);
-}
-body.mode-hybrid-flow .editor h1,
-body.mode-hybrid-flow .editor h2,
-body.mode-hybrid-flow .editor h3,
-body.mode-hybrid-flow .editor strong,
-body.mode-hybrid-flow .editor b,
-body.mode-hybrid-flow .rainbow-sharp {
-  background: var(--flowing-gradient) !important;
+/* ── Mode 2: Full Color Flow (ตัวหนังสือวิ่งสีเต็มตัว) ── */
+body.mode-full-flow .editor,
+body.mode-full-flow .editor p,
+body.mode-full-flow .editor div,
+body.mode-full-flow .editor li {
+  background: var(--pure-flowing-gradient) !important;
   background-size: 300% 100% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
+  text-shadow: none !important;
+  filter: none !important;
+  display: block !important;
+  margin-bottom: 8px;
+}
+
+/* ── Mode 3: Crisp Solid White + Flowing Headings (ตัวหนังสือสีขาวคม + หัวข้อสีวิ่ง) ── */
+body.mode-solid-white .editor {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  background: none !important;
+}
+body.mode-solid-white .editor p,
+body.mode-solid-white .editor div,
+body.mode-solid-white .editor li {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  background: none !important;
+  display: block !important;
+  margin-bottom: 8px;
+}
+
+/* Headings & Highlights always use Pure Vibrant Flowing Colors */
+.rainbow-sharp,
+.editor h1,
+.editor h2,
+.editor h3,
+.editor strong,
+.editor b,
+.hud-title-rainbow {
+  background: var(--pure-flowing-gradient) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
+  font-weight: 700;
+  display: inline-block;
+  text-shadow: none !important;
+  filter: none !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -248,7 +275,7 @@ body.mode-hybrid-flow .rainbow-sharp {
   border-color: var(--accent-cyan);
 }
 
-/* ── SECONDARY FORMATTING & PALETTE TOOLBAR ── */
+/* ── SECONDARY FORMATTING & IN-APP PALETTE TOOLBAR ── */
 .matte-toolbar {
   height: 44px;
   background: var(--bg-matte-dark);
@@ -425,7 +452,7 @@ body.mode-hybrid-flow .rainbow-sharp {
   font-weight: 700;
 }
 .ps-prompt-arrow {
-  color: var(--text-green-bright);
+  color: var(--accent-cyan);
   font-weight: 700;
 }
 
@@ -455,7 +482,7 @@ body.mode-hybrid-flow .rainbow-sharp {
   font-family: var(--font-mono);
 }
 
-/* Main Text Canvas: Crisp Flowing Text */
+/* Main Text Canvas: Crisp White Base with Flowing Color */
 .editor {
   flex: 1;
   min-height: 100%;
@@ -478,6 +505,7 @@ body.mode-hybrid-flow .rainbow-sharp {
 .editor:empty::before {
   content: attr(data-placeholder);
   color: #383846;
+  -webkit-text-fill-color: #383846;
   pointer-events: none;
 }
 
@@ -554,7 +582,7 @@ body.mode-hybrid-flow .rainbow-sharp {
 }
 .console-log.open { display: flex; }
 .console-row { line-height: 1.5; white-space: pre-wrap; }
-.console-row.success { color: var(--text-green-bright); }
+.console-row.success { color: #4ade80; }
 .console-row.error { color: #f43f5e; }
 .console-row.info { color: var(--accent-cyan); }
 
@@ -564,7 +592,7 @@ body.mode-hybrid-flow .rainbow-sharp {
   gap: 10px;
 }
 .cli-prompt-label {
-  color: var(--text-green-bright);
+  color: #4ade80;
   font-weight: 700;
   font-size: 14px;
   font-family: var(--font-mono);
@@ -600,16 +628,16 @@ body.mode-hybrid-flow .rainbow-sharp {
   gap: 5px;
   white-space: nowrap;
 }
-.status-item.save-ok { color: var(--text-green-bright); font-weight: 600; }
+.status-item.save-ok { color: #4ade80; font-weight: 600; }
 .status-item.rgb-tag { color: var(--accent-cyan); font-weight: 600; }
 
-/* ── COLOR STUDIO MODAL (เลือกสีวิ่งในแอพ) ── */
+/* ── COLOR STUDIO MODAL ── */
 .studio-modal {
   background: var(--bg-matte-panel);
   border: 1px solid var(--border-matte-active);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95);
   border-radius: 10px;
-  width: 520px;
+  width: 540px;
   max-width: 95vw;
 }
 .studio-grid {
@@ -781,7 +809,7 @@ body.mode-hybrid-flow .rainbow-sharp {
 </style>
 </head>
 
-<body class="mode-full-flow">
+<body class="mode-white-flow">
 <div class="app-container">
   <!-- ── TOP MATTE HUD BAR ── -->
   <div class="matte-topbar">
@@ -832,17 +860,18 @@ body.mode-hybrid-flow .rainbow-sharp {
   <!-- ── SECONDARY FORMATTING & IN-APP PALETTE TOOLBAR ── -->
   <div class="matte-toolbar">
     <div class="toolbar-cluster">
-      <!-- Quick Palette Swatches Bar right in the toolbar -->
-      <span style="font-size:11.5px;color:var(--text-dim);">🎨 สลับสีด่วน:</span>
+      <!-- Quick Palette Swatches Bar -->
+      <span style="font-size:11.5px;color:var(--text-dim);">🎨 โทนสีวิ่ง:</span>
       <div class="palette-swatches" id="quickSwatchesBar"></div>
 
       <div class="toolbar-sep"></div>
 
-      <!-- Flowing Text Scope Selector -->
-      <span style="font-size:11.5px;color:var(--text-dim);">ขอบเขตสีวิ่ง:</span>
+      <!-- Flowing Text Mode Selector -->
+      <span style="font-size:11.5px;color:var(--text-dim);">รูปแบบตัวหนังสือ:</span>
       <select class="matte-select" id="flowModeSelect" onchange="setFlowMode(this.value)">
-        <option value="full" selected>🌈 วิ่งทุกตัวอักษร</option>
-        <option value="hybrid">🌿 สีเขียว + หัวข้อสีวิ่ง</option>
+        <option value="white-flow" selected>⚪ ตัวหนังสือสีขาว + สีวิ่งผ่าน</option>
+        <option value="full-flow">🌈 ตัวหนังสือสีวิ่งเต็มสี</option>
+        <option value="solid-white">⚪ สีขาวล้วน + หัวข้อสีวิ่ง</option>
       </select>
 
       <div class="toolbar-sep"></div>
@@ -907,7 +936,7 @@ body.mode-hybrid-flow .rainbow-sharp {
       <div class="editor-main-area" id="editorContainer">
         <div class="editor-line-numbers" id="lineNumbers">1</div>
         <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-             data-placeholder="เริ่มพิมพ์ข้อความที่นี่... (ตัวหนังสือมีสีวิ่งลื่นไหล คมชัด · ปรับสีได้สดๆ ที่แถบด้านบนหรือกดสตูดิโอสี)">
+             data-placeholder="เริ่มพิมพ์ข้อความที่นี่... (ตัวหนังสือสีขาวคมชัด พร้อมสีวิ่งผ่านอย่างนุ่มนวล · เลือกสีวิ่งได้สดๆ)">
         </div>
       </div>
 
@@ -1016,79 +1045,80 @@ body.mode-hybrid-flow .rainbow-sharp {
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   FLOWING COLOR THEMES PRESETS (เลือกโทนสีวิ่งในแอพ)
+   FLOWING COLOR THEMES PRESETS
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   rainbow: {
     name: 'Spectrum Rainbow',
     label: '🌈 Spectrum Rainbow',
-    gradient: 'linear-gradient(90deg, #ff1744 0%, #ff6d00 14%, #ffd600 28%, #00e676 42%, #00e5ff 56%, #7c3aed 70%, #ec4899 84%, #ff1744 100%)'
+    pure: 'linear-gradient(90deg, #ff1744 0%, #ff6d00 14%, #ffd600 28%, #00e676 42%, #00e5ff 56%, #7c3aed 70%, #ec4899 84%, #ff1744 100%)',
+    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #ff1744 28%, #ffd600 42%, #00e5ff 56%, #ec4899 70%, #ffffff 85%, #ffffff 100%)'
   },
   cyber: {
     name: 'Cyber Neon',
     label: '⚡ Cyber Neon',
-    gradient: 'linear-gradient(90deg, #00e5ff 0%, #7c3aed 25%, #ec4899 50%, #f43f5e 75%, #00e5ff 100%)'
+    pure: 'linear-gradient(90deg, #00e5ff 0%, #7c3aed 25%, #ec4899 50%, #f43f5e 75%, #00e5ff 100%)',
+    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #00e5ff 30%, #7c3aed 50%, #ec4899 70%, #ffffff 85%, #ffffff 100%)'
   },
   sunset: {
     name: 'Sunset Gold',
     label: '🌅 Sunset Gold',
-    gradient: 'linear-gradient(90deg, #ff4b1f 0%, #ff9068 25%, #ffb347 50%, #ffcc33 75%, #ff4b1f 100%)'
+    pure: 'linear-gradient(90deg, #ff4b1f 0%, #ff9068 25%, #ffb347 50%, #ffcc33 75%, #ff4b1f 100%)',
+    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #ff4b1f 30%, #ffb347 50%, #ff9068 70%, #ffffff 85%, #ffffff 100%)'
   },
   matrix: {
     name: 'Matrix Emerald',
     label: '🍃 Matrix Emerald',
-    gradient: 'linear-gradient(90deg, #00e676 0%, #a3e635 25%, #34d399 50%, #10b981 75%, #00e676 100%)'
+    pure: 'linear-gradient(90deg, #00e676 0%, #a3e635 25%, #34d399 50%, #10b981 75%, #00e676 100%)',
+    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #00e676 30%, #a3e635 50%, #34d399 70%, #ffffff 85%, #ffffff 100%)'
   },
   ocean: {
     name: 'Ocean Cyan',
     label: '🌊 Ocean Cyan',
-    gradient: 'linear-gradient(90deg, #00c6ff 0%, #0072ff 25%, #38bdf8 50%, #06b6d4 75%, #00c6ff 100%)'
+    pure: 'linear-gradient(90deg, #00c6ff 0%, #0072ff 25%, #38bdf8 50%, #06b6d4 75%, #00c6ff 100%)',
+    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #00c6ff 30%, #0072ff 50%, #38bdf8 70%, #ffffff 85%, #ffffff 100%)'
   },
   purple: {
     name: 'Galaxy Purple',
     label: '🔮 Galaxy Purple',
-    gradient: 'linear-gradient(90deg, #9333ea 0%, #c084fc 25%, #f43f5e 50%, #db2777 75%, #9333ea 100%)'
+    pure: 'linear-gradient(90deg, #9333ea 0%, #c084fc 25%, #f43f5e 50%, #db2777 75%, #9333ea 100%)',
+    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #9333ea 30%, #c084fc 50%, #f43f5e 70%, #ffffff 85%, #ffffff 100%)'
   },
   fire: {
     name: 'Lava Fire',
     label: '🔥 Lava Fire',
-    gradient: 'linear-gradient(90deg, #ef4444 0%, #f97316 25%, #eab308 50%, #f59e0b 75%, #ef4444 100%)'
+    pure: 'linear-gradient(90deg, #ef4444 0%, #f97316 25%, #eab308 50%, #f59e0b 75%, #ef4444 100%)',
+    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #ef4444 30%, #f97316 50%, #eab308 70%, #ffffff 85%, #ffffff 100%)'
   },
   aurora: {
     name: 'Aurora Hologram',
     label: '💎 Aurora Hologram',
-    gradient: 'linear-gradient(90deg, #f472b6 0%, #38bdf8 25%, #4ade80 50%, #facc15 75%, #f472b6 100%)'
-  },
-  candy: {
-    name: 'Cotton Candy',
-    label: '🍬 Cotton Candy',
-    gradient: 'linear-gradient(90deg, #ff9a9e 0%, #fecfef 30%, #a1c4fd 70%, #c2e9fb 100%, #ff9a9e 100%)'
-  },
-  lime: {
-    name: 'Electric Lime',
-    label: '⚡ Electric Lime',
-    gradient: 'linear-gradient(90deg, #76b852 0%, #8DC26F 30%, #00f2fe 70%, #4facfe 100%, #76b852 100%)'
+    pure: 'linear-gradient(90deg, #f472b6 0%, #38bdf8 25%, #4ade80 50%, #facc15 75%, #f472b6 100%)',
+    whiteWave: 'linear-gradient(90deg, #ffffff 0%, #ffffff 15%, #f472b6 30%, #38bdf8 50%, #4ade80 70%, #ffffff 85%, #ffffff 100%)'
   }
 };
 
 let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'rainbow';
-let currentFlowMode = localStorage.getItem('cn_flow_mode') || 'full';
+let currentFlowMode = localStorage.getItem('cn_flow_mode') || 'white-flow';
 
-function setFlowingTheme(themeKey, customGradient = null) {
-  if (customGradient) {
+function setFlowingTheme(themeKey, customPure = null, customWhite = null) {
+  if (customPure) {
     currentFlowingTheme = 'custom';
     localStorage.setItem('cn_flowing_theme', 'custom');
-    localStorage.setItem('cn_custom_gradient', customGradient);
-    document.documentElement.style.setProperty('--flowing-gradient', customGradient);
+    localStorage.setItem('cn_custom_pure', customPure);
+    localStorage.setItem('cn_custom_white', customWhite);
+    document.documentElement.style.setProperty('--pure-flowing-gradient', customPure);
+    document.documentElement.style.setProperty('--white-flowing-gradient', customWhite);
     const status = document.getElementById('themeStatus');
-    if (status) status.textContent = `🎨 โทนสีวิ่ง: Custom Mixed`;
+    if (status) status.textContent = `🎨 โทนสีวิ่ง: ผสมเอง (Custom)`;
   } else {
     if (!COLOR_THEMES[themeKey]) themeKey = 'rainbow';
     currentFlowingTheme = themeKey;
     localStorage.setItem('cn_flowing_theme', themeKey);
 
     const t = COLOR_THEMES[themeKey];
-    document.documentElement.style.setProperty('--flowing-gradient', t.gradient);
+    document.documentElement.style.setProperty('--pure-flowing-gradient', t.pure);
+    document.documentElement.style.setProperty('--white-flowing-gradient', t.whiteWave);
 
     const status = document.getElementById('themeStatus');
     if (status) status.textContent = `🎨 โทนสีวิ่ง: ${t.name}`;
@@ -1100,7 +1130,7 @@ function setFlowingTheme(themeKey, customGradient = null) {
 function setFlowMode(mode) {
   currentFlowMode = mode;
   localStorage.setItem('cn_flow_mode', mode);
-  document.body.className = mode === 'full' ? 'mode-full-flow' : 'mode-hybrid-flow';
+  document.body.className = `mode-${mode}`;
   const sel = document.getElementById('flowModeSelect');
   if (sel) sel.value = mode;
 }
@@ -1115,7 +1145,7 @@ function renderQuickSwatches() {
     const t = COLOR_THEMES[k];
     const pill = document.createElement('div');
     pill.className = 'swatch-pill' + (currentFlowingTheme === k ? ' active' : '');
-    pill.style.background = t.gradient;
+    pill.style.background = t.pure;
     pill.title = t.name;
     pill.textContent = t.name.split(' ')[0];
     pill.onclick = () => setFlowingTheme(k);
@@ -1132,7 +1162,7 @@ function renderStudioGrid() {
     const t = COLOR_THEMES[k];
     const card = document.createElement('div');
     card.className = 'studio-card' + (currentFlowingTheme === k ? ' active' : '');
-    card.style.setProperty('--card-gradient', t.gradient);
+    card.style.setProperty('--card-gradient', t.pure);
     card.innerHTML = `
       <div class="studio-card-preview"></div>
       <div class="studio-card-title">${t.label}</div>
@@ -1156,8 +1186,8 @@ function updateCustomGradient() {
   const c3 = document.getElementById('customC3').value;
   const c4 = document.getElementById('customC4').value;
   const c5 = document.getElementById('customC5').value;
-  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
-  document.getElementById('customPreviewBar').style.background = grad;
+  const pureGrad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
+  document.getElementById('customPreviewBar').style.background = pureGrad;
 }
 
 function applyCustomGradient() {
@@ -1166,8 +1196,9 @@ function applyCustomGradient() {
   const c3 = document.getElementById('customC3').value;
   const c4 = document.getElementById('customC4').value;
   const c5 = document.getElementById('customC5').value;
-  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
-  setFlowingTheme(null, grad);
+  const pureGrad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
+  const whiteGrad = `linear-gradient(90deg, #ffffff 0%, #ffffff 15%, ${c1} 30%, ${c2} 50%, ${c4} 70%, #ffffff 85%, #ffffff 100%)`;
+  setFlowingTheme(null, pureGrad, whiteGrad);
   closeModals();
 }
 
@@ -1633,11 +1664,17 @@ function executePowerShellCmd(input) {
       break;
 
     case 'mode':
-      if (arg === 'full' || arg === 'hybrid') {
-        setFlowMode(arg);
-        logCmd(`เปลี่ยนโหมดสีวิ่งเป็น: ${arg}`, 'success');
+      if (arg === 'white' || arg === 'white-flow') {
+        setFlowMode('white-flow');
+        logCmd('เปลี่ยนโหมดเป็น: ตัวหนังสือสีขาว + สีวิ่งผ่าน', 'success');
+      } else if (arg === 'full' || arg === 'full-flow') {
+        setFlowMode('full-flow');
+        logCmd('เปลี่ยนโหมดเป็น: ตัวหนังสือสีวิ่งเต็มสี', 'success');
+      } else if (arg === 'solid' || arg === 'solid-white') {
+        setFlowMode('solid-white');
+        logCmd('เปลี่ยนโหมดเป็น: สีขาวล้วน + หัวข้อสีวิ่ง', 'success');
       } else {
-        logCmd('Usage: mode full (วิ่งทุกตัวอักษร) หรือ mode hybrid (สีเขียว+หัวข้อสีวิ่ง)', 'info');
+        logCmd('Usage: mode white, mode full, mode solid', 'info');
       }
       break;
 
@@ -1721,8 +1758,8 @@ function executePowerShellCmd(input) {
     case '?':
       logCmd(`คำสั่ง PowerShell CodeNote:
   • dir, ls              - แสดงรายชื่อโน้ตทั้งหมด
-  • theme <ชื่อธีม>      - เปลี่ยนโทนสีวิ่ง (rainbow, cyber, sunset, matrix, ocean, purple, fire, aurora, candy, lime)
-  • mode full/hybrid     - เลือกขอบเขตสีวิ่ง (full = วิ่งทุกตัว, hybrid = หัวข้อสีวิ่ง)
+  • theme <ชื่อธีม>      - เปลี่ยนโทนสีวิ่ง (rainbow, cyber, sunset, matrix, ocean, purple, fire, aurora)
+  • mode white/full/solid - เปลี่ยนรูปแบบสีตัวหนังสือ
   • cat <ชื่อไฟล์>        - อ่านเนื้อหาของไฟล์
   • new <ชื่อไฟล์>        - สร้างไฟล์โน้ตใหม่
   • edit <ชื่อไฟล์>       - เปิดไฟล์ในตัวแก้ไข
@@ -1880,17 +1917,18 @@ if ('serviceWorker' in navigator) {
    ═══════════════════════════════════════════════════════════════ */
 if (Object.keys(files).length === 0) {
   files['ยินดีต้อนรับ.ps1'] = [
-    '<h2># CodeNote Studio — Terminal Edition ⚡</h2>',
+    '<h2># CodeNote Studio — Matte Black Terminal ⚡</h2>',
     '<p>&nbsp;</p>',
     '<p>ยินดีต้อนรับสู่ CodeNote ในธีม <b>พื้นหลังสีดำด้าน (Matte Black)</b></p>',
-    '<p>✨ <b>ตัวหนังสือมีสีวิ่งลื่นไหลตลอดเวลา คมชัด สะดุดตา</b></p>',
+    '<p>• <b>ตัวหนังสือสีขาวเป็นพื้นฐาน</b> คมกริบ อ่านง่าย ชัดเจน 100%</p>',
+    '<p>• <b>สีที่คุณเลือกจะวิ่งผ่านตัวหนังสือ</b> อย่างนุ่มนวลและต่อเนื่อง</p>',
     '<p>&nbsp;</p>',
-    '<h3># ฟีเจอร์ใหม่:</h3>',
-    '<p>1. 🎨 <b>เลือกโทนสีวิ่งได้ในแอพ:</b> กดปุ่มสีที่แถบเครื่องมือด้านบน หรือคลิก <b>"🎨 สตูดิโอสีวิ่ง"</b> เพื่อเลือกโทนสี หรือผสมสีเองได้ทันที</p>',
-    '<p>2. 🌈 <b>เลือกขอบเขตสีวิ่ง:</b> สลับระหว่าง <i>"วิ่งทุกตัวอักษร"</i> กับ <i>"สีเขียว + หัวข้อสีวิ่ง"</i> ได้ที่แถบด้านบน</p>',
-    '<p>3. 📂 <b>สลับแท็บด้านบนได้ทันที:</b> กดคลิกแท็บเพื่อสลับไฟล์และบันทึกอัตโนมัติ</p>',
-    '<p>4. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>theme neon</code>, <code>dir</code>, <code>cat</code>, <code>sfx</code> ที่ช่องด้านล่าง</p>',
-    '<p>5. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> 5 โปรไฟล์เสียงสัมผัสระดับพรีเมียม</p>',
+    '<h3># ฟีเจอร์การใช้งาน:</h3>',
+    '<p>1. 🎨 <b>เลือกโทนสีวิ่ง:</b> กดเลือกโทนสีด้านบน หรือกด <b>"🎨 สตูดิโอสีวิ่ง"</b> เพื่อเลือก/ผสมสีเอง</p>',
+    '<p>2. ⚪ <b>รูปแบบตัวหนังสือ:</b> สลับระหว่าง <i>"สีขาว + สีวิ่งผ่าน"</i>, <i>"สีวิ่งเต็มสี"</i>, <i>"สีขาวล้วน + หัวข้อสีวิ่ง"</i> ได้ที่แถบด้านบน</p>',
+    '<p>3. 📂 <b>สลับแท็บได้ทันที:</b> กดคลิกแท็บด้านบนเพื่อสลับไฟล์และบันทึกอัตโนมัติ</p>',
+    '<p>4. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>theme cyber</code>, <code>mode white</code>, <code>dir</code> ที่ช่องด้านล่าง</p>',
+    '<p>5. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> 5 โปรไฟล์เสียงสมจริงระดับพรีเมียม</p>',
     '<p>&nbsp;</p>',
     '<p><strong># คีย์ลัด:</strong></p>',
     '<p>• <b>Ctrl+S:</b> บันทึก · <b>Ctrl+N:</b> สร้างโน้ตใหม่ · <b>Tab:</b> เว้นวรรคย่อหน้า</p>'
@@ -1898,9 +1936,10 @@ if (Object.keys(files).length === 0) {
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
 
-const savedCustom = localStorage.getItem('cn_custom_gradient');
-if (currentFlowingTheme === 'custom' && savedCustom) {
-  setFlowingTheme(null, savedCustom);
+const savedPure = localStorage.getItem('cn_custom_pure');
+const savedWhite = localStorage.getItem('cn_custom_white');
+if (currentFlowingTheme === 'custom' && savedPure && savedWhite) {
+  setFlowingTheme(null, savedPure, savedWhite);
 } else {
   setFlowingTheme(currentFlowingTheme);
 }
