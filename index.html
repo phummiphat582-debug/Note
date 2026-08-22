@@ -29,9 +29,10 @@
   --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', sans-serif;
   --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 
-  /* Flowing Gradient Colors */
-  --flowing-gradient: linear-gradient(90deg, #ffffff 0%, #ff1744 14%, #ff9100 28%, #ffd600 42%, #00e676 56%, #00e5ff 70%, #d500f9 84%, #ffffff 100%);
-  --flowing-speed: 3.5s;
+  /* Flowing Gradient Preset (High Density Color Waves) */
+  --flowing-gradient: linear-gradient(90deg, #ffffff 0%, #ff0055 12%, #ff7700 24%, #ffd600 36%, #00ff66 48%, #00e5ff 60%, #9900ff 72%, #ff00bb 84%, #ffffff 100%);
+  --flow-bg-x: 0%;
+  --flow-hue: 0deg;
 }
 
 html,body {
@@ -45,62 +46,24 @@ html,body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   GPU-ACCELERATED VISIBLE CHROMATIC ANIMATION
-   (อนิเมชั่นสีวิ่ง 100% ด้วย GPU HUE & GRADIENT SHIFT)
+   FORCED REAL-TIME 60FPS FLOWING ANIMATION (การันตีวิ่ง 100%)
    ═══════════════════════════════════════════════════════════════ */
-@keyframes dynamicHueAndFlow {
-  0% {
-    background-position: 0% 50%;
-    filter: hue-rotate(0deg);
-  }
-  50% {
-    background-position: 100% 50%;
-    filter: hue-rotate(180deg);
-  }
-  100% {
-    background-position: 0% 50%;
-    filter: hue-rotate(360deg);
-  }
-}
-
-@keyframes continuousFlowOnly {
-  0% {
-    background-position: 0% 50%;
-    filter: hue-rotate(0deg);
-  }
-  100% {
-    background-position: 300% 50%;
-    filter: hue-rotate(360deg);
-  }
-}
-
-/* Core Flowing Text Styling on Editor and Elements */
 .editor,
 .editor *,
 .rainbow-sharp,
 .hud-title-rainbow {
   background-image: var(--flowing-gradient) !important;
-  background-size: 250% 100% !important;
+  background-size: 300% 100% !important;
+  background-position: var(--flow-bg-x, 0%) 50% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  animation: dynamicHueAndFlow var(--flowing-speed) ease-in-out infinite !important;
-  will-change: filter, background-position !important;
-  transform: translateZ(0) !important;
-}
-
-body.anim-continuous .editor,
-body.anim-continuous .editor *,
-body.anim-continuous .rainbow-sharp,
-body.anim-continuous .hud-title-rainbow {
-  animation: continuousFlowOnly var(--flowing-speed) linear infinite !important;
+  filter: hue-rotate(var(--flow-hue, 0deg)) !important;
+  text-shadow: none !important;
 }
 
 .editor p, .editor div, .editor h1, .editor h2, .editor h3, .editor li {
-  background: inherit;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: block !important;
   margin-bottom: 8px;
+  line-height: 1.9;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -461,7 +424,7 @@ body.anim-continuous .hud-title-rainbow {
   font-family: var(--font-mono);
 }
 
-/* Main Text Canvas: Crisp Flowing Colors */
+/* Main Text Canvas: Crisp Animated Flowing Colors */
 .editor {
   flex: 1;
   min-height: 100%;
@@ -477,8 +440,6 @@ body.anim-continuous .hud-title-rainbow {
   font-weight: 500;
   caret-color: #00e5ff;
   position: relative;
-  text-shadow: none !important;
-  filter: none !important;
 }
 
 .editor:empty::before {
@@ -486,16 +447,6 @@ body.anim-continuous .hud-title-rainbow {
   color: #33333f;
   -webkit-text-fill-color: #33333f;
   pointer-events: none;
-}
-
-.editor p, .editor div, .editor li {
-  margin: 0 0 8px 0;
-  line-height: 1.9;
-}
-
-.editor h1, .editor h2, .editor h3 {
-  margin: 12px 0 6px 0;
-  line-height: 1.5;
 }
 
 /* Inserted Image Box */
@@ -857,9 +808,9 @@ body.anim-continuous .hud-title-rainbow {
       <!-- Speed Selector -->
       <span style="font-size:11.5px;color:var(--text-dim);">ความเร็ว:</span>
       <select class="matte-select" id="speedSelect" onchange="setFlowSpeed(this.value)">
-        <option value="2s">เร็วสะใจ (2s)</option>
-        <option value="3.5s" selected>มาตรฐาน (3.5s)</option>
-        <option value="5s">นุ่มนวล (5s)</option>
+        <option value="fast">เร็วสะใจ ⚡</option>
+        <option value="normal" selected>มาตรฐาน 🌊</option>
+        <option value="chill">ชิลล์ๆ 🍃</option>
       </select>
 
       <div class="toolbar-sep"></div>
@@ -1033,13 +984,13 @@ body.anim-continuous .hud-title-rainbow {
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   FLOWING COLOR THEMES PRESETS (สีสดใส วิ่งไปมาชัดเจน 100%)
+   FLOWING COLOR THEMES PRESETS
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   rainbow: {
     name: 'Spectrum Rainbow',
     label: '🌈 Spectrum Rainbow',
-    gradient: 'linear-gradient(90deg, #ffffff 0%, #ff1744 14%, #ff9100 28%, #ffd600 42%, #00e676 56%, #00e5ff 70%, #d500f9 84%, #ffffff 100%)'
+    gradient: 'linear-gradient(90deg, #ffffff 0%, #ff0055 14%, #ff7700 28%, #ffd600 42%, #00ff66 56%, #00e5ff 70%, #9900ff 84%, #ffffff 100%)'
   },
   cyber: {
     name: 'Cyber Neon',
@@ -1080,7 +1031,7 @@ const COLOR_THEMES = {
 
 let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'rainbow';
 let currentAnimStyle = localStorage.getItem('cn_anim_style') || 'wave';
-let currentFlowSpeed = localStorage.getItem('cn_flow_speed') || '3.5s';
+let speedMultiplier = 1.0;
 
 function setFlowingTheme(themeKey, customGradient = null) {
   if (customGradient) {
@@ -1108,18 +1059,45 @@ function setFlowingTheme(themeKey, customGradient = null) {
 function setAnimStyle(style) {
   currentAnimStyle = style;
   localStorage.setItem('cn_anim_style', style);
-  document.body.className = style === 'continuous' ? 'anim-continuous' : '';
   const sel = document.getElementById('animStyleSelect');
   if (sel) sel.value = style;
 }
 
-function setFlowSpeed(speed) {
-  currentFlowSpeed = speed;
-  localStorage.setItem('cn_flow_speed', speed);
-  document.documentElement.style.setProperty('--flowing-speed', speed);
+function setFlowSpeed(speedKey) {
+  if (speedKey === 'fast') speedMultiplier = 2.0;
+  else if (speedKey === 'chill') speedMultiplier = 0.5;
+  else speedMultiplier = 1.0;
+  localStorage.setItem('cn_flow_speed_key', speedKey);
   const sel = document.getElementById('speedSelect');
-  if (sel) sel.value = speed;
+  if (sel) sel.value = speedKey;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GUARANTEED 60FPS JAVASCRIPT ANIMATION TICK LOOP
+   (บีบให้ GPU & BROWSER ทำการอัปเดตอนิเมชั่นสีวิ่งทุกเฟรม)
+   ═══════════════════════════════════════════════════════════════ */
+let flowPosition = 0;
+let waveDir = 1;
+let flowHueDegree = 0;
+
+function animationTick() {
+  if (currentAnimStyle === 'wave') {
+    flowPosition += (0.9 * speedMultiplier * waveDir);
+    if (flowPosition >= 180) { waveDir = -1; }
+    if (flowPosition <= 0) { waveDir = 1; }
+  } else {
+    flowPosition = (flowPosition + (1.2 * speedMultiplier)) % 300;
+  }
+
+  flowHueDegree = (flowHueDegree + (1.0 * speedMultiplier)) % 360;
+
+  // Realtime update CSS variables on root (forces per-frame browser repaint)
+  document.documentElement.style.setProperty('--flow-bg-x', `${flowPosition.toFixed(2)}%`);
+  document.documentElement.style.setProperty('--flow-hue', `${flowHueDegree.toFixed(1)}deg`);
+
+  requestAnimationFrame(animationTick);
+}
+requestAnimationFrame(animationTick);
 
 function renderQuickSwatches() {
   const container = document.getElementById('quickSwatchesBar');
@@ -1886,7 +1864,7 @@ if (Object.keys(files).length === 0) {
     '<h2># CodeNote Studio — Matte Black Terminal ⚡</h2>',
     '<p>&nbsp;</p>',
     '<p>ยินดีต้อนรับสู่ CodeNote ในธีม <b>พื้นหลังสีดำด้าน (Matte Black)</b></p>',
-    '<p>• <b>ตัวหนังสือมีสีวิ่งไปมาแบบอนิเมชั่น 100% สดใส ลื่นไหล คมชัด</b></p>',
+    '<p>• <b>ตัวหนังสือมีสีวิ่งไปมาแบบเรียลไทม์ 60FPS สดใส ลื่นไหล คมชัด</b></p>',
     '<p>• <b>เลือกสลับสีวิ่งได้ทันที</b> ที่แถบเม็ดสีด้านบน หรือกดสตูดิโอสี</p>',
     '<p>&nbsp;</p>',
     '<h3># ฟีเจอร์การใช้งาน:</h3>',
@@ -1909,7 +1887,8 @@ if (currentFlowingTheme === 'custom' && savedCustom) {
   setFlowingTheme(currentFlowingTheme);
 }
 setAnimStyle(currentAnimStyle);
-setFlowSpeed(currentFlowSpeed);
+const savedSpeed = localStorage.getItem('cn_flow_speed_key') || 'normal';
+setFlowSpeed(savedSpeed);
 buildSfxPanel();
 openFile(Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1');
 </script>
