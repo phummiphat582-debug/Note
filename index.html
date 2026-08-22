@@ -21,7 +21,6 @@
   --bg-matte-card: #16161c;
   --border-matte: #22222a;
   --border-matte-active: #383846;
-  --text-green: #22c55e;
   --text-green-bright: #4ade80;
   --text-dim: #64748b;
   --text-sub: #94a3b8;
@@ -40,37 +39,62 @@ html,body {
   height: 100%;
   width: 100%;
   background: var(--bg-matte-base);
-  color: var(--text-green-bright);
+  color: #f1f5f9;
   font-family: var(--font-thai);
   overflow: hidden;
   user-select: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CRISP ANIMATED FLOWING GRADIENT (ปรับเปลี่ยนโทนสีได้ตามใจชอบ)
+   CRISP ANIMATED FLOWING GRADIENT TEXT (ไม่มีแสงฟุ้ง ไม่เบลอ)
    ═══════════════════════════════════════════════════════════════ */
 @keyframes rainbowFlowSharp {
   0%   { background-position: 0% 50%; }
   100% { background-position: 300% 50%; }
 }
 
-/* Flowing Sharp Colors for Headings, Bold, and Highlights */
+/* ── Mode 1: Full Flowing Text (ตัวหนังสือทุกตัววิ่งสีรุ้งสดใส) ── */
+body.mode-full-flow .editor,
+body.mode-full-flow .editor *,
 .rainbow-sharp,
-.editor h1,
-.editor h2,
-.editor h3,
-.editor strong,
-.editor b,
 .hud-title-rainbow {
   background: var(--flowing-gradient) !important;
   background-size: 300% 100% !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
-  font-weight: 700;
-  display: inline-block;
   text-shadow: none !important;
   filter: none !important;
+}
+
+body.mode-full-flow .editor p,
+body.mode-full-flow .editor div,
+body.mode-full-flow .editor h1,
+body.mode-full-flow .editor h2,
+body.mode-full-flow .editor h3,
+body.mode-full-flow .editor li {
+  background: inherit;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block !important;
+  margin-bottom: 8px;
+}
+
+/* ── Mode 2: Hybrid Mode (เนื้อหาเขียว + หัวข้อสีวิ่ง) ── */
+body.mode-hybrid-flow .editor {
+  color: var(--text-green-bright);
+}
+body.mode-hybrid-flow .editor h1,
+body.mode-hybrid-flow .editor h2,
+body.mode-hybrid-flow .editor h3,
+body.mode-hybrid-flow .editor strong,
+body.mode-hybrid-flow .editor b,
+body.mode-hybrid-flow .rainbow-sharp {
+  background: var(--flowing-gradient) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: rainbowFlowSharp var(--flowing-speed) linear infinite !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -130,7 +154,7 @@ html,body {
   align-items: center;
   gap: 4px;
   overflow-x: auto;
-  max-width: 60vw;
+  max-width: 55vw;
 }
 .matte-tabs::-webkit-scrollbar { display: none; }
 
@@ -224,9 +248,9 @@ html,body {
   border-color: var(--accent-cyan);
 }
 
-/* ── SECONDARY FORMATTING TOOLBAR ── */
+/* ── SECONDARY FORMATTING & PALETTE TOOLBAR ── */
 .matte-toolbar {
-  height: 42px;
+  height: 44px;
   background: var(--bg-matte-dark);
   border-bottom: 1px solid var(--border-matte);
   display: flex;
@@ -234,14 +258,16 @@ html,body {
   justify-content: space-between;
   padding: 0 16px;
   flex-shrink: 0;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
+  overflow-x: auto;
 }
+.matte-toolbar::-webkit-scrollbar { display: none; }
 
 .toolbar-cluster {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .toolbar-sep {
@@ -249,6 +275,36 @@ html,body {
   height: 18px;
   background: var(--border-matte);
   margin: 0 4px;
+}
+
+/* Quick Palette Swatches Bar */
+.palette-swatches {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.swatch-pill {
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.12s, border-color 0.12s;
+  user-select: none;
+}
+.swatch-pill:hover {
+  transform: scale(1.05);
+  border-color: #fff;
+}
+.swatch-pill.active {
+  border-color: #fff;
+  box-shadow: 0 0 8px rgba(255,255,255,0.4);
 }
 
 /* ── MAIN WORKSPACE ── */
@@ -399,7 +455,7 @@ html,body {
   font-family: var(--font-mono);
 }
 
-/* Main Text Canvas: Bright Green Text + Rainbow Headers */
+/* Main Text Canvas: Crisp Flowing Text */
 .editor {
   flex: 1;
   min-height: 100%;
@@ -413,7 +469,6 @@ html,body {
   user-select: text;
   font-family: var(--font-thai);
   font-weight: 400;
-  color: var(--text-green-bright); /* ตัวหนังสือสีเขียวคมชัด */
   caret-color: #00e5ff;
   position: relative;
   text-shadow: none !important;
@@ -548,7 +603,84 @@ html,body {
 .status-item.save-ok { color: var(--text-green-bright); font-weight: 600; }
 .status-item.rgb-tag { color: var(--accent-cyan); font-weight: 600; }
 
-/* ── SFX POPUP PANEL ── */
+/* ── COLOR STUDIO MODAL (เลือกสีวิ่งในแอพ) ── */
+.studio-modal {
+  background: var(--bg-matte-panel);
+  border: 1px solid var(--border-matte-active);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95);
+  border-radius: 10px;
+  width: 520px;
+  max-width: 95vw;
+}
+.studio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.studio-card {
+  padding: 12px;
+  background: var(--bg-matte-card);
+  border: 1px solid var(--border-matte);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.studio-card:hover {
+  border-color: #fff;
+  transform: translateY(-2px);
+}
+.studio-card.active {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+}
+.studio-card-preview {
+  height: 18px;
+  border-radius: 4px;
+  background: var(--card-gradient);
+}
+.studio-card-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Custom Color Maker */
+.custom-maker-box {
+  background: var(--bg-matte-card);
+  border: 1px solid var(--border-matte);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.color-inputs-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.color-input-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--text-dim);
+}
+.color-input-item input[type="color"] {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* SFX POPUP PANEL */
 .sfx-popup {
   display: none;
   position: absolute;
@@ -591,7 +723,7 @@ html,body {
 .sfx-item-name { font-size: 13px; color: #fff; font-weight: 600; }
 .sfx-item-desc { font-size: 11px; color: var(--text-dim); }
 
-/* Modals */
+/* Modals Overlay */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -618,7 +750,7 @@ html,body {
   border-bottom: 1px solid var(--border-matte);
 }
 .matte-modal-body { padding: 18px; }
-.matte-modal-body input {
+.matte-modal-body input[type="text"] {
   width: 100%;
   padding: 10px 14px;
   background: var(--bg-matte-dark);
@@ -649,7 +781,7 @@ html,body {
 </style>
 </head>
 
-<body>
+<body class="mode-full-flow">
 <div class="app-container">
   <!-- ── TOP MATTE HUD BAR ── -->
   <div class="matte-topbar">
@@ -665,6 +797,11 @@ html,body {
     </div>
 
     <div class="topbar-right">
+      <!-- Open Color Studio Modal Button -->
+      <button class="matte-btn" onclick="openColorStudio()" title="เปิดสตูดิโอเลือกสีวิ่งและสร้างสีเอง">
+        🎨 สตูดิโอสีวิ่ง
+      </button>
+
       <button class="matte-btn" onclick="toggleSidebar()" title="เปิด/ปิด แถบไฟล์">📁 Tree</button>
       <button class="matte-btn" onclick="printPage()" title="พิมพ์ / ส่งออก PDF">🖨️ PDF</button>
 
@@ -692,26 +829,26 @@ html,body {
     </div>
   </div>
 
-  <!-- ── SECONDARY FORMATTING TOOLBAR ── -->
+  <!-- ── SECONDARY FORMATTING & IN-APP PALETTE TOOLBAR ── -->
   <div class="matte-toolbar">
     <div class="toolbar-cluster">
-      <!-- Flowing Color Theme Selector -->
-      <span style="font-size:12px;color:var(--text-dim);">🎨 โทนสีวิ่ง:</span>
-      <select class="matte-select" id="flowingThemeSelect" onchange="setFlowingTheme(this.value)">
-        <option value="rainbow" selected>🌈 Spectrum Rainbow (รุ้งหลากสี)</option>
-        <option value="cyber">⚡ Cyber Neon (ฟ้า-ม่วง-ชมพู)</option>
-        <option value="sunset">🌅 Sunset Gold (ส้มทอง-ชมพู)</option>
-        <option value="matrix">🍃 Matrix Emerald (เขียวมรกต-มะนาว)</option>
-        <option value="ocean">🌊 Ocean Cyan (ฟ้าเทอร์ควอยซ์-น้ำเงิน)</option>
-        <option value="purple">🔮 Galaxy Purple (ม่วงกาแล็กซี-มาเจนต้า)</option>
-        <option value="fire">🔥 Lava Fire (ไฟแดง-ส้ม-เหลือง)</option>
-        <option value="aurora">💎 Aurora Hologram (ออโรร่า-พาสเทล)</option>
+      <!-- Quick Palette Swatches Bar right in the toolbar -->
+      <span style="font-size:11.5px;color:var(--text-dim);">🎨 สลับสีด่วน:</span>
+      <div class="palette-swatches" id="quickSwatchesBar"></div>
+
+      <div class="toolbar-sep"></div>
+
+      <!-- Flowing Text Scope Selector -->
+      <span style="font-size:11.5px;color:var(--text-dim);">ขอบเขตสีวิ่ง:</span>
+      <select class="matte-select" id="flowModeSelect" onchange="setFlowMode(this.value)">
+        <option value="full" selected>🌈 วิ่งทุกตัวอักษร</option>
+        <option value="hybrid">🌿 สีเขียว + หัวข้อสีวิ่ง</option>
       </select>
 
       <div class="toolbar-sep"></div>
 
       <!-- Font Size Selector -->
-      <span style="font-size:12px;color:var(--text-dim);">ขนาด:</span>
+      <span style="font-size:11.5px;color:var(--text-dim);">ขนาด:</span>
       <select class="matte-select" onchange="setFontSize(this.value)">
         <option value="18px">18 px</option>
         <option value="20px">20 px</option>
@@ -719,26 +856,22 @@ html,body {
         <option value="26px">26 px (ใหญ่มาก)</option>
         <option value="30px">30 px (จัมโบ้)</option>
       </select>
-
-      <div class="toolbar-sep"></div>
-
-      <!-- Format Buttons -->
-      <button class="matte-btn" onclick="makeRainbowHeading()" title="ทำเป็นหัวข้อสีวิ่ง">✨ ทำเป็นหัวข้อสีวิ่ง</button>
-      <button class="matte-btn" onclick="cmd('bold')" title="ตัวหนา (Ctrl+B)"><b>B</b></button>
-      <button class="matte-btn" onclick="cmd('italic')" title="ตัวเอียง (Ctrl+I)"><i>I</i></button>
-      <button class="matte-btn" onclick="cmd('underline')" title="ขีดเส้นใต้ (Ctrl+U)"><u>U</u></button>
-      <button class="matte-btn" onclick="cmd('insertUnorderedList')" title="รายการแบบจุด">• รายการ</button>
-      <button class="matte-btn" onclick="addImage()" title="แทรกรูปภาพ">🖼️ รูปภาพ</button>
     </div>
 
     <div class="toolbar-cluster">
-      <!-- Thai Font Family Selector -->
-      <span style="font-size:12px;color:var(--text-dim);">ฟอนต์:</span>
+      <!-- Formatting Buttons -->
+      <button class="matte-btn" onclick="cmd('bold')" title="ตัวหนา (Ctrl+B)"><b>B</b></button>
+      <button class="matte-btn" onclick="cmd('italic')" title="ตัวเอียง (Ctrl+I)"><i>I</i></button>
+      <button class="matte-btn" onclick="cmd('underline')" title="ขีดเส้นใต้ (Ctrl+U)"><u>U</u></button>
+      <button class="matte-btn" onclick="cmd('insertUnorderedList')" title="รายการ">•</button>
+      <button class="matte-btn" onclick="addImage()" title="แทรกรูปภาพ">🖼️</button>
+      
+      <!-- Thai Font Selector -->
       <select class="matte-select" onchange="setFontFamily(this.value)">
-        <option value="'Prompt', sans-serif" selected>Prompt (โมเดิร์น)</option>
-        <option value="'Noto Sans Thai', sans-serif">Noto Sans Thai (คมชัด)</option>
-        <option value="'Kanit', sans-serif">Kanit (สไตล์ทันสมัย)</option>
-        <option value="'Cascadia Code', monospace">Cascadia Code (โค้ด)</option>
+        <option value="'Prompt', sans-serif" selected>Prompt</option>
+        <option value="'Noto Sans Thai', sans-serif">Noto Sans Thai</option>
+        <option value="'Kanit', sans-serif">Kanit</option>
+        <option value="'Cascadia Code', monospace">Cascadia Code</option>
       </select>
     </div>
   </div>
@@ -774,7 +907,7 @@ html,body {
       <div class="editor-main-area" id="editorContainer">
         <div class="editor-line-numbers" id="lineNumbers">1</div>
         <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-             data-placeholder="เริ่มพิมพ์ข้อความ... (ตัวหนังสือสีเขียวคมชัด · หัวข้อสีวิ่งเลือกโทนสีได้ · กดเปลี่ยนแท็บด้านบนได้ทันที)">
+             data-placeholder="เริ่มพิมพ์ข้อความที่นี่... (ตัวหนังสือมีสีวิ่งลื่นไหล คมชัด · ปรับสีได้สดๆ ที่แถบด้านบนหรือกดสตูดิโอสี)">
         </div>
       </div>
 
@@ -803,12 +936,64 @@ html,body {
 
 <input type="file" id="imageInput" accept="image/*" hidden multiple>
 
+<!-- ── IN-APP COLOR STUDIO MODAL (เลือกสีและสร้างสีเองสดๆ) ── -->
+<div class="modal-overlay" id="colorStudioModal">
+  <div class="studio-modal">
+    <div class="matte-modal-head" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>🎨 สตูดิโอเลือกสีวิ่ง (FLOWING COLOR STUDIO)</span>
+      <span style="cursor:pointer;font-size:16px;" onclick="closeModals()">✕</span>
+    </div>
+    <div class="matte-modal-body" style="max-height:75vh;overflow-y:auto;">
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;">
+        เลือกชุดสีวิ่งสำเร็จรูป (คลิกเพื่อเปลี่ยนทันที):
+      </div>
+      <div class="studio-grid" id="studioGrid"></div>
+
+      <!-- Custom Color Mixer -->
+      <div style="font-size:12px;color:var(--text-dim);margin:14px 0 8px;">
+        ⚡ หรือผสมสีวิ่งของคุณเองสดๆ (Custom Palette):
+      </div>
+      <div class="custom-maker-box">
+        <div class="color-inputs-row">
+          <div class="color-input-item">
+            <span>สีที่ 1</span>
+            <input type="color" id="customC1" value="#ff0055" onchange="updateCustomGradient()">
+          </div>
+          <div class="color-input-item">
+            <span>สีที่ 2</span>
+            <input type="color" id="customC2" value="#ff7700" onchange="updateCustomGradient()">
+          </div>
+          <div class="color-input-item">
+            <span>สีที่ 3</span>
+            <input type="color" id="customC3" value="#00ff66" onchange="updateCustomGradient()">
+          </div>
+          <div class="color-input-item">
+            <span>สีที่ 4</span>
+            <input type="color" id="customC4" value="#00e5ff" onchange="updateCustomGradient()">
+          </div>
+          <div class="color-input-item">
+            <span>สีที่ 5</span>
+            <input type="color" id="customC5" value="#9900ff" onchange="updateCustomGradient()">
+          </div>
+        </div>
+        <div id="customPreviewBar" style="height:18px;border-radius:4px;background:linear-gradient(90deg, #ff0055, #ff7700, #00ff66, #00e5ff, #9900ff, #ff0055);"></div>
+        <button class="matte-btn" style="background:#0284c7;color:#fff;justify-content:center;" onclick="applyCustomGradient()">
+          ✓ ใช้สีที่ผสมเองนี้ทันที
+        </button>
+      </div>
+    </div>
+    <div class="matte-modal-foot">
+      <button class="matte-btn active" onclick="closeModals()">เสร็จสิ้น</button>
+    </div>
+  </div>
+</div>
+
 <!-- Create Note Modal -->
 <div class="modal-overlay" id="createModal">
   <div class="matte-modal">
     <div class="matte-modal-head">⚡ สร้างไฟล์ Note ใหม่</div>
     <div class="matte-modal-body">
-      <input id="nameInput" placeholder="เช่น บันทึกงาน หรือ my-notes" autocomplete="off">
+      <input type="text" id="nameInput" placeholder="เช่น บันทึกงาน หรือ my-notes" autocomplete="off">
     </div>
     <div class="matte-modal-foot">
       <button class="matte-btn" onclick="closeModals()">ยกเลิก</button>
@@ -831,7 +1016,7 @@ html,body {
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   FLOWING COLOR THEMES PRESETS (เลือกโทนสีวิ่ง)
+   FLOWING COLOR THEMES PRESETS (เลือกโทนสีวิ่งในแอพ)
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   rainbow: {
@@ -873,24 +1058,117 @@ const COLOR_THEMES = {
     name: 'Aurora Hologram',
     label: '💎 Aurora Hologram',
     gradient: 'linear-gradient(90deg, #f472b6 0%, #38bdf8 25%, #4ade80 50%, #facc15 75%, #f472b6 100%)'
+  },
+  candy: {
+    name: 'Cotton Candy',
+    label: '🍬 Cotton Candy',
+    gradient: 'linear-gradient(90deg, #ff9a9e 0%, #fecfef 30%, #a1c4fd 70%, #c2e9fb 100%, #ff9a9e 100%)'
+  },
+  lime: {
+    name: 'Electric Lime',
+    label: '⚡ Electric Lime',
+    gradient: 'linear-gradient(90deg, #76b852 0%, #8DC26F 30%, #00f2fe 70%, #4facfe 100%, #76b852 100%)'
   }
 };
 
 let currentFlowingTheme = localStorage.getItem('cn_flowing_theme') || 'rainbow';
+let currentFlowMode = localStorage.getItem('cn_flow_mode') || 'full';
 
-function setFlowingTheme(themeKey) {
-  if (!COLOR_THEMES[themeKey]) themeKey = 'rainbow';
-  currentFlowingTheme = themeKey;
-  localStorage.setItem('cn_flowing_theme', themeKey);
+function setFlowingTheme(themeKey, customGradient = null) {
+  if (customGradient) {
+    currentFlowingTheme = 'custom';
+    localStorage.setItem('cn_flowing_theme', 'custom');
+    localStorage.setItem('cn_custom_gradient', customGradient);
+    document.documentElement.style.setProperty('--flowing-gradient', customGradient);
+    const status = document.getElementById('themeStatus');
+    if (status) status.textContent = `🎨 โทนสีวิ่ง: Custom Mixed`;
+  } else {
+    if (!COLOR_THEMES[themeKey]) themeKey = 'rainbow';
+    currentFlowingTheme = themeKey;
+    localStorage.setItem('cn_flowing_theme', themeKey);
 
-  const t = COLOR_THEMES[themeKey];
-  document.documentElement.style.setProperty('--flowing-gradient', t.gradient);
+    const t = COLOR_THEMES[themeKey];
+    document.documentElement.style.setProperty('--flowing-gradient', t.gradient);
 
-  const sel = document.getElementById('flowingThemeSelect');
-  if (sel) sel.value = themeKey;
+    const status = document.getElementById('themeStatus');
+    if (status) status.textContent = `🎨 โทนสีวิ่ง: ${t.name}`;
+  }
+  renderQuickSwatches();
+  renderStudioGrid();
+}
 
-  const status = document.getElementById('themeStatus');
-  if (status) status.textContent = `🎨 โทนสีวิ่ง: ${t.name}`;
+function setFlowMode(mode) {
+  currentFlowMode = mode;
+  localStorage.setItem('cn_flow_mode', mode);
+  document.body.className = mode === 'full' ? 'mode-full-flow' : 'mode-hybrid-flow';
+  const sel = document.getElementById('flowModeSelect');
+  if (sel) sel.value = mode;
+}
+
+function renderQuickSwatches() {
+  const container = document.getElementById('quickSwatchesBar');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  const quickKeys = ['rainbow', 'cyber', 'sunset', 'matrix', 'ocean', 'purple', 'fire'];
+  quickKeys.forEach(k => {
+    const t = COLOR_THEMES[k];
+    const pill = document.createElement('div');
+    pill.className = 'swatch-pill' + (currentFlowingTheme === k ? ' active' : '');
+    pill.style.background = t.gradient;
+    pill.title = t.name;
+    pill.textContent = t.name.split(' ')[0];
+    pill.onclick = () => setFlowingTheme(k);
+    container.appendChild(pill);
+  });
+}
+
+function renderStudioGrid() {
+  const container = document.getElementById('studioGrid');
+  if (!container) return;
+  container.innerHTML = '';
+
+  Object.keys(COLOR_THEMES).forEach(k => {
+    const t = COLOR_THEMES[k];
+    const card = document.createElement('div');
+    card.className = 'studio-card' + (currentFlowingTheme === k ? ' active' : '');
+    card.style.setProperty('--card-gradient', t.gradient);
+    card.innerHTML = `
+      <div class="studio-card-preview"></div>
+      <div class="studio-card-title">${t.label}</div>
+    `;
+    card.onclick = () => {
+      setFlowingTheme(k);
+      closeModals();
+    };
+    container.appendChild(card);
+  });
+}
+
+function openColorStudio() {
+  renderStudioGrid();
+  document.getElementById('colorStudioModal').classList.add('show');
+}
+
+function updateCustomGradient() {
+  const c1 = document.getElementById('customC1').value;
+  const c2 = document.getElementById('customC2').value;
+  const c3 = document.getElementById('customC3').value;
+  const c4 = document.getElementById('customC4').value;
+  const c5 = document.getElementById('customC5').value;
+  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
+  document.getElementById('customPreviewBar').style.background = grad;
+}
+
+function applyCustomGradient() {
+  const c1 = document.getElementById('customC1').value;
+  const c2 = document.getElementById('customC2').value;
+  const c3 = document.getElementById('customC3').value;
+  const c4 = document.getElementById('customC4').value;
+  const c5 = document.getElementById('customC5').value;
+  const grad = `linear-gradient(90deg, ${c1} 0%, ${c2} 25%, ${c3} 50%, ${c4} 75%, ${c5} 90%, ${c1} 100%)`;
+  setFlowingTheme(null, grad);
+  closeModals();
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1116,24 +1394,6 @@ function setFontSize(size) {
 
 function setFontFamily(font) {
   editor.style.fontFamily = font;
-}
-
-function makeRainbowHeading() {
-  editor.focus();
-  const sel = window.getSelection();
-  if (!sel || !sel.rangeCount || sel.getRangeAt(0).collapsed) {
-    document.execCommand('formatBlock', false, '<h2>');
-  } else {
-    const span = document.createElement('span');
-    span.className = 'rainbow-sharp';
-    try {
-      sel.getRangeAt(0).surroundContents(span);
-      scheduleSave();
-    } catch(e) {
-      document.execCommand('formatBlock', false, '<h2>');
-    }
-  }
-  scheduleSave();
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1372,6 +1632,15 @@ function executePowerShellCmd(input) {
       }
       break;
 
+    case 'mode':
+      if (arg === 'full' || arg === 'hybrid') {
+        setFlowMode(arg);
+        logCmd(`เปลี่ยนโหมดสีวิ่งเป็น: ${arg}`, 'success');
+      } else {
+        logCmd('Usage: mode full (วิ่งทุกตัวอักษร) หรือ mode hybrid (สีเขียว+หัวข้อสีวิ่ง)', 'info');
+      }
+      break;
+
     case 'cat':
     case 'type':
     case 'gc':
@@ -1452,7 +1721,8 @@ function executePowerShellCmd(input) {
     case '?':
       logCmd(`คำสั่ง PowerShell CodeNote:
   • dir, ls              - แสดงรายชื่อโน้ตทั้งหมด
-  • theme <ชื่อธีม>      - เปลี่ยนโทนสีวิ่ง (rainbow, cyber, sunset, matrix, ocean, purple, fire, aurora)
+  • theme <ชื่อธีม>      - เปลี่ยนโทนสีวิ่ง (rainbow, cyber, sunset, matrix, ocean, purple, fire, aurora, candy, lime)
+  • mode full/hybrid     - เลือกขอบเขตสีวิ่ง (full = วิ่งทุกตัว, hybrid = หัวข้อสีวิ่ง)
   • cat <ชื่อไฟล์>        - อ่านเนื้อหาของไฟล์
   • new <ชื่อไฟล์>        - สร้างไฟล์โน้ตใหม่
   • edit <ชื่อไฟล์>       - เปิดไฟล์ในตัวแก้ไข
@@ -1556,6 +1826,7 @@ function askDelete(n) {
 function closeModals() {
   document.getElementById('createModal').classList.remove('show');
   document.getElementById('deleteModal').classList.remove('show');
+  document.getElementById('colorStudioModal').classList.remove('show');
 }
 
 function confirmCreate() {
@@ -1609,16 +1880,15 @@ if ('serviceWorker' in navigator) {
    ═══════════════════════════════════════════════════════════════ */
 if (Object.keys(files).length === 0) {
   files['ยินดีต้อนรับ.ps1'] = [
-    '<h2 class="rainbow-sharp"># CodeNote Studio — Terminal Edition ⚡</h2>',
+    '<h2># CodeNote Studio — Terminal Edition ⚡</h2>',
     '<p>&nbsp;</p>',
     '<p>ยินดีต้อนรับสู่ CodeNote ในธีม <b>พื้นหลังสีดำด้าน (Matte Black)</b></p>',
-    '<p>• ตัวหนังสือเนื้อหาทั่วไปเป็น <b>สีเขียวเทอร์มินัลคมชัด</b></p>',
-    '<p>• หัวข้อและข้อความเน้นเป็น <b class="rainbow-sharp">สีวิ่งคมชัด ไม่มีแสงฟุ้ง</b></p>',
+    '<p>✨ <b>ตัวหนังสือมีสีวิ่งลื่นไหลตลอดเวลา คมชัด สะดุดตา</b></p>',
     '<p>&nbsp;</p>',
-    '<h3 class="rainbow-sharp"># ไฮไลท์การใช้งาน:</h3>',
-    '<p>1. 🎨 <b>เลือกโทนสีวิ่งได้ตามใจชอบ:</b> เลือกได้ที่แถบด้านบน (Spectrum, Cyber Neon, Sunset Gold, Matrix, Ocean, Galaxy, Lava, Aurora)</p>',
-    '<p>2. 📂 <b>สลับแท็บด้านบนได้ทันที:</b> กดคลิกแท็บเพื่อสลับไฟล์และบันทึกอัตโนมัติ</p>',
-    '<p>3. ✨ <b>ปุ่ม "ทำเป็นหัวข้อสีวิ่ง":</b> ไฮไลท์ข้อความแล้วกดปุ่มเพื่อใส่สีวิ่งได้ทันที</p>',
+    '<h3># ฟีเจอร์ใหม่:</h3>',
+    '<p>1. 🎨 <b>เลือกโทนสีวิ่งได้ในแอพ:</b> กดปุ่มสีที่แถบเครื่องมือด้านบน หรือคลิก <b>"🎨 สตูดิโอสีวิ่ง"</b> เพื่อเลือกโทนสี หรือผสมสีเองได้ทันที</p>',
+    '<p>2. 🌈 <b>เลือกขอบเขตสีวิ่ง:</b> สลับระหว่าง <i>"วิ่งทุกตัวอักษร"</i> กับ <i>"สีเขียว + หัวข้อสีวิ่ง"</i> ได้ที่แถบด้านบน</p>',
+    '<p>3. 📂 <b>สลับแท็บด้านบนได้ทันที:</b> กดคลิกแท็บเพื่อสลับไฟล์และบันทึกอัตโนมัติ</p>',
     '<p>4. ⌨️ <b>PowerShell Console:</b> พิมพ์คำสั่ง <code>theme neon</code>, <code>dir</code>, <code>cat</code>, <code>sfx</code> ที่ช่องด้านล่าง</p>',
     '<p>5. 🔊 <b>เสียงคีย์บอร์ดกลไก:</b> 5 โปรไฟล์เสียงสัมผัสระดับพรีเมียม</p>',
     '<p>&nbsp;</p>',
@@ -1628,7 +1898,13 @@ if (Object.keys(files).length === 0) {
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
 
-setFlowingTheme(currentFlowingTheme);
+const savedCustom = localStorage.getItem('cn_custom_gradient');
+if (currentFlowingTheme === 'custom' && savedCustom) {
+  setFlowingTheme(null, savedCustom);
+} else {
+  setFlowingTheme(currentFlowingTheme);
+}
+setFlowMode(currentFlowMode);
 buildSfxPanel();
 openFile(Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1');
 </script>
