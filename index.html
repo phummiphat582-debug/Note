@@ -1919,9 +1919,21 @@ editorContainer.addEventListener('drop', e => {
   imgs.forEach(insertImageFile);
 });
 
-/* PWA */
+/* PWA & Cache Purge */
+if ('caches' in window) {
+  caches.keys().then(keys => {
+    keys.forEach(k => {
+      if (k === 'codenote-v1' || k === 'codenote-v2') caches.delete(k);
+    });
+  });
+}
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/Note/sw.js').catch(()=>{}));
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(r => r.update());
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/Note/sw.js?v=' + Date.now()).catch(()=>{});
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
