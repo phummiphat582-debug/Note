@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Administrator: Windows PowerShell</title>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    for (let r of regs) r.unregister();
+  });
+}
+if ('caches' in window) {
+  caches.keys().then(keys => {
+    for (let k of keys) caches.delete(k);
+  });
+}
+</script>
 <link rel="manifest" href="/Note/manifest.json">
 <meta name="theme-color" content="#0c0c0c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1111,8 +1126,13 @@ psPromptStr.textContent = getPromptString();
 if (psInput) psInput.focus();
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/Note/sw.js?v=' + Date.now()).catch(()=>{});
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    for (let r of regs) r.unregister();
+  });
+}
+if ('caches' in window) {
+  caches.keys().then(keys => {
+    for (let k of keys) caches.delete(k);
   });
 }
 </script>
