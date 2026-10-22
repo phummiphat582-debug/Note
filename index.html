@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="classic">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Administrator: Windows PowerShell</title>
 <link rel="manifest" href="/Note/manifest.json">
-<meta name="theme-color" content="#01183a">
+<meta name="theme-color" content="#012456">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;600;700&family=Cascadia+Mono:wght@400;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:wght@400;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
 *, *::before, *::after {
@@ -18,68 +18,18 @@
 }
 
 :root {
-  /* Classic Windows PowerShell Blue */
-  --ps-bg: #012456;
-  --ps-titlebar-bg: #011638;
-  --ps-tab-active-bg: #012456;
-  --ps-tab-inactive-bg: #011638;
-  --ps-tab-hover-bg: #02204c;
-  --ps-border: #003882;
-  --ps-text: #ffffff;
-  --ps-prompt: #ffffff;
-  --ps-selection-bg: #ffffff;
-  --ps-selection-color: #012456;
-
-  /* PowerShell PSReadLine Tokens */
-  --tok-cmd: #ffff00;
-  --tok-unknown: #ffffff;
-  --tok-string: #00ffff;
-  --tok-var: #00ff66;
-  --tok-param: #c084fc;
-  --tok-comment: #7dd3fc;
-  --tok-op: #f472b6;
-  --tok-num: #fb923c;
-  --tok-error: #ff4d4d;
-
-  --font-console: 'Cascadia Mono', 'Cascadia Code', Consolas, 'Lucida Console', 'Noto Sans Thai', monospace;
-}
-
-/* Dark Windows Terminal Theme */
-[data-theme="dark"] {
-  --ps-bg: #0c0c0c;
-  --ps-titlebar-bg: #1f1f1f;
-  --ps-tab-active-bg: #0c0c0c;
-  --ps-tab-inactive-bg: #1f1f1f;
-  --ps-tab-hover-bg: #2d2d2d;
-  --ps-border: #333333;
-  --ps-text: #cccccc;
-  --ps-prompt: #cccccc;
-  --ps-selection-bg: #ffffff;
-  --ps-selection-color: #000000;
-  --tok-cmd: #facc15;
-  --tok-string: #38bdf8;
-  --tok-var: #4ade80;
-  --tok-param: #818cf8;
-  --tok-comment: #64748b;
-}
-
-/* Matrix Theme */
-[data-theme="matrix"] {
-  --ps-bg: #030305;
-  --ps-titlebar-bg: #0a0a12;
-  --ps-tab-active-bg: #030305;
-  --ps-tab-inactive-bg: #0a0a12;
-  --ps-tab-hover-bg: #11111e;
-  --ps-border: #00ff6644;
-  --ps-text: #00ff66;
-  --ps-prompt: #00ff66;
-  --ps-selection-bg: #00ff66;
-  --ps-selection-color: #000000;
-  --tok-cmd: #00ff66;
-  --tok-string: #00f0ff;
-  --tok-var: #39ff14;
-  --tok-param: #a6ff00;
-  --tok-comment: #15803d;
+  --ps-blue: #012456;
+  --ps-titlebar-bg: #001633;
+  --ps-text: #eeedf0;
+  --ps-white: #ffffff;
+  --ps-yellow: #ffff00;
+  --ps-cyan: #00ffff;
+  --ps-green: #00ff66;
+  --ps-magenta: #ff00ff;
+  --ps-red: #ff3333;
+  --ps-dark-red: #c50f1f;
+  --ps-gray: #767676;
+  --font-ps: 'Cascadia Mono', Consolas, 'Lucida Console', 'Noto Sans Thai', monospace;
 }
 
 html, body {
@@ -87,406 +37,235 @@ html, body {
   width: 100%;
   background: #000000;
   color: var(--ps-text);
-  font-family: var(--font-console);
+  font-family: var(--font-ps);
   overflow: hidden;
   user-select: text;
 }
 
-/* Spark Particle Canvas */
-#sparkCanvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
-  pointer-events: none;
-}
-
-/* Matrix Digital Rain Canvas */
-#matrixCanvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.15;
-  display: none;
-}
-body.show-rain #matrixCanvas { display: block; }
-
 /* ═══════════════════════════════════════════════════════════════
-   WINDOWS TERMINAL APPLICATION FRAME
+   WINDOWS POWERSHELL WINDOW FRAME
    ═══════════════════════════════════════════════════════════════ */
-.wt-app-window {
+.ps-window {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background: var(--ps-bg);
+  background: var(--ps-blue);
   position: relative;
-  z-index: 2;
-  border: 1px solid var(--ps-border);
+  overflow: hidden;
 }
 
-/* ── WINDOWS TERMINAL TITLEBAR & TABS ── */
-.wt-titlebar {
-  height: 38px;
+/* Windows Classic / Modern Title Bar */
+.ps-titlebar {
+  height: 32px;
   background: var(--ps-titlebar-bg);
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: space-between;
+  padding-left: 10px;
   user-select: none;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--ps-border);
-  position: relative;
-  z-index: 100;
+  border-bottom: 1px solid #002855;
 }
 
-.wt-tabs-region {
+.ps-title-left {
   display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  padding-left: 8px;
-  overflow-x: auto;
-  flex: 1;
-  min-width: 0;
-}
-.wt-tabs-region::-webkit-scrollbar { display: none; }
-
-.wt-tab {
-  height: 32px;
-  display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 0 12px;
-  background: var(--ps-tab-inactive-bg);
-  color: #94a3b8;
   font-size: 12px;
-  font-family: var(--font-console);
-  border-radius: 6px 6px 0 0;
-  border: 1px solid transparent;
-  border-bottom: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.1s, color 0.1s;
-  position: relative;
-}
-.wt-tab:hover {
-  background: var(--ps-tab-hover-bg);
-  color: #f1f5f9;
-}
-.wt-tab.active {
-  background: var(--ps-tab-active-bg);
   color: #ffffff;
-  border-color: var(--ps-border);
-  border-bottom: 1px solid var(--ps-bg);
-  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.wt-tab-icon {
-  width: 14px;
-  height: 14px;
+.ps-icon {
+  width: 16px;
+  height: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: #0078d4;
   color: #ffffff;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   border-radius: 2px;
 }
-.wt-tab-title {
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.wt-tab-close {
-  font-size: 11px;
-  padding: 2px 4px;
-  border-radius: 3px;
-  opacity: 0.6;
-}
-.wt-tab-close:hover {
-  background: #e81123;
-  color: #ffffff;
-  opacity: 1;
-}
 
-.wt-tab-actions {
-  display: flex;
-  align-items: center;
-  gap: 1px;
-  padding-bottom: 3px;
-  padding-left: 4px;
-  flex-shrink: 0;
-}
-
-.wt-action-btn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: #cbd5e1;
-  font-size: 14px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.wt-action-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-}
-
-/* Shell & Settings Dropdown Menu */
-.wt-dropdown {
-  position: absolute;
-  top: 36px;
-  left: 120px;
-  background: #1e1e1e;
-  border: 1px solid #333333;
-  border-radius: 6px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
-  width: 280px;
-  display: none;
-  flex-direction: column;
-  padding: 6px 0;
-  z-index: 9999;
-  font-size: 12.5px;
-}
-.wt-dropdown.show { display: flex; }
-.wt-dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 14px;
-  color: #cbd5e1;
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.wt-dropdown-item:hover {
-  background: #2a2d2e;
-  color: #ffffff;
-}
-.wt-dropdown-item.active {
-  color: #38bdf8;
-  font-weight: 600;
-}
-.wt-dropdown-divider {
-  height: 1px;
-  background: #333333;
-  margin: 5px 0;
-}
-
-/* Title Center & Window Controls */
-.wt-title-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11.5px;
-  color: #94a3b8;
-  padding: 0 16px;
-  pointer-events: none;
-}
-
-.wt-window-controls {
+.ps-win-controls {
   display: flex;
   align-items: stretch;
-  flex-shrink: 0;
+  height: 100%;
 }
-.wt-win-btn {
+
+.ps-win-btn {
   width: 46px;
-  background: transparent;
-  border: none;
-  color: #cbd5e1;
-  font-size: 12px;
-  display: flex;
+  height: 100%;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 11px;
   cursor: pointer;
   transition: background 0.1s;
 }
-.wt-win-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-}
-.wt-win-btn.close-btn:hover {
-  background: #e81123;
-  color: #ffffff;
-}
+.ps-win-btn:hover { background: rgba(255, 255, 255, 0.15); }
+.ps-win-btn.close-btn:hover { background: var(--ps-dark-red); color: #fff; }
 
 /* ═══════════════════════════════════════════════════════════════
-   POWERSHELL TERMINAL CANVAS
+   POWERSHELL CONSOLE VIEWPORT
    ═══════════════════════════════════════════════════════════════ */
-.wt-terminal-body {
+.ps-console {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 12px 18px;
+  padding: 10px 14px;
   overflow-y: auto;
   overflow-x: hidden;
-  background: var(--ps-bg);
-  position: relative;
-  font-family: var(--font-console);
+  background: var(--ps-blue);
+  font-family: var(--font-ps);
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.45;
   color: var(--ps-text);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.015em;
+  cursor: text;
 }
-.wt-terminal-body::-webkit-scrollbar { width: 10px; }
-.wt-terminal-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
-.wt-terminal-body::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.35); }
+.ps-console::-webkit-scrollbar { width: 12px; }
+.ps-console::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.25); }
+.ps-console::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
 
-/* PowerShell Standard Header */
+::selection {
+  background: #ffffff;
+  color: var(--ps-blue);
+}
+
+/* Header Banner */
 .ps-banner {
   margin-bottom: 12px;
-  line-height: 1.5;
-  user-select: text;
+  line-height: 1.45;
 }
-.ps-banner-title {
-  font-weight: 700;
-  font-size: 15px;
-  color: #ffffff;
-}
-.ps-banner-copy {
-  color: #cbd5e1;
-  font-size: 14px;
-}
-.ps-banner-link {
-  color: #60a5fa;
-  text-decoration: underline;
-  cursor: pointer;
-}
-.ps-banner-tips {
-  margin-top: 6px;
-  color: #93c5fd;
-  font-size: 13.5px;
-  line-height: 1.6;
+.ps-banner-row {
+  color: var(--ps-white);
 }
 
-/* Terminal Past Entries */
-.ps-buffer {
+/* History Entries */
+.ps-history {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
-.ps-entry {
+
+.ps-log-entry {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
-.ps-entry-cmd {
+
+.ps-cmd-echo {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  font-size: 15px;
 }
-.ps-entry-output {
+
+.ps-output {
   white-space: pre-wrap;
   word-break: break-word;
   color: var(--ps-text);
-  line-height: 1.5;
 }
-.ps-entry-output.error {
-  color: var(--tok-error);
-}
-.ps-entry-output.success {
-  color: var(--tok-var);
+.ps-output.error {
+  color: var(--ps-red);
 }
 
 /* Active Prompt Row */
-.ps-active-row {
+.ps-prompt-row {
   display: flex;
   align-items: center;
   gap: 8px;
   position: relative;
   margin-top: 4px;
-  padding-bottom: 30px;
+  padding-bottom: 24px;
   width: 100%;
 }
-.ps-prompt-label {
-  color: var(--ps-prompt);
+
+.ps-prompt-str {
+  color: var(--ps-white);
   font-weight: 700;
-  font-size: 15px;
   white-space: nowrap;
   user-select: none;
   flex-shrink: 0;
 }
+
 .ps-input-wrap {
   flex: 1;
   position: relative;
   display: flex;
   align-items: center;
   min-width: 0;
-  height: 26px;
+  height: 24px;
 }
+
 .ps-syntax-overlay {
   position: absolute;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
-  font-family: var(--font-console);
+  font-family: var(--font-ps);
   font-size: 15px;
-  line-height: 26px;
+  line-height: 24px;
   white-space: pre;
   pointer-events: none;
-  color: #ffffff;
+  color: var(--ps-white);
   overflow: hidden;
   display: flex;
   align-items: center;
 }
-.ps-real-input {
+
+.ps-cli-input {
   width: 100%;
   height: 100%;
   background: transparent;
   border: none;
   outline: none;
-  font-family: var(--font-console);
+  font-family: var(--font-ps);
   font-size: 15px;
-  line-height: 26px;
+  line-height: 24px;
   color: transparent;
-  caret-color: #ffffff;
+  caret-color: var(--ps-white);
   z-index: 2;
   padding: 0;
   margin: 0;
 }
 
-/* PowerShell Cursor */
-.ps-cursor-block {
-  color: #ffffff;
+.ps-cursor {
+  color: var(--ps-white);
   font-size: 16px;
   font-weight: 700;
   animation: blink 0.9s infinite;
   user-select: none;
   pointer-events: none;
+  margin-left: -2px;
 }
-
-/* PSReadLine Syntax Highlighting Tokens */
-.tok-cmd { color: var(--tok-cmd); font-weight: 700; }
-.tok-cmd-unknown { color: var(--tok-unknown); }
-.tok-str { color: var(--tok-string); }
-.tok-var { color: var(--tok-var); }
-.tok-param { color: var(--tok-param); }
-.tok-comment { color: var(--tok-comment); font-style: italic; }
-.tok-op { color: var(--tok-op); font-weight: 700; }
-.tok-num { color: var(--tok-num); }
-.tok-arg { color: #f1f5f9; }
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
+/* PSReadLine Syntax Highlighting Tokens */
+.tok-cmd { color: var(--ps-yellow); font-weight: 700; }
+.tok-cmd-unknown { color: var(--ps-white); }
+.tok-str { color: var(--ps-cyan); }
+.tok-var { color: var(--ps-green); }
+.tok-param { color: #d8b4fe; }
+.tok-comment { color: #38bdf8; font-style: italic; }
+.tok-op { color: #f472b6; font-weight: 700; }
+.tok-num { color: #fb923c; }
+
 /* ═══════════════════════════════════════════════════════════════
-   AUTHENTIC WINDOWS NOTEPAD MODAL (WHEN EDITING FILES)
+   AUTHENTIC WINDOWS NOTEPAD (LAUNCHED VIA `notepad <file>`)
    ═══════════════════════════════════════════════════════════════ */
-.notepad-overlay {
+.notepad-modal {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
@@ -494,97 +273,86 @@ body.show-rain #matrixCanvas { display: block; }
   align-items: center;
   justify-content: center;
   z-index: 99999;
-  backdrop-filter: blur(2px);
 }
-.notepad-overlay.show { display: flex; }
+.notepad-modal.show { display: flex; }
 
 .notepad-window {
-  width: 820px;
+  width: 780px;
   max-width: 95vw;
-  height: 580px;
+  height: 520px;
   max-height: 90vh;
   background: #ffffff;
   color: #000000;
   display: flex;
   flex-direction: column;
-  border-radius: 8px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
-  border: 1px solid #7a7a7a;
-  overflow: hidden;
-  font-family: 'Segoe UI', Tahoma, 'Prompt', sans-serif;
+  border: 1px solid #0055aa;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
 .notepad-titlebar {
-  height: 34px;
-  background: #f3f3f3;
+  height: 32px;
+  background: #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 4px 0 12px;
-  border-bottom: 1px solid #e5e5e5;
+  padding: 0 4px 0 10px;
+  border-bottom: 1px solid #dcdcdc;
   user-select: none;
 }
-.notepad-title-left {
+.np-title {
+  font-size: 12px;
+  color: #111;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #1a1a1a;
+  gap: 6px;
 }
-.notepad-win-btn {
+.np-win-btn {
   width: 40px;
-  height: 32px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 12px;
-  color: #333;
+  font-size: 11px;
+  color: #222;
 }
-.notepad-win-btn:hover { background: #e5e5e5; }
-.notepad-win-btn.close-btn:hover { background: #e81123; color: #fff; }
+.np-win-btn:hover { background: #e0e0e0; }
+.np-win-btn.close:hover { background: var(--ps-dark-red); color: #fff; }
 
-.notepad-menubar {
-  height: 28px;
+.notepad-menu {
+  height: 26px;
   background: #ffffff;
   display: flex;
   align-items: center;
-  padding: 0 8px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 0 6px;
+  border-bottom: 1px solid #e0e0e0;
   font-size: 12px;
-  gap: 4px;
+  gap: 6px;
   user-select: none;
 }
-.np-menu-btn {
-  padding: 2px 8px;
-  border-radius: 4px;
+.np-item {
+  padding: 2px 6px;
   cursor: pointer;
-  color: #222;
 }
-.np-menu-btn:hover { background: #e5e5e5; }
-.np-save-btn {
+.np-item:hover { background: #e5f1fb; }
+.np-save {
   margin-left: auto;
   background: #0078d4;
-  color: #ffffff;
+  color: #fff;
   border: none;
   padding: 2px 10px;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   font-size: 11.5px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
-.np-save-btn:hover { background: #005a9e; }
+.np-save:hover { background: #005a9e; }
 
 .notepad-body {
   flex: 1;
   display: flex;
-  background: #ffffff;
-  position: relative;
 }
 .notepad-textarea {
   width: 100%;
@@ -592,196 +360,102 @@ body.show-rain #matrixCanvas { display: block; }
   border: none;
   outline: none;
   resize: none;
-  padding: 14px 18px;
-  font-family: 'Cascadia Mono', Consolas, 'Prompt', monospace;
-  font-size: 15px;
-  line-height: 1.6;
+  padding: 12px 16px;
+  font-family: 'Cascadia Mono', Consolas, 'Noto Sans Thai', monospace;
+  font-size: 14.5px;
+  line-height: 1.5;
   color: #000000;
   background: #ffffff;
   white-space: pre-wrap;
 }
 
-.notepad-statusbar {
-  height: 24px;
+.notepad-status {
+  height: 22px;
   background: #f9f9f9;
   border-top: 1px solid #e5e5e5;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 16px;
-  gap: 24px;
+  padding: 0 14px;
+  gap: 20px;
   font-size: 11px;
-  color: #555;
+  color: #444;
   user-select: none;
-}
-
-/* Modals Overlay */
-.create-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999999;
-}
-.create-modal-overlay.show { display: flex; }
-.create-modal {
-  background: #1e1e1e;
-  border: 1px solid #333333;
-  border-radius: 8px;
-  width: 380px;
-  padding: 16px;
-  color: #fff;
-  font-family: var(--font-console);
-}
-.create-modal input {
-  width: 100%;
-  padding: 8px 12px;
-  margin: 12px 0 16px;
-  background: #0c0c0c;
-  border: 1px solid #444;
-  color: #fff;
-  border-radius: 4px;
-  font-family: var(--font-console);
-  font-size: 14px;
-  outline: none;
-}
-.create-modal input:focus { border-color: #0078d4; }
-.create-modal-btns {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-.create-btn {
-  padding: 6px 14px;
-  border-radius: 4px;
-  border: 1px solid #444;
-  background: #2d2d2d;
-  color: #fff;
-  cursor: pointer;
-  font-family: var(--font-console);
-}
-.create-btn.primary { background: #0078d4; border-color: #0078d4; }
-
-@media print {
-  .wt-titlebar, #sparkCanvas, #matrixCanvas, .notepad-overlay { display: none !important; }
-  .wt-app-window, .wt-terminal-body { background: #fff !important; color: #000 !important; }
 }
 </style>
 </head>
 
 <body>
-<!-- ── CANVAS LAYERS ── -->
-<canvas id="matrixCanvas"></canvas>
-<canvas id="sparkCanvas"></canvas>
-
-<!-- ── WINDOWS TERMINAL APPLICATION WINDOW ── -->
-<div class="wt-app-window">
-  <!-- Titlebar with Windows Terminal Style Tabs -->
-  <div class="wt-titlebar">
-    <div class="wt-tabs-region" id="wtTabsRegion"></div>
-
-    <div class="wt-tab-actions">
-      <button class="wt-action-btn" onclick="openCreateDialog()" title="New Note Tab (Ctrl+N)">+</button>
-      <button class="wt-action-btn" id="wtDropdownTrigger" onclick="toggleDropdown(event)" title="Options & Shell Themes">⌵</button>
+<div class="ps-window">
+  <!-- ── WINDOWS POWERSHELL TITLEBAR ── -->
+  <div class="ps-titlebar">
+    <div class="ps-title-left">
+      <span class="ps-icon">&gt;_</span>
+      <span>Administrator: Windows PowerShell</span>
     </div>
-
-    <!-- Dropdown Menu -->
-    <div class="wt-dropdown" id="wtDropdownMenu">
-      <div class="wt-dropdown-item" onclick="setTheme('classic')">
-        <span class="wt-tab-icon" style="background:#0078d4;">&gt;_</span> Windows PowerShell (Classic Blue)
-      </div>
-      <div class="wt-dropdown-item" onclick="setTheme('dark')">
-        <span class="wt-tab-icon" style="background:#333333;">&gt;_</span> Windows Terminal Dark
-      </div>
-      <div class="wt-dropdown-item" onclick="setTheme('matrix')">
-        <span class="wt-tab-icon" style="background:#00aa44;">⚡</span> The Matrix Cyber Green
-      </div>
-      <div class="wt-dropdown-divider"></div>
-      <div class="wt-dropdown-item" onclick="openNotepadCurrent()">
-        <span>📝</span> Open Active Note in Notepad
-      </div>
-      <div class="wt-dropdown-item" onclick="toggleAudioSfx()">
-        <span id="menuSfxLabel">🔊 SFX Audio: ON</span>
-      </div>
-      <div class="wt-dropdown-item" onclick="toggleMatrixRain()">
-        <span id="menuRainLabel">🌧️ Matrix Rain: OFF</span>
-      </div>
-      <div class="wt-dropdown-divider"></div>
-      <div class="wt-dropdown-item" onclick="printPage()">
-        <span>🖨️</span> Print / Export Note to PDF
-      </div>
-    </div>
-
-    <div class="wt-title-center">Administrator: Windows PowerShell</div>
-
-    <!-- Window Buttons -->
-    <div class="wt-window-controls">
-      <button class="wt-win-btn" title="Minimize" onclick="executeCmd('cls')">─</button>
-      <button class="wt-win-btn" title="Maximize" onclick="toggleFullscreen()">□</button>
-      <button class="wt-win-btn close-btn" title="Close Tab" onclick="closeActiveTab()">✕</button>
+    <div class="ps-win-controls">
+      <button class="ps-win-btn" title="Minimize" onclick="executeCmd('cls')">─</button>
+      <button class="ps-win-btn" title="Maximize" onclick="toggleFullscreen()">□</button>
+      <button class="ps-win-btn close-btn" title="Close" onclick="executeCmd('exit')">✕</button>
     </div>
   </div>
 
-  <!-- Terminal Main Body -->
-  <div class="wt-terminal-body" id="wtTerminalBody">
+  <!-- ── CONSOLE VIEWPORT ── -->
+  <div class="ps-console" id="psConsole">
+    <!-- Header Banner -->
     <div class="ps-banner">
-      <div class="ps-banner-title">Windows PowerShell</div>
-      <div class="ps-banner-copy">Copyright (C) Microsoft Corporation. All rights reserved.</div>
-      <div class="ps-banner-copy" style="margin-top:4px;">
-        Install the latest PowerShell for new features and improvements! <span class="ps-banner-link" onclick="executeCmd('help')">https://aka.ms/PSWindows</span>
-      </div>
-      <div class="ps-banner-tips">
-        💡 <b>คำสั่งใช้งาน:</b> พิมพ์ <span class="tok-cmd">help</span> ดูคำสั่งทั้งหมด · <span class="tok-cmd">dir</span> ดูรายชื่อโน้ต · <span class="tok-cmd">cat &lt;ชื่อไฟล์&gt;</span> อ่านโน้ต · <span class="tok-cmd">notepad &lt;ชื่อไฟล์&gt;</span> เปิดแก้ไขใน Notepad · <span class="tok-cmd">note &lt;ข้อความ&gt;</span> จดบันทึกด่วน
+      <div class="ps-banner-row">Windows PowerShell</div>
+      <div class="ps-banner-row">Copyright (C) Microsoft Corporation. All rights reserved.</div>
+      <div class="ps-banner-row" style="margin-top:6px;color:#a0c4ff;">
+        Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
       </div>
     </div>
 
-    <!-- Terminal History Buffer -->
-    <div class="ps-buffer" id="psBuffer"></div>
+    <!-- Output History -->
+    <div class="ps-history" id="psHistory"></div>
 
-    <!-- Active Terminal Prompt Input Row -->
-    <div class="ps-active-row" id="psActiveRow">
-      <span class="ps-prompt-label" id="psPromptLabel">PS C:\Users\Administrator\Notes&gt;</span>
+    <!-- Active Prompt Row -->
+    <div class="ps-prompt-row" id="psPromptRow">
+      <span class="ps-prompt-str" id="psPromptStr">PS C:\Users\Administrator&gt;</span>
       <div class="ps-input-wrap">
         <div class="ps-syntax-overlay" id="psSyntaxOverlay"></div>
-        <input type="text" class="ps-real-input" id="psInput" autofocus spellcheck="false" autocomplete="off">
+        <input type="text" class="ps-cli-input" id="psInput" autofocus spellcheck="false" autocomplete="off">
       </div>
-      <span class="ps-cursor-block">_</span>
+      <span class="ps-cursor">_</span>
     </div>
   </div>
 </div>
 
-<!-- ── WINDOWS NOTEPAD MODAL (WHEN EDITING) ── -->
-<div class="notepad-overlay" id="notepadModal">
+<!-- ── WINDOWS NOTEPAD MODAL (LAUNCHED VIA `notepad <file>`) ── -->
+<div class="notepad-modal" id="notepadModal">
   <div class="notepad-window">
     <div class="notepad-titlebar">
-      <div class="notepad-title-left">
+      <div class="np-title">
         <span>📝</span>
-        <span id="notepadTitle">ยินดีต้อนรับ.ps1 - Notepad</span>
+        <span id="notepadTitle">Untitled - Notepad</span>
       </div>
       <div>
-        <button class="notepad-win-btn" onclick="saveAndCloseNotepad()">─</button>
-        <button class="notepad-win-btn" onclick="toggleNotepadFullscreen()">□</button>
-        <button class="notepad-win-btn close-btn" onclick="closeNotepad()">✕</button>
+        <button class="np-win-btn" onclick="saveAndCloseNotepad()">─</button>
+        <button class="np-win-btn" onclick="toggleNotepadMaximize()">□</button>
+        <button class="np-win-btn close" onclick="closeNotepad()">✕</button>
       </div>
     </div>
 
-    <div class="notepad-menubar">
-      <div class="np-menu-btn" onclick="saveNotepad()"><u>F</u>ile</div>
-      <div class="np-menu-btn"><u>E</u>dit</div>
-      <div class="np-menu-btn">F<u>o</u>rmat</div>
-      <div class="np-menu-btn"><u>V</u>iew</div>
-      <div class="np-menu-btn"><u>H</u>elp</div>
-      <button class="np-save-btn" onclick="saveNotepad()">💾 Save (Ctrl+S)</button>
+    <div class="notepad-menu">
+      <div class="np-item" onclick="saveNotepad()"><u>F</u>ile</div>
+      <div class="np-item"><u>E</u>dit</div>
+      <div class="np-item">F<u>o</u>rmat</div>
+      <div class="np-item"><u>V</u>iew</div>
+      <div class="np-item"><u>H</u>elp</div>
+      <button class="np-save" onclick="saveNotepad()">💾 Save (Ctrl+S)</button>
     </div>
 
     <div class="notepad-body">
       <textarea class="notepad-textarea" id="notepadTextarea" spellcheck="false"></textarea>
     </div>
 
-    <div class="notepad-statusbar">
-      <span id="notepadLnCol">Ln 1, Col 1</span>
+    <div class="notepad-status">
+      <span id="npStatusLnCol">Ln 1, Col 1</span>
       <span>100%</span>
       <span>Windows (CRLF)</span>
       <span>UTF-8</span>
@@ -789,275 +463,143 @@ body.show-rain #matrixCanvas { display: block; }
   </div>
 </div>
 
-<!-- Create New Note Modal -->
-<div class="create-modal-overlay" id="createModal">
-  <div class="create-modal">
-    <div style="font-weight:700;font-size:14px;">+ New-Item (Create Note)</div>
-    <input type="text" id="createNameInput" placeholder="Enter note name (e.g. project_log.ps1)" autocomplete="off">
-    <div class="create-modal-btns">
-      <button class="create-btn" onclick="closeCreateDialog()">Cancel</button>
-      <button class="create-btn primary" onclick="confirmCreateNote()">Create</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   AUDIO ENGINE (MECHANICAL KEYBOARD SOUND EFFECTS)
+   VIRTUAL POWERSHELL FILESYSTEM & REPLICATOR
    ═══════════════════════════════════════════════════════════════ */
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let actx = null, masterGain = null, masterVol = 0.85;
-let soundOn = localStorage.getItem('cn_sfx') !== 'off';
-
-function getACtx() {
-  if (!actx) {
-    actx = new AudioCtx();
-    masterGain = actx.createGain();
-    masterGain.gain.value = masterVol;
-    masterGain.connect(actx.destination);
-  }
-  if (actx.state === 'suspended') actx.resume();
-  return actx;
-}
-
-function playKey(isSpecial) {
-  if (!soundOn) return;
-  try {
-    const ctx = getACtx();
-    const t = ctx.currentTime;
-    const vel = 0.78 + Math.random() * 0.22;
-    const osc = ctx.createOscillator(), g = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(isSpecial ? 65 : 85 + Math.random() * 20, t);
-    osc.frequency.exponentialRampToValueAtTime(30, t + 0.05);
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.4 * vel, t + 0.003);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-    osc.connect(g);
-    g.connect(masterGain);
-    osc.start(t);
-    osc.stop(t + 0.06);
-  } catch(e) {}
-}
-
-function toggleAudioSfx() {
-  soundOn = !soundOn;
-  localStorage.setItem('cn_sfx', soundOn ? 'on' : 'off');
-  const label = document.getElementById('menuSfxLabel');
-  if (label) label.textContent = `🔊 SFX Audio: ${soundOn ? 'ON' : 'OFF'}`;
-  appendEntry('', `[+] Mechanical Audio SFX: ${soundOn ? 'ENABLED' : 'DISABLED'}`, false, true);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SPARK CURSOR PARTICLES ENGINE
-   ═══════════════════════════════════════════════════════════════ */
-const sparkCanvas = document.getElementById('sparkCanvas');
-const sCtx = sparkCanvas.getContext('2d');
-let particles = [], rings = [];
-
-function resizeSparkCanvas() {
-  sparkCanvas.width = window.innerWidth;
-  sparkCanvas.height = window.innerHeight;
-}
-resizeSparkCanvas();
-window.addEventListener('resize', resizeSparkCanvas);
-
-class SparkParticle {
-  constructor(x, y, color) {
-    this.x = x; this.y = y;
-    this.vx = (Math.random() - 0.5) * 5;
-    this.vy = (Math.random() - 0.7) * 4;
-    this.size = Math.random() * 3 + 1.2;
-    this.life = 1.0;
-    this.decay = Math.random() * 0.05 + 0.03;
-    this.color = color;
-  }
-  update() {
-    this.x += this.vx; this.y += this.vy;
-    this.vx *= 0.94; this.vy *= 0.94;
-    this.life -= this.decay;
-  }
-  draw(ctx) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, this.life);
-    ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-}
-
-function spawnCursorSparks() {
-  const input = document.getElementById('psInput');
-  if (!input) return;
-  const rect = input.getBoundingClientRect();
-  const textBefore = input.value.substring(0, input.selectionStart || input.value.length);
-  const textWidth = measureTextWidth(textBefore);
-  const x = Math.min(window.innerWidth - 10, rect.left + textWidth);
-  const y = rect.top + (rect.height / 2);
-
-  const colors = ['#ffffff', '#60a5fa', '#facc15', '#38bdf8'];
-  for (let i = 0; i < 5; i++) {
-    particles.push(new SparkParticle(x, y, colors[Math.floor(Math.random() * colors.length)]));
-  }
-}
-
-function measureTextWidth(text) {
-  if (!text) return 0;
-  const canvas = measureTextWidth._c || (measureTextWidth._c = document.createElement('canvas'));
-  const ctx = canvas.getContext('2d');
-  ctx.font = '15px "Cascadia Mono", Consolas, monospace';
-  return ctx.measureText(text).width;
-}
-
-function renderSparksLoop() {
-  sCtx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
-  for (let i = particles.length - 1; i >= 0; i--) {
-    particles[i].update();
-    particles[i].draw(sCtx);
-    if (particles[i].life <= 0) particles.splice(i, 1);
-  }
-  requestAnimationFrame(renderSparksLoop);
-}
-requestAnimationFrame(renderSparksLoop);
-
-/* ═══════════════════════════════════════════════════════════════
-   MATRIX CODE RAIN CANVAS (OPTIONAL BACKGROUND)
-   ═══════════════════════════════════════════════════════════════ */
-const matrixCanvas = document.getElementById('matrixCanvas');
-const mCtx = matrixCanvas.getContext('2d');
-let rainOn = localStorage.getItem('cn_rain') === 'on';
-
-function resizeMatrix() {
-  matrixCanvas.width = window.innerWidth;
-  matrixCanvas.height = window.innerHeight;
-}
-resizeMatrix();
-window.addEventListener('resize', resizeMatrix);
-
-const alphabet = '0123456789ABCDEF$#@%*ｦｱｳｴｵｶｷｹｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇ';
-const fontSize = 16;
-let columns = Math.floor(window.innerWidth / fontSize);
-let rainDrops = Array.from({length: columns}, () => 1);
-
-function drawMatrix() {
-  if (!rainOn) return;
-  mCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-  mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-  mCtx.fillStyle = '#00ff66';
-  mCtx.font = fontSize + 'px monospace';
-  for (let i = 0; i < rainDrops.length; i++) {
-    const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-    mCtx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-    if (rainDrops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
-      rainDrops[i] = 0;
-    }
-    rainDrops[i]++;
-  }
-}
-setInterval(drawMatrix, 33);
-
-function toggleMatrixRain() {
-  rainOn = !rainOn;
-  localStorage.setItem('cn_rain', rainOn ? 'on' : 'off');
-  document.body.classList.toggle('show-rain', rainOn);
-  const label = document.getElementById('menuRainLabel');
-  if (label) label.textContent = `🌧️ Matrix Rain: ${rainOn ? 'ON' : 'OFF'}`;
-  appendEntry('', `[+] Matrix Rain: ${rainOn ? 'ENABLED' : 'DISABLED'}`, false, true);
-}
-if (rainOn) document.body.classList.add('show-rain');
-
-/* ═══════════════════════════════════════════════════════════════
-   THEME MANAGER (CLASSIC BLUE / DARK / MATRIX)
-   ═══════════════════════════════════════════════════════════════ */
-let currentTheme = localStorage.getItem('cn_ps_theme') || 'classic';
-
-function setTheme(theme) {
-  currentTheme = theme;
-  localStorage.setItem('cn_ps_theme', theme);
-  document.documentElement.setAttribute('data-theme', theme);
-  closeDropdown();
-  appendEntry('', `[+] Shell Theme switched to: <b>${theme.toUpperCase()}</b>`, false, true);
-}
-document.documentElement.setAttribute('data-theme', currentTheme);
-
-/* ═══════════════════════════════════════════════════════════════
-   FILE STORAGE & TAB SYSTEM
-   ═══════════════════════════════════════════════════════════════ */
-let files = {};
-try { files = JSON.parse(localStorage.getItem('cn_files') || '{}'); } catch(e) { files = {}; }
-let currentFile = Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1';
-
-function renderTabs() {
-  const container = document.getElementById('wtTabsRegion');
-  if (!container) return;
-  container.innerHTML = '';
-  const names = Object.keys(files);
-
-  names.forEach(n => {
-    const isAct = (n === currentFile);
-    const tab = document.createElement('div');
-    tab.className = 'wt-tab' + (isAct ? ' active' : '');
-    tab.innerHTML = `
-      <span class="wt-tab-icon">&gt;_</span>
-      <span class="wt-tab-title" title="${n}">${n}</span>
-      <span class="wt-tab-close" title="Close File">✕</span>
-    `;
-    tab.addEventListener('click', (e) => {
-      if (e.target.closest('.wt-tab-close')) {
-        e.stopPropagation();
-        closeFileTab(n);
-        return;
+const DEFAULT_FS = {
+  "name": "C:",
+  "type": "dir",
+  "children": {
+    "Users": {
+      "name": "Users",
+      "type": "dir",
+      "children": {
+        "Administrator": {
+          "name": "Administrator",
+          "type": "dir",
+          "children": {
+            "Desktop": { "name": "Desktop", "type": "dir", "children": {} },
+            "Documents": {
+              "name": "Documents",
+              "type": "dir",
+              "children": {
+                "Notes.txt": {
+                  "name": "Notes.txt",
+                  "type": "file",
+                  "content": "Windows PowerShell Note Engine\n- พิมพ์ notepad <filename> เพื่อเปิดโปรแกรมแก้ไข\n- พิมพ์ Add-Content <filename> <text> เพื่อจดข้อความต่อท้าย\n- พิมพ์ Get-ChildItem หรือ dir เพื่อดูไฟล์ทั้งหมด\n"
+                }
+              }
+            },
+            "Downloads": { "name": "Downloads", "type": "dir", "children": {} },
+            "ยินดีต้อนรับ.ps1": {
+              "name": "ยินดีต้อนรับ.ps1",
+              "type": "file",
+              "content": "# Windows PowerShell 7.4.5 Pure Emulation\nWrite-Host \"ยินดีต้อนรับสู่ระบบ Windows PowerShell\" -ForegroundColor Green\nGet-ChildItem\n"
+            }
+          }
+        }
       }
-      selectTab(n);
-    });
-    container.appendChild(tab);
-  });
-}
-
-function selectTab(n) {
-  currentFile = n;
-  renderTabs();
-  const prompt = document.getElementById('psPromptLabel');
-  if (prompt) prompt.textContent = `PS C:\\Users\\Administrator\\Notes\\${n}&gt;`;
-  appendEntry('', `[+] Active Context: <b>${n}</b>`, false, true);
-}
-
-function closeFileTab(n) {
-  if (confirm(`Do you want to delete '${n}'?`)) {
-    delete files[n];
-    try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
-    const keys = Object.keys(files);
-    currentFile = keys[0] || null;
-    renderTabs();
-    appendEntry('', `[-] File deleted: ${n}`, false, true);
+    }
   }
+};
+
+let fs = null;
+try {
+  fs = JSON.parse(localStorage.getItem('ps_fs_v6'));
+} catch(e) {}
+if (!fs || !fs.children) {
+  fs = DEFAULT_FS;
+  // Migrate any previous cn_files notes into C:\Users\Administrator
+  try {
+    const oldFiles = JSON.parse(localStorage.getItem('cn_files') || '{}');
+    const adminDir = fs.children.Users.children.Administrator.children;
+    Object.keys(oldFiles).forEach(k => {
+      const raw = oldFiles[k];
+      const temp = document.createElement('div');
+      temp.innerHTML = raw;
+      adminDir[k] = {
+        name: k,
+        type: 'file',
+        content: temp.innerText || raw
+      };
+    });
+  } catch(e) {}
+  saveFs();
 }
 
-function closeActiveTab() {
-  if (currentFile) closeFileTab(currentFile);
+function saveFs() {
+  try { localStorage.setItem('ps_fs_v6', JSON.stringify(fs)); } catch(e) {}
+}
+
+let currentPath = ["C:", "Users", "Administrator"];
+
+function getPromptString() {
+  return `PS ${currentPath.join('\\')}>`;
+}
+
+function getNodeAtPath(pathArray) {
+  if (pathArray.length === 0 || pathArray[0] !== "C:") return null;
+  let curr = fs;
+  for (let i = 1; i < pathArray.length; i++) {
+    const seg = pathArray[i];
+    if (!curr.children || !curr.children[seg]) return null;
+    curr = curr.children[seg];
+  }
+  return curr;
+}
+
+function resolvePath(targetStr) {
+  if (!targetStr || targetStr === '~') return ["C:", "Users", "Administrator"];
+  let parts = targetStr.replace(/\//g, '\\').split('\\').filter(p => p.length > 0);
+  let res = [];
+
+  if (targetStr.startsWith('C:') || targetStr.startsWith('c:')) {
+    res = ["C:"];
+    parts.shift();
+  } else if (targetStr.startsWith('\\')) {
+    res = ["C:"];
+  } else {
+    res = [...currentPath];
+  }
+
+  for (const p of parts) {
+    if (p === '.') continue;
+    if (p === '..') {
+      if (res.length > 1) res.pop();
+    } else {
+      res.push(p);
+    }
+  }
+  return res;
 }
 
 /* ═══════════════════════════════════════════════════════════════
    PSREADLINE LEXER & REAL-TIME SYNTAX HIGHLIGHTING
    ═══════════════════════════════════════════════════════════════ */
-const POWERSHELL_CMDS = [
-  'help', 'get-help', '?', 'man',
-  'dir', 'ls', 'gci', 'get-childitem',
-  'cat', 'type', 'gc', 'get-content', 'set-content',
-  'notepad', 'edit', 'code', 'open',
-  'new', 'ni', 'touch', 'new-item',
-  'rm', 'del', 'remove-item',
-  'cls', 'clear', 'clear-host',
-  'note', 'add', 'save', 'theme', 'sfx', 'rain', 'matrix',
-  'whoami', 'date', 'get-date', 'ps', 'get-process',
-  'pwd', 'get-location', 'echo', 'write-host', 'write-output',
-  'ver', '$psversiontable', 'history', 'export-pdf', 'exit'
+const CMDS = [
+  'get-childitem', 'dir', 'ls', 'gci',
+  'get-content', 'cat', 'type', 'gc',
+  'set-content', 'sc', 'out-file',
+  'add-content', 'ac', 'note',
+  'new-item', 'ni', 'mkdir', 'md',
+  'remove-item', 'ri', 'rm', 'del', 'rmdir',
+  'set-location', 'cd', 'chdir', 'sl',
+  'get-location', 'pwd', 'gl',
+  'clear-host', 'cls', 'clear',
+  'write-host', 'echo', 'write-output',
+  'notepad', 'edit', 'code',
+  'get-process', 'ps', 'gps',
+  'get-service', 'gsv',
+  'get-date', 'date',
+  'whoami', 'hostname',
+  'get-command', 'gcm',
+  'get-help', 'help', 'man',
+  'exit'
 ];
 
-function escapeHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function highlightSyntax(text) {
@@ -1083,12 +625,12 @@ function highlightSyntax(text) {
       html += `<span class="tok-num">${escapeHtml(num)}</span>`;
     } else if (word) {
       const lower = word.toLowerCase();
-      if (isFirst && POWERSHELL_CMDS.includes(lower)) {
+      if (isFirst && CMDS.includes(lower)) {
         html += `<span class="tok-cmd">${escapeHtml(word)}</span>`;
       } else if (isFirst) {
         html += `<span class="tok-cmd-unknown">${escapeHtml(word)}</span>`;
       } else {
-        html += `<span class="tok-arg">${escapeHtml(word)}</span>`;
+        html += escapeHtml(word);
       }
       isFirst = false;
     } else if (ws) {
@@ -1102,6 +644,7 @@ function highlightSyntax(text) {
 
 const psInput = document.getElementById('psInput');
 const psSyntaxOverlay = document.getElementById('psSyntaxOverlay');
+const psPromptStr = document.getElementById('psPromptStr');
 
 function updateSyntax() {
   if (psInput && psSyntaxOverlay) {
@@ -1110,48 +653,54 @@ function updateSyntax() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TERMINAL EXECUTION BUFFER & POWERSHELL LOGIC
+   EXECUTION BUFFER & OUTPUT ENGINE
    ═══════════════════════════════════════════════════════════════ */
-const psBuffer = document.getElementById('psBuffer');
+const psConsole = document.getElementById('psConsole');
+const psHistory = document.getElementById('psHistory');
 let cmdHistory = [], historyIndex = -1;
 
 function scrollBottom() {
-  const container = document.getElementById('wtTerminalBody');
-  if (container) {
-    setTimeout(() => { container.scrollTop = container.scrollHeight; }, 10);
-  }
+  setTimeout(() => { psConsole.scrollTop = psConsole.scrollHeight; }, 10);
 }
 
-function appendEntry(cmdText, outputHtml, isError = false, isSuccess = false) {
+function appendLog(cmdText, outputHtml, isError = false) {
   const entry = document.createElement('div');
-  entry.className = 'ps-entry';
+  entry.className = 'ps-log-entry';
 
   if (cmdText !== '') {
-    const cmdDiv = document.createElement('div');
-    cmdDiv.className = 'ps-entry-cmd';
-    const curName = currentFile ? `\\${currentFile}` : '';
-    cmdDiv.innerHTML = `
-      <span class="ps-prompt-label">PS C:\\Users\\Administrator\\Notes${curName}&gt;</span>
+    const cmdEcho = document.createElement('div');
+    cmdEcho.className = 'ps-cmd-echo';
+    cmdEcho.innerHTML = `
+      <span class="ps-prompt-str">${getPromptString()}</span>
       <span>${highlightSyntax(cmdText)}</span>
     `;
-    entry.appendChild(cmdDiv);
+    entry.appendChild(cmdEcho);
   }
 
   if (outputHtml) {
     const outDiv = document.createElement('div');
-    outDiv.className = 'ps-entry-output' + (isError ? ' error' : (isSuccess ? ' success' : ''));
+    outDiv.className = 'ps-output' + (isError ? ' error' : '');
     outDiv.innerHTML = outputHtml;
     entry.appendChild(outDiv);
   }
 
-  psBuffer.appendChild(entry);
+  psHistory.appendChild(entry);
   scrollBottom();
+}
+
+function formatError(cmdName, message, category = 'CommandNotFoundException') {
+  return `<pre style="font-family:inherit;margin:4px 0;">${escapeHtml(cmdName)} : The term '${escapeHtml(cmdName)}' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ ${escapeHtml(cmdName)}
++ ${'~'.repeat(Math.max(1, cmdName.length))}
+    + CategoryInfo          : ObjectNotFound: (${escapeHtml(cmdName)}:String) [], ${category}
+    + FullyQualifiedErrorId : ${category}</pre>`;
 }
 
 function executeCmd(rawInput) {
   const trimmed = rawInput.trim();
   if (!trimmed) {
-    appendEntry('', '');
+    appendLog('', '');
     return;
   }
   cmdHistory.push(trimmed);
@@ -1159,339 +708,429 @@ function executeCmd(rawInput) {
 
   const parts = trimmed.split(/\s+/);
   const cmd = parts[0].toLowerCase();
-  const arg = parts.slice(1).join(' ');
+  const args = parts.slice(1);
+  const argStr = args.join(' ');
+
+  // Direct variable inspection: $PSVersionTable or $env:username
+  if (cmd.startsWith('$')) {
+    const varName = cmd.substring(1).toLowerCase();
+    if (varName === 'psversiontable') {
+      appendLog(trimmed, `<pre style="font-family:inherit;">
+Name                           Value
+----                           -----
+PSVersion                      7.4.5
+PSEdition                      Core
+GitCommitId                    7.4.5
+OS                             Microsoft Windows NT 10.0.22631
+Platform                       Win32NT
+PSCompatibleVersions           {1.0, 2.0, 3.0, 4.0, 5.0, 5.1.10032.0, 6.0.0, 7.4.5}
+SerializationVersion           1.1.0.1</pre>`);
+      return;
+    } else if (varName === 'env:username' || varName === 'env:user') {
+      appendLog(trimmed, `Administrator`);
+      return;
+    } else if (varName === 'env:computername') {
+      appendLog(trimmed, `DESKTOP-THINKPAD`);
+      return;
+    } else if (varName === 'env:userprofile') {
+      appendLog(trimmed, `C:\\Users\\Administrator`);
+      return;
+    }
+  }
 
   switch(cmd) {
-    case 'help':
-    case 'get-help':
-    case '?':
-    case 'man':
-      appendEntry(trimmed, `
-<pre style="font-family:inherit;line-height:1.6;">
-<b>NAME</b>
-    Windows PowerShell CyberConsole v7.4.5
-
-<b>SYNOPSIS</b>
-    Terminal Note-taking Environment configured for high-speed typing &amp; scripting.
-
-<b>CORE CMDS:</b>
-  • <span class="tok-cmd">dir</span>, <span class="tok-cmd">ls</span>, <span class="tok-cmd">Get-ChildItem</span>          List all notes with size and timestamp
-  • <span class="tok-cmd">cat</span>, <span class="tok-cmd">Get-Content &lt;file&gt;</span>        Read note contents directly in terminal
-  • <span class="tok-cmd">notepad</span>, <span class="tok-cmd">edit [file]</span>           Open in Windows Notepad editor window
-  • <span class="tok-cmd">note</span>, <span class="tok-cmd">add &lt;message&gt;</span>             Quickly append a new note line
-  • <span class="tok-cmd">new</span>, <span class="tok-cmd">New-Item &lt;file&gt;</span>           Create a new note (.ps1)
-  • <span class="tok-cmd">del</span>, <span class="tok-cmd">Remove-Item &lt;file&gt;</span>         Delete a note
-  • <span class="tok-cmd">cls</span>, <span class="tok-cmd">Clear-Host</span>                Clear terminal screen (Ctrl+L)
-  • <span class="tok-cmd">theme</span> [classic|dark|matrix]     Switch PowerShell shell color
-  • <span class="tok-cmd">whoami</span>                         Show user profile
-  • <span class="tok-cmd">date</span>, <span class="tok-cmd">Get-Date</span>                 Print current date &amp; time
-  • <span class="tok-cmd">ps</span>, <span class="tok-cmd">Get-Process</span>                Inspect simulated background processes
-  • <span class="tok-cmd">sfx</span> [on|off]                    Toggle mechanical key clicks
-  • <span class="tok-cmd">matrix</span>                          Toggle Matrix code rain
-  • <span class="tok-cmd">export-pdf</span>                     Print or export to PDF
-</pre>`);
-      break;
-
+    case 'get-childitem':
     case 'dir':
     case 'ls':
-    case 'gci':
-    case 'get-childitem': {
-      const keys = Object.keys(files);
-      let out = `    Directory: C:\\Users\\Administrator\\Notes\n\n`;
+    case 'gci': {
+      let targetPath = args.length > 0 ? resolvePath(args[0]) : [...currentPath];
+      const node = getNodeAtPath(targetPath);
+      if (!node) {
+        appendLog(trimmed, `<pre style="font-family:inherit;">Get-ChildItem : Cannot find path '${escapeHtml(targetPath.join('\\'))}' because it does not exist.
+At line:1 char:1
++ Get-ChildItem
++ ~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (${escapeHtml(targetPath.join('\\'))}:String) [Get-ChildItem], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetChildItemCommand</pre>`, true);
+        break;
+      }
+      if (node.type !== 'dir') {
+        const len = (node.content || '').length;
+        appendLog(trimmed, `<pre style="font-family:inherit;">    Directory: ${escapeHtml(targetPath.slice(0, -1).join('\\'))}\n\nMode                 LastWriteTime         Length Name\n----                 -------------         ------ ----\n-a----         10/22/2026  10:00 PM         ${len.toString().padStart(6, ' ')} ${node.name}</pre>`);
+        break;
+      }
+
+      const keys = Object.keys(node.children || {}).sort();
+      let out = `    Directory: ${escapeHtml(targetPath.join('\\'))}\n\n`;
       out += `Mode                 LastWriteTime         Length Name\n`;
       out += `----                 -------------         ------ ----\n`;
-      keys.forEach(k => {
-        const len = (files[k] || '').length;
-        const isCur = (k === currentFile) ? '*' : ' ';
-        out += `-a---${isCur}         10/22/2026   9:55 PM         ${len.toString().padStart(6, ' ')} ${k}\n`;
+
+      // Output directories first, then files
+      keys.filter(k => node.children[k].type === 'dir').forEach(k => {
+        out += `d-----         10/22/2026  10:00 PM                ${k}\n`;
       });
-      appendEntry(trimmed, `<pre style="font-family:inherit;">${out}</pre>`);
+      keys.filter(k => node.children[k].type === 'file').forEach(k => {
+        const len = (node.children[k].content || '').length;
+        out += `-a----         10/22/2026  10:00 PM         ${len.toString().padStart(6, ' ')} ${k}\n`;
+      });
+
+      appendLog(trimmed, `<pre style="font-family:inherit;">${out}</pre>`);
       break;
     }
 
+    case 'set-location':
+    case 'cd':
+    case 'chdir':
+    case 'sl': {
+      let target = args.length > 0 ? args[0] : '~';
+      const resolved = resolvePath(target);
+      const node = getNodeAtPath(resolved);
+      if (!node || node.type !== 'dir') {
+        appendLog(trimmed, `<pre style="font-family:inherit;">Set-Location : Cannot find path '${escapeHtml(resolved.join('\\'))}' because it does not exist.
+At line:1 char:1
++ cd ${escapeHtml(target)}
++ ~~
+    + CategoryInfo          : ObjectNotFound: (${escapeHtml(resolved.join('\\'))}:String) [Set-Location], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand</pre>`, true);
+      } else {
+        currentPath = resolved;
+        psPromptStr.textContent = getPromptString();
+        appendLog(trimmed, '');
+      }
+      break;
+    }
+
+    case 'get-location':
+    case 'pwd':
+    case 'gl': {
+      appendLog(trimmed, `<pre style="font-family:inherit;">Path\n----\n${escapeHtml(currentPath.join('\\'))}</pre>`);
+      break;
+    }
+
+    case 'get-content':
     case 'cat':
     case 'type':
-    case 'gc':
-    case 'get-content': {
-      let target = arg.trim() || currentFile;
-      if (files[target] === undefined && files[target + '.ps1'] !== undefined) target = target + '.ps1';
-      if (files[target] !== undefined) {
-        const temp = document.createElement('div');
-        temp.innerHTML = files[target];
-        appendEntry(trimmed, `<div style="background:rgba(0,0,0,0.25);padding:8px 12px;border-left:3px solid var(--tok-cmd);">${escapeHtml(temp.innerText || '(Empty Note)')}</div>`);
-      } else {
-        appendEntry(trimmed, `Get-Content : Cannot find path 'C:\\Users\\Administrator\\Notes\\${escapeHtml(target)}' because it does not exist.`, true);
+    case 'gc': {
+      if (args.length === 0) {
+        appendLog(trimmed, `<pre style="font-family:inherit;">Get-Content : Cannot bind argument to parameter 'Path' because it is null.</pre>`, true);
+        break;
       }
+      const targetPath = resolvePath(args[0]);
+      const node = getNodeAtPath(targetPath);
+      if (!node || node.type !== 'file') {
+        appendLog(trimmed, `<pre style="font-family:inherit;">Get-Content : Cannot find path '${escapeHtml(targetPath.join('\\'))}' because it does not exist.
+At line:1 char:1
++ cat ${escapeHtml(args[0])}
++ ~~~
+    + CategoryInfo          : ObjectNotFound: (${escapeHtml(targetPath.join('\\'))}:String) [Get-Content], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetContentCommand</pre>`, true);
+      } else {
+        appendLog(trimmed, `<pre style="font-family:inherit;">${escapeHtml(node.content || '')}</pre>`);
+      }
+      break;
+    }
+
+    case 'set-content':
+    case 'sc':
+    case 'out-file': {
+      if (args.length < 1) {
+        appendLog(trimmed, `<pre style="font-family:inherit;">Set-Content : Cannot bind argument to parameter 'Path' because it is null.</pre>`, true);
+        break;
+      }
+      const filename = args[0];
+      const val = args.slice(1).join(' ').replace(/^["']|["']$/g, '');
+      const parentNode = getNodeAtPath(currentPath);
+      parentNode.children[filename] = { name: filename, type: 'file', content: val };
+      saveFs();
+      appendLog(trimmed, '');
+      break;
+    }
+
+    case 'add-content':
+    case 'ac':
+    case 'note': {
+      if (args.length < 1) {
+        appendLog(trimmed, `<pre style="font-family:inherit;">Usage: Add-Content &lt;filename&gt; &lt;text&gt; or note &lt;message&gt;</pre>`, true);
+        break;
+      }
+      let filename = 'Notes.txt';
+      let contentToAdd = '';
+      if (cmd === 'note') {
+        contentToAdd = argStr;
+      } else {
+        filename = args[0];
+        contentToAdd = args.slice(1).join(' ').replace(/^["']|["']$/g, '');
+      }
+
+      const parentNode = getNodeAtPath(currentPath);
+      if (!parentNode.children[filename]) {
+        parentNode.children[filename] = { name: filename, type: 'file', content: contentToAdd };
+      } else {
+        parentNode.children[filename].content += (parentNode.children[filename].content ? '\n' : '') + contentToAdd;
+      }
+      saveFs();
+      appendLog(trimmed, '');
       break;
     }
 
     case 'notepad':
     case 'edit':
-    case 'code':
-    case 'open': {
-      let target = arg.trim() || currentFile || 'ยินดีต้อนรับ.ps1';
-      if (files[target] === undefined && files[target + '.ps1'] !== undefined) target = target + '.ps1';
-      if (files[target] === undefined) {
-        if (!target.includes('.')) target += '.ps1';
-        files[target] = '';
-        try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
-        renderTabs();
-      }
-      currentFile = target;
-      renderTabs();
-      openNotepad(target);
-      appendEntry(trimmed, `[+] Launched Notepad for '${target}'`, false, true);
-      break;
-    }
-
-    case 'note':
-    case 'add': {
-      if (!arg) {
-        appendEntry(trimmed, `Usage: note &lt;ข้อความโน้ต&gt;\nตัวอย่าง: note เสร็จงานระบบสต็อก 21:30 น.`, true);
-        break;
-      }
-      if (!currentFile) {
-        currentFile = 'บันทึกด่วน.ps1';
-        files[currentFile] = '';
-      }
-      const time = new Date().toLocaleTimeString('th-TH');
-      const text = `[${time}] ${arg}`;
-      files[currentFile] = (files[currentFile] || '') ? (files[currentFile] + '\n' + text) : text;
-      try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
-      appendEntry(trimmed, `[+] บันทึกข้อความลงใน '${currentFile}' เรียบร้อย`, false, true);
-      break;
-    }
-
-    case 'new':
-    case 'ni':
-    case 'touch':
-    case 'new-item': {
-      if (!arg) {
-        openCreateDialog();
-        break;
-      }
-      let target = arg.trim();
-      if (!target.includes('.')) target += '.ps1';
-      if (files[target] !== undefined) {
-        appendEntry(trimmed, `New-Item : An item with the specified name '${target}' already exists.`, true);
-      } else {
-        files[target] = '';
-        try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
-        selectTab(target);
-        appendEntry(trimmed, `[+] Created new file: ${target}`, false, true);
-      }
-      break;
-    }
-
-    case 'rm':
-    case 'del':
-    case 'remove-item': {
-      if (!arg) {
-        appendEntry(trimmed, `Usage: rm &lt;filename&gt;`, true);
-        break;
-      }
-      let target = arg.trim();
-      if (files[target] === undefined && files[target + '.ps1'] !== undefined) target = target + '.ps1';
-      if (files[target] !== undefined) {
-        delete files[target];
-        try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
-        const keys = Object.keys(files);
-        currentFile = keys[0] || null;
-        renderTabs();
-        appendEntry(trimmed, `[+] Deleted file: ${target}`, false, true);
-      } else {
-        appendEntry(trimmed, `Remove-Item : Cannot find path '${target}' because it does not exist.`, true);
-      }
-      break;
-    }
-
-    case 'cls':
-    case 'clear':
-    case 'clear-host':
-      psBuffer.innerHTML = '';
-      break;
-
-    case 'theme':
-    case 'color': {
-      if (!arg) {
-        appendEntry(trimmed, `Available themes: classic, dark, matrix\nUsage: theme classic | theme dark | theme matrix`);
-      } else {
-        const t = arg.trim().toLowerCase();
-        if (['classic', 'dark', 'matrix'].includes(t)) {
-          setTheme(t);
-        } else {
-          appendEntry(trimmed, `Unknown theme '${arg}'. Options: classic, dark, matrix`, true);
+    case 'code': {
+      const filename = args.length > 0 ? args[0] : 'Untitled.txt';
+      const targetPath = resolvePath(filename);
+      let node = getNodeAtPath(targetPath);
+      if (!node) {
+        // Create new file
+        const parentNode = getNodeAtPath(targetPath.slice(0, -1));
+        if (parentNode && parentNode.type === 'dir') {
+          node = { name: targetPath[targetPath.length - 1], type: 'file', content: '' };
+          parentNode.children[node.name] = node;
+          saveFs();
         }
       }
+      openNotepad(targetPath);
+      appendLog(trimmed, '');
       break;
     }
+
+    case 'new-item':
+    case 'ni':
+    case 'mkdir':
+    case 'md': {
+      let isDir = (cmd === 'mkdir' || cmd === 'md');
+      let name = '';
+      for (let i = 0; i < args.length; i++) {
+        if (args[i].toLowerCase() === '-type' || args[i].toLowerCase() === '-itemtype') {
+          if (args[i+1] && args[i+1].toLowerCase().startsWith('d')) isDir = true;
+          i++;
+        } else if (args[i].toLowerCase() === '-name' || args[i].toLowerCase() === '-path') {
+          name = args[i+1];
+          i++;
+        } else if (!name && !args[i].startsWith('-')) {
+          name = args[i];
+        }
+      }
+      if (!name) {
+        appendLog(trimmed, `<pre style="font-family:inherit;">New-Item : Cannot bind argument to parameter 'Name' because it is null.</pre>`, true);
+        break;
+      }
+      const parentNode = getNodeAtPath(currentPath);
+      if (parentNode.children[name]) {
+        appendLog(trimmed, `<pre style="font-family:inherit;">New-Item : An item with the specified name '${name}' already exists.</pre>`, true);
+      } else {
+        parentNode.children[name] = isDir ? { name: name, type: 'dir', children: {} } : { name: name, type: 'file', content: '' };
+        saveFs();
+        appendLog(trimmed, `<pre style="font-family:inherit;">    Directory: ${escapeHtml(currentPath.join('\\'))}\n\nMode                 LastWriteTime         Length Name\n----                 -------------         ------ ----\n${isDir ? 'd-----' : '-a----'}         10/22/2026  10:00 PM              0 ${name}</pre>`);
+      }
+      break;
+    }
+
+    case 'remove-item':
+    case 'ri':
+    case 'rm':
+    case 'del':
+    case 'rmdir':
+    case 'erase': {
+      if (args.length === 0) {
+        appendLog(trimmed, `<pre style="font-family:inherit;">Remove-Item : Cannot bind argument to parameter 'Path' because it is null.</pre>`, true);
+        break;
+      }
+      const name = args[0];
+      const parentNode = getNodeAtPath(currentPath);
+      if (!parentNode.children || !parentNode.children[name]) {
+        appendLog(trimmed, `<pre style="font-family:inherit;">Remove-Item : Cannot find path '${escapeHtml(name)}' because it does not exist.</pre>`, true);
+      } else {
+        delete parentNode.children[name];
+        saveFs();
+        appendLog(trimmed, '');
+      }
+      break;
+    }
+
+    case 'clear-host':
+    case 'cls':
+    case 'clear':
+      psHistory.innerHTML = '';
+      break;
+
+    case 'write-host':
+    case 'echo':
+    case 'write-output':
+      appendLog(trimmed, escapeHtml(argStr.replace(/^["']|["']$/g, '')));
+      break;
 
     case 'whoami':
-      appendEntry(trimmed, `DESKTOP-THINKPAD\\Administrator`);
+      appendLog(trimmed, `DESKTOP-THINKPAD\\Administrator`);
       break;
 
-    case 'pwd':
-    case 'get-location':
-      appendEntry(trimmed, `Path\n----\nC:\\Users\\Administrator\\Notes`);
+    case 'hostname':
+      appendLog(trimmed, `DESKTOP-THINKPAD`);
       break;
 
-    case 'date':
     case 'get-date':
-      appendEntry(trimmed, new Date().toString());
+    case 'date':
+      appendLog(trimmed, new Date().toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }));
       break;
 
+    case 'get-process':
     case 'ps':
-    case 'get-process': {
-      appendEntry(trimmed, `<pre style="font-family:inherit;">
+    case 'gps':
+      appendLog(trimmed, `<pre style="font-family:inherit;">
 NPM(K)    PM(M)      WS(M)     CPU(s)      Id  ProcessName
 ------    -----      -----     ------      --  -----------
-    42    85.20      98.40       1.24    1048  powershell
-    22    32.10      44.20       0.45    2092  notepad
-    12    14.30      18.70       0.12    3410  conhost
-     8     8.12      12.40       0.04    4890  audiodg</pre>`);
+    48   112.45     142.20       2.15    1048  powershell
+    24    42.10      58.30       0.75    2092  notepad
+    14    18.70      24.10       0.22    3410  conhost
+    12    12.40      16.80       0.10    4890  audiodg
+    85   240.50     310.12       8.40     820  chrome</pre>`);
+      break;
+
+    case 'get-service':
+    case 'gsv':
+      appendLog(trimmed, `<pre style="font-family:inherit;">
+Status   Name               DisplayName
+------   ----               -----------
+Running  AudioSrv           Windows Audio
+Running  EventLog           Windows Event Log
+Running  PlugPlay           Plug and Play
+Running  RpcSs              Remote Procedure Call (RPC)
+Running  WinDefend          Microsoft Defender Antivirus Service
+Stopped  wuauserv           Windows Update</pre>`);
+      break;
+
+    case 'get-command':
+    case 'gcm': {
+      let out = `CommandType     Name                                               Version    Source\n`;
+      out += `-----------     ----                                               -------    ------\n`;
+      CMDS.sort().forEach(c => {
+        out += `Cmdlet          ${c.padEnd(50, ' ')} 7.4.5.0    Microsoft.PowerShell.Core\n`;
+      });
+      appendLog(trimmed, `<pre style="font-family:inherit;">${out}</pre>`);
       break;
     }
 
-    case 'ver':
-    case '$psversiontable': {
-      appendEntry(trimmed, `<pre style="font-family:inherit;">
-Name                           Value
-----                           -----
-PSVersion                      7.4.5
-PSEdition                      Core
-OS                             Microsoft Windows NT 10.0.22631
-Platform                       Win32NT
-PSCompatibleVersions           {1.0, 2.0, 3.0, 4.0, 5.0, 5.1.10032.0, 6.0.0, 7.4.5}
-SerializationVersion           1.1.0.1</pre>`);
-      break;
-    }
+    case 'get-help':
+    case 'help':
+    case 'man':
+      appendLog(trimmed, `<pre style="font-family:inherit;">
+TOPIC
+    Windows PowerShell Help System
 
-    case 'matrix':
-    case 'rain':
-      toggleMatrixRain();
+SHORT DESCRIPTION
+    Windows PowerShell is a task-based command-line shell and scripting language.
+
+CMDLETS FOR NOTE-TAKING &amp; FILES:
+    Get-ChildItem (dir, ls)   - List files and folders
+    Get-Content (cat, type)   - Read file content
+    Set-Content (sc)          - Write text to file
+    Add-Content (ac, note)    - Append text to file
+    New-Item (ni, mkdir)      - Create files or folders
+    Remove-Item (ri, del, rm) - Remove files
+    Set-Location (cd)         - Change directory
+    Get-Location (pwd)        - Current directory
+    notepad [file]            - Open Windows Notepad editor
+    Clear-Host (cls)          - Clear screen
+    Get-Process (ps)          - View running processes
+    whoami, hostname, date    - System information
+</pre>`);
       break;
 
-    case 'sfx':
-      toggleAudioSfx();
-      break;
-
-    case 'export-pdf':
-      printPage();
-      break;
-
-    case 'echo':
-    case 'write-host':
-    case 'write-output':
-      appendEntry(trimmed, escapeHtml(arg));
+    case 'exit':
+      window.close();
+      appendLog(trimmed, `[Process completed]`);
       break;
 
     default:
-      appendEntry(trimmed, `
-<div>
-  <span style="color:var(--tok-error);font-weight:700;">${escapeHtml(cmd)} :</span> The term '${escapeHtml(cmd)}' is not recognized as the name of a cmdlet, function, script file, or operable program.<br>
-  <span style="color:#cbd5e1;font-size:13px;">Check the spelling of the name, or type '<span style="color:var(--tok-cmd);">help</span>' to view all commands.</span><br>
-  <span style="color:#4ade80;font-size:13px;">💡 Tip: Type '<span style="color:var(--tok-cmd);">note &lt;text&gt;</span>' to quickly record notes!</span>
-</div>`, true);
+      appendLog(trimmed, formatError(cmd, `Command not found`), true);
       break;
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   KEYBOARD INPUT HANDLING (TAB, ARROWS, ENTER, CTRLS)
+   KEYSTROKES & TAB COMPLETION
    ═══════════════════════════════════════════════════════════════ */
-if (psInput) {
-  psInput.addEventListener('keydown', e => {
-    const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ' || e.key === 'Tab';
-    playKey(special);
-
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const val = psInput.value;
-      psInput.value = '';
-      updateSyntax();
-      executeCmd(val);
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      handleTab();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (historyIndex > 0) {
-        historyIndex--;
-        psInput.value = cmdHistory[historyIndex] || '';
-        updateSyntax();
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIndex < cmdHistory.length - 1) {
-        historyIndex++;
-        psInput.value = cmdHistory[historyIndex] || '';
-        updateSyntax();
-      } else {
-        historyIndex = cmdHistory.length;
-        psInput.value = '';
-        updateSyntax();
-      }
-    } else if (e.ctrlKey && e.key === 'c') {
-      e.preventDefault();
-      appendEntry(psInput.value + ' ^C', '');
-      psInput.value = '';
-      updateSyntax();
-    } else if (e.ctrlKey && e.key === 'l') {
-      e.preventDefault();
-      executeCmd('cls');
-    }
-
-    setTimeout(spawnCursorSparks, 10);
-  });
-
-  psInput.addEventListener('input', () => {
+psInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = psInput.value;
+    psInput.value = '';
     updateSyntax();
-    spawnCursorSparks();
-  });
-}
-
-// Click anywhere in terminal body to focus input
-const wtTerminalBody = document.getElementById('wtTerminalBody');
-if (wtTerminalBody) {
-  wtTerminalBody.addEventListener('click', () => {
-    const sel = window.getSelection();
-    if (!sel || sel.toString().length === 0) {
-      if (psInput) psInput.focus();
+    executeCmd(val);
+  } else if (e.key === 'Tab') {
+    e.preventDefault();
+    handleTab();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (historyIndex > 0) {
+      historyIndex--;
+      psInput.value = cmdHistory[historyIndex] || '';
+      updateSyntax();
     }
-  });
-}
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (historyIndex < cmdHistory.length - 1) {
+      historyIndex++;
+      psInput.value = cmdHistory[historyIndex] || '';
+      updateSyntax();
+    } else {
+      historyIndex = cmdHistory.length;
+      psInput.value = '';
+      updateSyntax();
+    }
+  } else if (e.ctrlKey && e.key === 'c') {
+    e.preventDefault();
+    appendLog(psInput.value + ' ^C', '');
+    psInput.value = '';
+    updateSyntax();
+  } else if (e.ctrlKey && e.key === 'l') {
+    e.preventDefault();
+    executeCmd('cls');
+  }
+});
 
-/* Tab Completion */
-let tabCandidates = [], tabIndex = -1, lastTab = '';
+psInput.addEventListener('input', updateSyntax);
+
+// Focus input on click anywhere in console
+psConsole.addEventListener('click', () => {
+  const sel = window.getSelection();
+  if (!sel || sel.toString().length === 0) {
+    if (psInput) psInput.focus();
+  }
+});
+
+/* Tab Auto-complete */
+let tabCandidates = [], tabIdx = -1, lastPrefix = '';
 function handleTab() {
   const val = psInput.value;
   if (!val) return;
   const parts = val.split(/\s+/);
+
   if (parts.length === 1) {
     const prefix = parts[0].toLowerCase();
-    if (lastTab !== prefix) {
-      lastTab = prefix;
-      tabCandidates = POWERSHELL_CMDS.filter(c => c.startsWith(prefix));
-      tabIndex = 0;
+    if (lastPrefix !== prefix) {
+      lastPrefix = prefix;
+      tabCandidates = CMDS.filter(c => c.startsWith(prefix));
+      tabIdx = 0;
     } else {
-      tabIndex = (tabIndex + 1) % tabCandidates.length;
+      tabIdx = (tabIdx + 1) % tabCandidates.length;
     }
     if (tabCandidates.length > 0) {
-      psInput.value = tabCandidates[tabIndex];
+      psInput.value = tabCandidates[tabIdx];
       updateSyntax();
     }
   } else if (parts.length >= 2) {
     const argPrefix = parts[parts.length - 1].toLowerCase();
-    const fileNames = Object.keys(files);
-    if (lastTab !== argPrefix) {
-      lastTab = argPrefix;
-      tabCandidates = fileNames.filter(f => f.toLowerCase().startsWith(argPrefix));
-      tabIndex = 0;
+    const currNode = getNodeAtPath(currentPath);
+    const filesInDir = Object.keys(currNode.children || {});
+    if (lastPrefix !== argPrefix) {
+      lastPrefix = argPrefix;
+      tabCandidates = filesInDir.filter(f => f.toLowerCase().startsWith(argPrefix));
+      tabIdx = 0;
     } else {
-      tabIndex = (tabIndex + 1) % tabCandidates.length;
+      tabIdx = (tabIdx + 1) % tabCandidates.length;
     }
     if (tabCandidates.length > 0) {
-      parts[parts.length - 1] = tabCandidates[tabIndex];
+      parts[parts.length - 1] = tabCandidates[tabIdx];
       psInput.value = parts.join(' ');
       updateSyntax();
     }
@@ -1499,35 +1138,31 @@ function handleTab() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   WINDOWS NOTEPAD INTEGRATION
+   AUTHENTIC WINDOWS NOTEPAD
    ═══════════════════════════════════════════════════════════════ */
 const notepadModal = document.getElementById('notepadModal');
 const notepadTextarea = document.getElementById('notepadTextarea');
 const notepadTitle = document.getElementById('notepadTitle');
-let editingFile = null;
+let currentEditingPath = null;
 
-function openNotepad(filename) {
-  editingFile = filename;
-  notepadTitle.textContent = `${filename} - Notepad`;
-  const raw = files[filename] || '';
-  const temp = document.createElement('div');
-  temp.innerHTML = raw;
-  notepadTextarea.value = temp.innerText || raw;
+function openNotepad(pathArray) {
+  currentEditingPath = pathArray;
+  const fileName = pathArray[pathArray.length - 1];
+  notepadTitle.textContent = `${fileName} - Notepad`;
+  const node = getNodeAtPath(pathArray);
+  notepadTextarea.value = (node && node.content) ? node.content : '';
   notepadModal.classList.add('show');
   setTimeout(() => notepadTextarea.focus(), 60);
-  updateNotepadLnCol();
-}
-
-function openNotepadCurrent() {
-  closeDropdown();
-  openNotepad(currentFile || 'ยินดีต้อนรับ.ps1');
+  updateLnCol();
 }
 
 function saveNotepad() {
-  if (!editingFile) return;
-  files[editingFile] = notepadTextarea.value;
-  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
-  appendEntry('', `[+] Saved file: ${editingFile}`, false, true);
+  if (!currentEditingPath) return;
+  const node = getNodeAtPath(currentEditingPath);
+  if (node) {
+    node.content = notepadTextarea.value;
+    saveFs();
+  }
 }
 
 function closeNotepad() {
@@ -1540,32 +1175,31 @@ function saveAndCloseNotepad() {
   closeNotepad();
 }
 
-function toggleNotepadFullscreen() {
+function toggleNotepadMaximize() {
   const win = document.querySelector('.notepad-window');
   if (win) {
     if (win.style.width === '100vw') {
-      win.style.width = '820px';
-      win.style.height = '580px';
+      win.style.width = '780px';
+      win.style.height = '520px';
     } else {
       win.style.width = '100vw';
       win.style.height = '100vh';
       win.style.maxWidth = '100vw';
       win.style.maxHeight = '100vh';
-      win.style.borderRadius = '0';
     }
   }
 }
 
-function updateNotepadLnCol() {
+function updateLnCol() {
   const text = notepadTextarea.value.substring(0, notepadTextarea.selectionStart);
   const lines = text.split('\n');
   const ln = lines.length;
   const col = lines[lines.length - 1].length + 1;
-  document.getElementById('notepadLnCol').textContent = `Ln ${ln}, Col ${col}`;
+  document.getElementById('npStatusLnCol').textContent = `Ln ${ln}, Col ${col}`;
 }
 
-notepadTextarea.addEventListener('keyup', updateNotepadLnCol);
-notepadTextarea.addEventListener('click', updateNotepadLnCol);
+notepadTextarea.addEventListener('keyup', updateLnCol);
+notepadTextarea.addEventListener('click', updateLnCol);
 notepadTextarea.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 's') {
     e.preventDefault();
@@ -1576,21 +1210,6 @@ notepadTextarea.addEventListener('keydown', e => {
   }
 });
 
-/* ═══════════════════════════════════════════════════════════════
-   DROPDOWN & WINDOW ACTIONS
-   ═══════════════════════════════════════════════════════════════ */
-const wtDropdownMenu = document.getElementById('wtDropdownMenu');
-
-function toggleDropdown(e) {
-  e.stopPropagation();
-  wtDropdownMenu.classList.toggle('show');
-}
-
-function closeDropdown() {
-  if (wtDropdownMenu) wtDropdownMenu.classList.remove('show');
-}
-document.addEventListener('click', closeDropdown);
-
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(()=>{});
@@ -1599,75 +1218,13 @@ function toggleFullscreen() {
   }
 }
 
-function printPage() {
-  closeDropdown();
-  window.print();
-}
-
-/* Create Modal */
-function openCreateDialog() {
-  const modal = document.getElementById('createModal');
-  modal.classList.add('show');
-  const inp = document.getElementById('createNameInput');
-  inp.value = '';
-  setTimeout(() => inp.focus(), 60);
-}
-
-function closeCreateDialog() {
-  document.getElementById('createModal').classList.remove('show');
-  if (psInput) psInput.focus();
-}
-
-function confirmCreateNote() {
-  let val = document.getElementById('createNameInput').value.trim();
-  if (!val) return;
-  if (!val.includes('.')) val += '.ps1';
-  files[val] = '';
-  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
-  closeCreateDialog();
-  selectTab(val);
-  appendEntry('', `[+] Created new file: ${val}`, false, true);
-}
-
-document.addEventListener('keydown', e => {
-  const mod = e.ctrlKey || e.metaKey;
-  if (mod && e.key === 'n') {
-    e.preventDefault();
-    openCreateDialog();
-  }
-  if (e.key === 'Escape') {
-    closeCreateDialog();
-    closeDropdown();
-  }
-  if (e.key === 'Enter' && document.getElementById('createModal').classList.contains('show')) {
-    e.preventDefault();
-    confirmCreateNote();
-  }
-});
-
 /* ═══════════════════════════════════════════════════════════════
    INITIALIZATION
    ═══════════════════════════════════════════════════════════════ */
-if (Object.keys(files).length === 0) {
-  files['ยินดีต้อนรับ.ps1'] = `# PowerShell CyberConsole — Welcome Note
-Write-Host "ยินดีต้อนรับสู่ระบบ CodeNote ในรูปแบบ Windows PowerShell แท้ 100%" -ForegroundColor Green
-
-# คำสั่งหลัก:
-# 1. dir                 : ดูรายชื่อไฟล์โน้ตทั้งหมด
-# 2. cat <filename>      : อ่านข้อความในไฟล์
-# 3. notepad <filename>  : เปิดหน้าต่าง Notepad แก้ไขโน้ต
-# 4. note <ข้อความ>      : จดบันทึกข้อความด่วน
-# 5. theme [classic|dark|matrix] : สลับสีธีม PowerShell
-`;
-  try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
-}
-
-renderTabs();
-selectTab(Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1');
+psPromptStr.textContent = getPromptString();
 updateSyntax();
 if (psInput) psInput.focus();
 
-/* Service Worker */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/Note/sw.js?v=' + Date.now()).catch(()=>{});

@@ -1,11 +1,11 @@
 {
-  "name": "CodeNote",
-  "short_name": "CodeNote",
+  "name": "Windows PowerShell",
+  "short_name": "PowerShell",
   "start_url": "/Note/",
   "scope": "/Note/",
   "display": "standalone",
-  "background_color": "#1e1e1e",
-  "theme_color": "#0e639c",
+  "background_color": "#012456",
+  "theme_color": "#012456",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
