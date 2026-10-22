@@ -414,7 +414,7 @@ html, body {
     <!-- Active Prompt Row: Direct, Crisp, Multi-line Auto-wrapping -->
     <div class="ps-prompt-row" id="psPromptRow">
       <span class="ps-prompt-str" id="psPromptStr">PS C:\Users\Administrator&gt;</span>
-      <textarea class="ps-cli-input" id="psInput" rows="1" autofocus spellcheck="false" autocomplete="off"></textarea>
+      <textarea class="ps-cli-input" id="psInput" rows="1" autofocus spellcheck="false" autocomplete="off" enterkeyhint="go"></textarea>
     </div>
   </div>
 </div>
@@ -608,15 +608,13 @@ function appendLog(cmdText, outputHtml, isError = false) {
   const entry = document.createElement('div');
   entry.className = 'ps-log-entry';
 
-  if (cmdText !== '') {
-    const cmdEcho = document.createElement('div');
-    cmdEcho.className = 'ps-cmd-echo';
-    cmdEcho.innerHTML = `
-      <span class="ps-prompt-str">${getPromptString()}</span>
-      <span class="ps-cmd-text">${escapeHtml(cmdText)}</span>
-    `;
-    entry.appendChild(cmdEcho);
-  }
+  const cmdEcho = document.createElement('div');
+  cmdEcho.className = 'ps-cmd-echo';
+  cmdEcho.innerHTML = `
+    <span class="ps-prompt-str">${getPromptString()}</span>
+    <span class="ps-cmd-text">${escapeHtml(cmdText || '')}</span>
+  `;
+  entry.appendChild(cmdEcho);
 
   if (outputHtml) {
     const outDiv = document.createElement('div');
@@ -1001,7 +999,9 @@ function setInputValue(val) {
 psInput.addEventListener('input', adjustInputHeight);
 
 psInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
+  const isEnter = (e.key === 'Enter' || e.code === 'Enter' || e.code === 'NumpadEnter' || e.keyCode === 13 || e.which === 13);
+  if (isEnter) {
+    if (e.isComposing) return;
     if (e.shiftKey) {
       // Shift+Enter allows newline without executing
       setTimeout(adjustInputHeight, 0);
@@ -1048,8 +1048,10 @@ psInput.addEventListener('keydown', e => {
   }
 });
 
-// Focus input on click anywhere in console
-psConsole.addEventListener('click', () => {
+// Focus input on click anywhere in console or window
+document.addEventListener('click', e => {
+  if (notepadModal && notepadModal.classList.contains('show')) return;
+  if (e.target && e.target.closest && e.target.closest('.ps-titlebar')) return;
   const sel = window.getSelection();
   if (!sel || sel.toString().length === 0) {
     if (psInput) psInput.focus();
