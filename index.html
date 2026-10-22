@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Administrator: Windows PowerShell</title>
 <link rel="manifest" href="/Note/manifest.json">
-<meta name="theme-color" content="#012456">
+<meta name="theme-color" content="#0c0c0c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:wght@400;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:wght@400;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
 *, *::before, *::after {
@@ -18,54 +18,54 @@
 }
 
 :root {
-  --ps-blue: #012456;
-  --ps-titlebar-bg: #001633;
-  --ps-text: #eeedf0;
-  --ps-white: #ffffff;
-  --ps-yellow: #ffff00;
-  --ps-cyan: #00ffff;
-  --ps-green: #00ff66;
-  --ps-magenta: #ff00ff;
-  --ps-red: #ff3333;
-  --ps-dark-red: #c50f1f;
-  --ps-gray: #767676;
+  /* Matte Black Terminal Palette */
+  --bg-matte: #0c0c0c;
+  --bg-titlebar: #181818;
+  --border-matte: #262626;
+  --text-main: #cccccc;
+  --text-bright: #ffffff;
+  --text-dim: #767676;
+  --ps-red: #f43f5e;
+  --ps-yellow: #facc15;
+  --ps-green: #4ade80;
+  --ps-cyan: #38bdf8;
   --font-ps: 'Cascadia Mono', Consolas, 'Lucida Console', 'Noto Sans Thai', monospace;
 }
 
 html, body {
   height: 100%;
   width: 100%;
-  background: #000000;
-  color: var(--ps-text);
+  background: var(--bg-matte);
+  color: var(--text-main);
   font-family: var(--font-ps);
   overflow: hidden;
   user-select: text;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   WINDOWS POWERSHELL WINDOW FRAME
+   MATTE BLACK WINDOWS POWERSHELL FRAME
    ═══════════════════════════════════════════════════════════════ */
 .ps-window {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background: var(--ps-blue);
+  background: var(--bg-matte);
   position: relative;
   overflow: hidden;
 }
 
-/* Windows Classic / Modern Title Bar */
+/* Titlebar */
 .ps-titlebar {
   height: 32px;
-  background: var(--ps-titlebar-bg);
+  background: var(--bg-titlebar);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-left: 10px;
   user-select: none;
   flex-shrink: 0;
-  border-bottom: 1px solid #002855;
+  border-bottom: 1px solid var(--border-matte);
 }
 
 .ps-title-left {
@@ -73,8 +73,7 @@ html, body {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #ffffff;
-  letter-spacing: 0.02em;
+  color: #cccccc;
 }
 
 .ps-icon {
@@ -85,7 +84,7 @@ html, body {
   justify-content: center;
   background: #0078d4;
   color: #ffffff;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   border-radius: 2px;
 }
@@ -104,16 +103,22 @@ html, body {
   justify-content: center;
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: #aaaaaa;
   font-size: 11px;
   cursor: pointer;
-  transition: background 0.1s;
+  transition: background 0.1s, color 0.1s;
 }
-.ps-win-btn:hover { background: rgba(255, 255, 255, 0.15); }
-.ps-win-btn.close-btn:hover { background: var(--ps-dark-red); color: #fff; }
+.ps-win-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+.ps-win-btn.close-btn:hover {
+  background: #e81123;
+  color: #ffffff;
+}
 
 /* ═══════════════════════════════════════════════════════════════
-   POWERSHELL CONSOLE VIEWPORT
+   MATTE BLACK TERMINAL CONSOLE
    ═══════════════════════════════════════════════════════════════ */
 .ps-console {
   flex: 1;
@@ -122,21 +127,20 @@ html, body {
   padding: 10px 14px;
   overflow-y: auto;
   overflow-x: hidden;
-  background: var(--ps-blue);
+  background: var(--bg-matte);
   font-family: var(--font-ps);
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.45;
-  color: var(--ps-text);
-  letter-spacing: 0.015em;
+  color: var(--text-main);
   cursor: text;
 }
-.ps-console::-webkit-scrollbar { width: 12px; }
-.ps-console::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.25); }
-.ps-console::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+.ps-console::-webkit-scrollbar { width: 10px; }
+.ps-console::-webkit-scrollbar-thumb { background: #222222; }
+.ps-console::-webkit-scrollbar-thumb:hover { background: #333333; }
 
 ::selection {
   background: #ffffff;
-  color: var(--ps-blue);
+  color: #000000;
 }
 
 /* Header Banner */
@@ -145,10 +149,10 @@ html, body {
   line-height: 1.45;
 }
 .ps-banner-row {
-  color: var(--ps-white);
+  color: var(--text-bright);
 }
 
-/* History Entries */
+/* History Log */
 .ps-history {
   display: flex;
   flex-direction: column;
@@ -166,109 +170,59 @@ html, body {
   align-items: baseline;
   gap: 8px;
 }
+.ps-cmd-text {
+  color: var(--text-bright);
+}
 
 .ps-output {
   white-space: pre-wrap;
   word-break: break-word;
-  color: var(--ps-text);
+  color: var(--text-main);
 }
 .ps-output.error {
   color: var(--ps-red);
 }
 
-/* Active Prompt Row */
+/* Active Prompt Row — Clean, Direct, Zero Effects */
 .ps-prompt-row {
   display: flex;
   align-items: center;
   gap: 8px;
   position: relative;
   margin-top: 4px;
-  padding-bottom: 24px;
+  padding-bottom: 30px;
   width: 100%;
 }
 
 .ps-prompt-str {
-  color: var(--ps-white);
+  color: var(--text-bright);
   font-weight: 700;
   white-space: nowrap;
   user-select: none;
   flex-shrink: 0;
 }
 
-.ps-input-wrap {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  height: 24px;
-}
-
-.ps-syntax-overlay {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  font-family: var(--font-ps);
-  font-size: 15px;
-  line-height: 24px;
-  white-space: pre;
-  pointer-events: none;
-  color: var(--ps-white);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-}
-
 .ps-cli-input {
-  width: 100%;
-  height: 100%;
+  flex: 1;
   background: transparent;
   border: none;
   outline: none;
   font-family: var(--font-ps);
-  font-size: 15px;
-  line-height: 24px;
-  color: transparent;
-  caret-color: var(--ps-white);
-  z-index: 2;
+  font-size: 14.5px;
+  line-height: 22px;
+  color: var(--text-bright);
+  caret-color: var(--text-bright);
   padding: 0;
   margin: 0;
 }
 
-.ps-cursor {
-  color: var(--ps-white);
-  font-size: 16px;
-  font-weight: 700;
-  animation: blink 0.9s infinite;
-  user-select: none;
-  pointer-events: none;
-  margin-left: -2px;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* PSReadLine Syntax Highlighting Tokens */
-.tok-cmd { color: var(--ps-yellow); font-weight: 700; }
-.tok-cmd-unknown { color: var(--ps-white); }
-.tok-str { color: var(--ps-cyan); }
-.tok-var { color: var(--ps-green); }
-.tok-param { color: #d8b4fe; }
-.tok-comment { color: #38bdf8; font-style: italic; }
-.tok-op { color: #f472b6; font-weight: 700; }
-.tok-num { color: #fb923c; }
-
 /* ═══════════════════════════════════════════════════════════════
-   AUTHENTIC WINDOWS NOTEPAD (LAUNCHED VIA `notepad <file>`)
+   WINDOWS NOTEPAD (DARK MATTE)
    ═══════════════════════════════════════════════════════════════ */
 .notepad-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.75);
   display: none;
   align-items: center;
   justify-content: center;
@@ -281,28 +235,28 @@ html, body {
   max-width: 95vw;
   height: 520px;
   max-height: 90vh;
-  background: #ffffff;
-  color: #000000;
+  background: #1e1e1e;
+  color: #cccccc;
   display: flex;
   flex-direction: column;
-  border: 1px solid #0055aa;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+  border: 1px solid #333333;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9);
   font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
 .notepad-titlebar {
   height: 32px;
-  background: #f0f0f0;
+  background: #252525;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 4px 0 10px;
-  border-bottom: 1px solid #dcdcdc;
+  border-bottom: 1px solid #333333;
   user-select: none;
 }
 .np-title {
   font-size: 12px;
-  color: #111;
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -317,27 +271,28 @@ html, body {
   border: none;
   cursor: pointer;
   font-size: 11px;
-  color: #222;
+  color: #cccccc;
 }
-.np-win-btn:hover { background: #e0e0e0; }
-.np-win-btn.close:hover { background: var(--ps-dark-red); color: #fff; }
+.np-win-btn:hover { background: #333333; color: #fff; }
+.np-win-btn.close:hover { background: #e81123; color: #fff; }
 
 .notepad-menu {
   height: 26px;
-  background: #ffffff;
+  background: #1e1e1e;
   display: flex;
   align-items: center;
   padding: 0 6px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #282828;
   font-size: 12px;
   gap: 6px;
   user-select: none;
 }
 .np-item {
   padding: 2px 6px;
+  color: #cccccc;
   cursor: pointer;
 }
-.np-item:hover { background: #e5f1fb; }
+.np-item:hover { background: #2d2d2d; color: #fff; }
 .np-save {
   margin-left: auto;
   background: #0078d4;
@@ -361,25 +316,25 @@ html, body {
   outline: none;
   resize: none;
   padding: 12px 16px;
-  font-family: 'Cascadia Mono', Consolas, 'Noto Sans Thai', monospace;
+  font-family: var(--font-ps);
   font-size: 14.5px;
   line-height: 1.5;
-  color: #000000;
-  background: #ffffff;
+  color: #cccccc;
+  background: #1e1e1e;
   white-space: pre-wrap;
 }
 
 .notepad-status {
   height: 22px;
-  background: #f9f9f9;
-  border-top: 1px solid #e5e5e5;
+  background: #181818;
+  border-top: 1px solid #282828;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding: 0 14px;
   gap: 20px;
   font-size: 11px;
-  color: #444;
+  color: #777777;
   user-select: none;
 }
 </style>
@@ -387,7 +342,7 @@ html, body {
 
 <body>
 <div class="ps-window">
-  <!-- ── WINDOWS POWERSHELL TITLEBAR ── -->
+  <!-- Titlebar -->
   <div class="ps-titlebar">
     <div class="ps-title-left">
       <span class="ps-icon">&gt;_</span>
@@ -400,13 +355,13 @@ html, body {
     </div>
   </div>
 
-  <!-- ── CONSOLE VIEWPORT ── -->
+  <!-- Console Viewport -->
   <div class="ps-console" id="psConsole">
     <!-- Header Banner -->
     <div class="ps-banner">
       <div class="ps-banner-row">Windows PowerShell</div>
       <div class="ps-banner-row">Copyright (C) Microsoft Corporation. All rights reserved.</div>
-      <div class="ps-banner-row" style="margin-top:6px;color:#a0c4ff;">
+      <div class="ps-banner-row" style="margin-top:4px;color:#85a5ff;">
         Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
       </div>
     </div>
@@ -414,19 +369,15 @@ html, body {
     <!-- Output History -->
     <div class="ps-history" id="psHistory"></div>
 
-    <!-- Active Prompt Row -->
+    <!-- Active Prompt Row: Direct, Crisp, No Effects -->
     <div class="ps-prompt-row" id="psPromptRow">
       <span class="ps-prompt-str" id="psPromptStr">PS C:\Users\Administrator&gt;</span>
-      <div class="ps-input-wrap">
-        <div class="ps-syntax-overlay" id="psSyntaxOverlay"></div>
-        <input type="text" class="ps-cli-input" id="psInput" autofocus spellcheck="false" autocomplete="off">
-      </div>
-      <span class="ps-cursor">_</span>
+      <input type="text" class="ps-cli-input" id="psInput" autofocus spellcheck="false" autocomplete="off">
     </div>
   </div>
 </div>
 
-<!-- ── WINDOWS NOTEPAD MODAL (LAUNCHED VIA `notepad <file>`) ── -->
+<!-- Notepad Window (Dark Mode) -->
 <div class="notepad-modal" id="notepadModal">
   <div class="notepad-window">
     <div class="notepad-titlebar">
@@ -465,7 +416,7 @@ html, body {
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   VIRTUAL POWERSHELL FILESYSTEM & REPLICATOR
+   VIRTUAL POWERSHELL FILESYSTEM
    ═══════════════════════════════════════════════════════════════ */
 const DEFAULT_FS = {
   "name": "C:",
@@ -487,7 +438,7 @@ const DEFAULT_FS = {
                 "Notes.txt": {
                   "name": "Notes.txt",
                   "type": "file",
-                  "content": "Windows PowerShell Note Engine\n- พิมพ์ notepad <filename> เพื่อเปิดโปรแกรมแก้ไข\n- พิมพ์ Add-Content <filename> <text> เพื่อจดข้อความต่อท้าย\n- พิมพ์ Get-ChildItem หรือ dir เพื่อดูไฟล์ทั้งหมด\n"
+                  "content": "Windows PowerShell Note Engine\n- พิมพ์ notepad <filename> เพื่อเปิดโปรแกรมแก้ไข\n- พิมพ์ Add-Content <filename> <text> หรือ note <text> เพื่อจดบันทึกด่วน\n- พิมพ์ Get-ChildItem หรือ dir เพื่อดูไฟล์ทั้งหมด\n"
                 }
               }
             },
@@ -495,7 +446,7 @@ const DEFAULT_FS = {
             "ยินดีต้อนรับ.ps1": {
               "name": "ยินดีต้อนรับ.ps1",
               "type": "file",
-              "content": "# Windows PowerShell 7.4.5 Pure Emulation\nWrite-Host \"ยินดีต้อนรับสู่ระบบ Windows PowerShell\" -ForegroundColor Green\nGet-ChildItem\n"
+              "content": "# Windows PowerShell 7.4.5 Pure Emulation\nWrite-Host \"ยินดีต้อนรับสู่ระบบ Windows PowerShell (Matte Black)\" -ForegroundColor Green\nGet-ChildItem\n"
             }
           }
         }
@@ -510,7 +461,6 @@ try {
 } catch(e) {}
 if (!fs || !fs.children) {
   fs = DEFAULT_FS;
-  // Migrate any previous cn_files notes into C:\Users\Administrator
   try {
     const oldFiles = JSON.parse(localStorage.getItem('cn_files') || '{}');
     const adminDir = fs.children.Users.children.Administrator.children;
@@ -575,7 +525,7 @@ function resolvePath(targetStr) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   PSREADLINE LEXER & REAL-TIME SYNTAX HIGHLIGHTING
+   EXECUTION BUFFER & OUTPUT ENGINE
    ═══════════════════════════════════════════════════════════════ */
 const CMDS = [
   'get-childitem', 'dir', 'ls', 'gci',
@@ -602,61 +552,10 @@ function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function highlightSyntax(text) {
-  if (!text) return '';
-  const tokenRegex = /(#.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\$[a-zA-Z0-9_:]+)|(-[a-zA-Z0-9_-]+)|(\||\>|;|\&)|(\b\d+\b)|(\b[a-zA-Z0-9_.-]+\b)|(\s+)|(.)/g;
-  let html = '';
-  let match;
-  let isFirst = true;
-
-  while ((match = tokenRegex.exec(text)) !== null) {
-    const [full, comment, str, variable, param, op, num, word, ws, other] = match;
-    if (comment) {
-      html += `<span class="tok-comment">${escapeHtml(comment)}</span>`;
-    } else if (str) {
-      html += `<span class="tok-str">${escapeHtml(str)}</span>`;
-    } else if (variable) {
-      html += `<span class="tok-var">${escapeHtml(variable)}</span>`;
-    } else if (param) {
-      html += `<span class="tok-param">${escapeHtml(param)}</span>`;
-    } else if (op) {
-      html += `<span class="tok-op">${escapeHtml(op)}</span>`;
-    } else if (num) {
-      html += `<span class="tok-num">${escapeHtml(num)}</span>`;
-    } else if (word) {
-      const lower = word.toLowerCase();
-      if (isFirst && CMDS.includes(lower)) {
-        html += `<span class="tok-cmd">${escapeHtml(word)}</span>`;
-      } else if (isFirst) {
-        html += `<span class="tok-cmd-unknown">${escapeHtml(word)}</span>`;
-      } else {
-        html += escapeHtml(word);
-      }
-      isFirst = false;
-    } else if (ws) {
-      html += escapeHtml(ws);
-    } else if (other) {
-      html += escapeHtml(other);
-    }
-  }
-  return html;
-}
-
-const psInput = document.getElementById('psInput');
-const psSyntaxOverlay = document.getElementById('psSyntaxOverlay');
-const psPromptStr = document.getElementById('psPromptStr');
-
-function updateSyntax() {
-  if (psInput && psSyntaxOverlay) {
-    psSyntaxOverlay.innerHTML = highlightSyntax(psInput.value);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   EXECUTION BUFFER & OUTPUT ENGINE
-   ═══════════════════════════════════════════════════════════════ */
 const psConsole = document.getElementById('psConsole');
 const psHistory = document.getElementById('psHistory');
+const psInput = document.getElementById('psInput');
+const psPromptStr = document.getElementById('psPromptStr');
 let cmdHistory = [], historyIndex = -1;
 
 function scrollBottom() {
@@ -672,7 +571,7 @@ function appendLog(cmdText, outputHtml, isError = false) {
     cmdEcho.className = 'ps-cmd-echo';
     cmdEcho.innerHTML = `
       <span class="ps-prompt-str">${getPromptString()}</span>
-      <span>${highlightSyntax(cmdText)}</span>
+      <span class="ps-cmd-text">${escapeHtml(cmdText)}</span>
     `;
     entry.appendChild(cmdEcho);
   }
@@ -711,7 +610,6 @@ function executeCmd(rawInput) {
   const args = parts.slice(1);
   const argStr = args.join(' ');
 
-  // Direct variable inspection: $PSVersionTable or $env:username
   if (cmd.startsWith('$')) {
     const varName = cmd.substring(1).toLowerCase();
     if (varName === 'psversiontable') {
@@ -765,7 +663,6 @@ At line:1 char:1
       out += `Mode                 LastWriteTime         Length Name\n`;
       out += `----                 -------------         ------ ----\n`;
 
-      // Output directories first, then files
       keys.filter(k => node.children[k].type === 'dir').forEach(k => {
         out += `d-----         10/22/2026  10:00 PM                ${k}\n`;
       });
@@ -880,7 +777,6 @@ At line:1 char:1
       const targetPath = resolvePath(filename);
       let node = getNodeAtPath(targetPath);
       if (!node) {
-        // Create new file
         const parentNode = getNodeAtPath(targetPath.slice(0, -1));
         if (parentNode && parentNode.type === 'dir') {
           node = { name: targetPath[targetPath.length - 1], type: 'file', content: '' };
@@ -981,8 +877,7 @@ NPM(K)    PM(M)      WS(M)     CPU(s)      Id  ProcessName
     48   112.45     142.20       2.15    1048  powershell
     24    42.10      58.30       0.75    2092  notepad
     14    18.70      24.10       0.22    3410  conhost
-    12    12.40      16.80       0.10    4890  audiodg
-    85   240.50     310.12       8.40     820  chrome</pre>`);
+    12    12.40      16.80       0.10    4890  audiodg</pre>`);
       break;
 
     case 'get-service':
@@ -1047,14 +942,13 @@ CMDLETS FOR NOTE-TAKING &amp; FILES:
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   KEYSTROKES & TAB COMPLETION
+   DIRECT TYPING & TAB AUTO-COMPLETE (ZERO EFFECTS)
    ═══════════════════════════════════════════════════════════════ */
 psInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     e.preventDefault();
     const val = psInput.value;
     psInput.value = '';
-    updateSyntax();
     executeCmd(val);
   } else if (e.key === 'Tab') {
     e.preventDefault();
@@ -1064,31 +958,25 @@ psInput.addEventListener('keydown', e => {
     if (historyIndex > 0) {
       historyIndex--;
       psInput.value = cmdHistory[historyIndex] || '';
-      updateSyntax();
     }
   } else if (e.key === 'ArrowDown') {
     e.preventDefault();
     if (historyIndex < cmdHistory.length - 1) {
       historyIndex++;
       psInput.value = cmdHistory[historyIndex] || '';
-      updateSyntax();
     } else {
       historyIndex = cmdHistory.length;
       psInput.value = '';
-      updateSyntax();
     }
   } else if (e.ctrlKey && e.key === 'c') {
     e.preventDefault();
     appendLog(psInput.value + ' ^C', '');
     psInput.value = '';
-    updateSyntax();
   } else if (e.ctrlKey && e.key === 'l') {
     e.preventDefault();
     executeCmd('cls');
   }
 });
-
-psInput.addEventListener('input', updateSyntax);
 
 // Focus input on click anywhere in console
 psConsole.addEventListener('click', () => {
@@ -1116,7 +1004,6 @@ function handleTab() {
     }
     if (tabCandidates.length > 0) {
       psInput.value = tabCandidates[tabIdx];
-      updateSyntax();
     }
   } else if (parts.length >= 2) {
     const argPrefix = parts[parts.length - 1].toLowerCase();
@@ -1132,13 +1019,12 @@ function handleTab() {
     if (tabCandidates.length > 0) {
       parts[parts.length - 1] = tabCandidates[tabIdx];
       psInput.value = parts.join(' ');
-      updateSyntax();
     }
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   AUTHENTIC WINDOWS NOTEPAD
+   AUTHENTIC WINDOWS NOTEPAD (MATTE DARK)
    ═══════════════════════════════════════════════════════════════ */
 const notepadModal = document.getElementById('notepadModal');
 const notepadTextarea = document.getElementById('notepadTextarea');
@@ -1222,7 +1108,6 @@ function toggleFullscreen() {
    INITIALIZATION
    ═══════════════════════════════════════════════════════════════ */
 psPromptStr.textContent = getPromptString();
-updateSyntax();
 if (psInput) psInput.focus();
 
 if ('serviceWorker' in navigator) {

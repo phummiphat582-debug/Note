@@ -1,5 +1,5 @@
-// Network-First Service Worker for PowerShell
-const CACHE_NAME = 'powershell-v6-' + Date.now();
+// Network-First Service Worker for PowerShell (Matte Black)
+const CACHE_NAME = 'powershell-v7-' + Date.now();
 
 self.addEventListener('install', event => {
   self.skipWaiting();
