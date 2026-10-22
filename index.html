@@ -182,26 +182,43 @@ html, body {
 
 .ps-cmd-echo {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   gap: 8px;
+  width: 100%;
 }
 .ps-cmd-text {
   color: var(--text-bright);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  flex: 1;
+  line-height: 22px;
 }
 
 .ps-output {
   white-space: pre-wrap;
   word-break: break-word;
+  overflow-wrap: anywhere;
   color: var(--text-main);
+  line-height: 1.45;
+  width: 100%;
+}
+.ps-output pre {
+  font-family: inherit;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  margin: 0;
+  line-height: inherit;
 }
 .ps-output.error {
   color: var(--ps-red);
 }
 
-/* Active Prompt Row — Clean, Direct, Zero Effects */
+/* Active Prompt Row — Clean, Direct, Multi-line Auto-wrapping */
 .ps-prompt-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   position: relative;
   margin-top: 4px;
@@ -215,6 +232,7 @@ html, body {
   white-space: nowrap;
   user-select: none;
   flex-shrink: 0;
+  line-height: 22px;
 }
 
 .ps-cli-input {
@@ -229,6 +247,13 @@ html, body {
   caret-color: var(--text-bright);
   padding: 0;
   margin: 0;
+  resize: none;
+  overflow-y: hidden;
+  height: 22px;
+  min-height: 22px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -337,6 +362,8 @@ html, body {
   color: #cccccc;
   background: #1e1e1e;
   white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .notepad-status {
@@ -384,10 +411,10 @@ html, body {
     <!-- Output History -->
     <div class="ps-history" id="psHistory"></div>
 
-    <!-- Active Prompt Row: Direct, Crisp, No Effects -->
+    <!-- Active Prompt Row: Direct, Crisp, Multi-line Auto-wrapping -->
     <div class="ps-prompt-row" id="psPromptRow">
       <span class="ps-prompt-str" id="psPromptStr">PS C:\Users\Administrator&gt;</span>
-      <input type="text" class="ps-cli-input" id="psInput" autofocus spellcheck="false" autocomplete="off">
+      <textarea class="ps-cli-input" id="psInput" rows="1" autofocus spellcheck="false" autocomplete="off"></textarea>
     </div>
   </div>
 </div>
@@ -957,36 +984,64 @@ CMDLETS FOR NOTE-TAKING &amp; FILES:
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   DIRECT TYPING & TAB AUTO-COMPLETE (ZERO EFFECTS)
+   DIRECT TYPING & TAB AUTO-COMPLETE (ZERO EFFECTS, MULTI-LINE AUTO-WRAP)
    ═══════════════════════════════════════════════════════════════ */
+function adjustInputHeight() {
+  if (!psInput) return;
+  psInput.style.height = 'auto';
+  psInput.style.height = Math.max(22, psInput.scrollHeight) + 'px';
+  scrollBottom();
+}
+
+function setInputValue(val) {
+  psInput.value = val;
+  adjustInputHeight();
+}
+
+psInput.addEventListener('input', adjustInputHeight);
+
 psInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
+    if (e.shiftKey) {
+      // Shift+Enter allows newline without executing
+      setTimeout(adjustInputHeight, 0);
+      return;
+    }
     e.preventDefault();
     const val = psInput.value;
     psInput.value = '';
+    psInput.style.height = '22px';
     executeCmd(val);
   } else if (e.key === 'Tab') {
     e.preventDefault();
     handleTab();
   } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    if (historyIndex > 0) {
-      historyIndex--;
-      psInput.value = cmdHistory[historyIndex] || '';
+    const isFirstLine = !psInput.value.includes('\n') || psInput.selectionStart <= psInput.value.indexOf('\n');
+    if (isFirstLine && cmdHistory.length > 0) {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        setInputValue(cmdHistory[historyIndex] || '');
+      }
     }
   } else if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    if (historyIndex < cmdHistory.length - 1) {
-      historyIndex++;
-      psInput.value = cmdHistory[historyIndex] || '';
-    } else {
-      historyIndex = cmdHistory.length;
-      psInput.value = '';
+    const lastNewline = psInput.value.lastIndexOf('\n');
+    const isLastLine = lastNewline === -1 || psInput.selectionStart > lastNewline;
+    if (isLastLine && cmdHistory.length > 0) {
+      e.preventDefault();
+      if (historyIndex < cmdHistory.length - 1) {
+        historyIndex++;
+        setInputValue(cmdHistory[historyIndex] || '');
+      } else {
+        historyIndex = cmdHistory.length;
+        setInputValue('');
+      }
     }
   } else if (e.ctrlKey && e.key === 'c') {
     e.preventDefault();
     appendLog(psInput.value + ' ^C', '');
     psInput.value = '';
+    psInput.style.height = '22px';
   } else if (e.ctrlKey && e.key === 'l') {
     e.preventDefault();
     executeCmd('cls');
@@ -1018,7 +1073,7 @@ function handleTab() {
       tabIdx = (tabIdx + 1) % tabCandidates.length;
     }
     if (tabCandidates.length > 0) {
-      psInput.value = tabCandidates[tabIdx];
+      setInputValue(tabCandidates[tabIdx]);
     }
   } else if (parts.length >= 2) {
     const argPrefix = parts[parts.length - 1].toLowerCase();
@@ -1033,7 +1088,7 @@ function handleTab() {
     }
     if (tabCandidates.length > 0) {
       parts[parts.length - 1] = tabCandidates[tabIdx];
-      psInput.value = parts.join(' ');
+      setInputValue(parts.join(' '));
     }
   }
 }
