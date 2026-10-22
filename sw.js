@@ -1,5 +1,5 @@
 // Network-First Service Worker for CodeNote (Auto-update always)
-const CACHE_NAME = 'codenote-v3-' + Date.now();
+const CACHE_NAME = 'codenote-v4-' + Date.now();
 
 self.addEventListener('install', event => {
   self.skipWaiting();

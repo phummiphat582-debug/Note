@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeNote — Neon Cursor Trail & Hacker Terminal</title>
+<title>CodeNote — PowerShell 7.4 Cyber Terminal & Note Studio</title>
 <link rel="manifest" href="/Note/manifest.json">
 <meta name="theme-color" content="#030305">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Prompt:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&family=Cascadia+Code:wght@400;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Prompt:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&family=Cascadia+Code:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -28,8 +28,9 @@
   --accent-cyan: #00f0ff;
   --accent-red: #ff0055;
   --accent-yellow: #ffb703;
+  --ps-yellow: #facc15;
   --font-thai: 'Prompt', 'Noto Sans Thai', 'Kanit', sans-serif;
-  --font-mono: 'Share Tech Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Share Tech Mono', Consolas, monospace, 'Prompt';
 }
 
 html,body {
@@ -145,13 +146,39 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   50% { opacity: 0.3; }
 }
 
+/* Mode Toggle Switcher */
+.mode-toggle-group {
+  display: flex;
+  align-items: center;
+  background: #090912;
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid var(--border-matte);
+  gap: 2px;
+  flex-shrink: 0;
+}
+.mode-toggle-group .matte-btn {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  border-radius: 4px;
+}
+.mode-toggle-group .matte-btn.active {
+  background: rgba(0, 255, 102, 0.16);
+  color: var(--base-text-color, #00ff66);
+  border: 1px solid rgba(0, 255, 102, 0.4);
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+}
+
 /* Tabs Bar */
 .matte-tabs {
   display: flex;
   align-items: center;
   gap: 4px;
   overflow-x: auto;
-  max-width: 55vw;
+  max-width: 40vw;
 }
 .matte-tabs::-webkit-scrollbar { display: none; }
 
@@ -251,16 +278,17 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 
 /* ── SECONDARY FORMATTING TOOLBAR ── */
 .matte-toolbar {
-  height: 44px;
+  min-height: 44px;
   background: rgba(3, 3, 6, 0.96);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-matte);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 4px 16px;
   flex-shrink: 0;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .toolbar-cluster {
@@ -268,6 +296,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .toolbar-sep {
@@ -368,6 +397,212 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   flex-direction: column;
   min-width: 0;
   background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   POWERSHELL TERMINAL VIEWPORT ENGINE (INTERACTIVE CLI)
+   ═══════════════════════════════════════════════════════════════ */
+.ps-terminal-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: rgba(3, 4, 8, 0.88);
+  backdrop-filter: blur(8px);
+  position: relative;
+  font-family: var(--font-mono);
+  user-select: text;
+}
+.ps-terminal-container::-webkit-scrollbar { width: 8px; }
+.ps-terminal-container::-webkit-scrollbar-thumb { background: #161626; border-radius: 4px; }
+.ps-terminal-container::-webkit-scrollbar-thumb:hover { background: #26263c; }
+
+.ps-terminal-header {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-matte);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.5;
+}
+.ps-term-line { font-size: 13.5px; }
+.ps-term-highlight {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-size: 14.5px;
+}
+.ps-term-muted { color: var(--text-dim); font-size: 12px; }
+.ps-term-info {
+  color: #94a3b8;
+  font-size: 12.5px;
+  margin-top: 4px;
+  background: rgba(255,255,255,0.03);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #00f0ff;
+  line-height: 1.6;
+}
+
+.ps-quick-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.ps-quick-label {
+  font-size: 10.5px;
+  color: var(--text-dim);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-right: 2px;
+}
+.ps-quick-chip {
+  background: var(--bg-matte-card);
+  border: 1px solid var(--border-matte);
+  color: #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.ps-quick-chip:hover {
+  border-color: #00ff66;
+  color: #00ff66;
+  background: #10101c;
+}
+
+.ps-terminal-buffer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ps-history-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.6;
+}
+.ps-history-cmd {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14.5px;
+}
+.ps-history-output {
+  padding-left: 4px;
+  font-size: 13.5px;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ps-history-output.error-output {
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.06);
+  border-left: 3px solid #f43f5e;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+.ps-history-output.success-output {
+  color: #00ff66;
+}
+
+/* Active Terminal Input Row */
+.ps-terminal-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  margin-top: 8px;
+  padding: 4px 0 20px;
+  width: 100%;
+}
+.ps-terminal-prompt-label {
+  color: #facc15;
+  font-family: var(--font-mono);
+  font-size: 14.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  user-select: none;
+  flex-shrink: 0;
+}
+.ps-cli-input-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 28px;
+}
+.ps-cli-syntax-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  font-family: var(--font-mono);
+  font-size: 14.5px;
+  line-height: 28px;
+  letter-spacing: 0.02em;
+  white-space: pre;
+  pointer-events: none;
+  color: #f8fafc;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.ps-cli-input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 14.5px;
+  line-height: 28px;
+  letter-spacing: 0.02em;
+  color: transparent;
+  caret-color: var(--base-text-color, #00ff66);
+  z-index: 2;
+  padding: 0;
+  margin: 0;
+}
+.ps-blinking-cursor {
+  color: var(--base-text-color, #00ff66);
+  font-size: 15px;
+  animation: blink 0.9s infinite;
+  user-select: none;
+  pointer-events: none;
+  margin-left: 2px;
+}
+
+/* Real-time PSReadLine Syntax Highlighting Tokens */
+.ps-tok-cmd { color: #facc15; font-weight: 700; text-shadow: 0 0 6px rgba(250, 204, 21, 0.4); }
+.ps-tok-cmd-unknown { color: #f8fafc; font-weight: 600; }
+.ps-tok-string { color: #38bdf8; }
+.ps-tok-var { color: #4ade80; }
+.ps-tok-param { color: #818cf8; }
+.ps-tok-comment { color: #64748b; font-style: italic; }
+.ps-tok-op { color: #c084fc; font-weight: 700; }
+.ps-tok-arg { color: #e2e8f0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCRIPT EDITOR VIEWPORT ENGINE
+   ═══════════════════════════════════════════════════════════════ */
+.ps-editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   position: relative;
 }
 
@@ -498,7 +733,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 .img-box:hover .del-img { opacity: 1; }
 
-/* ── POWERSHELL INTERACTIVE CLI DRAWER ── */
+/* ── POWERSHELL INTERACTIVE CLI DRAWER (IN EDITOR) ── */
 .matte-console-drawer {
   background: rgba(2, 2, 4, 0.96);
   backdrop-filter: blur(10px);
@@ -571,6 +806,18 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 .status-item.save-ok { color: #00ff66; font-weight: 600; }
 .status-item.rgb-tag { color: #00f0ff; font-weight: 600; }
+.status-item.mode-tag {
+  color: #facc15;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid rgba(250, 204, 21, 0.25);
+}
+.status-item.mode-tag:hover {
+  background: rgba(250, 204, 21, 0.2);
+}
 
 /* ── COLOR STUDIO MODAL ── */
 .studio-modal {
@@ -753,7 +1000,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 }
 
 @media print {
-  .matte-topbar, .matte-toolbar, .matte-sidebar, .matte-console-drawer, .matte-statusbar, .editor-line-numbers, .ps-prompt-banner, #matrixCanvas, #sparkCanvas {
+  .matte-topbar, .matte-toolbar, .matte-sidebar, .matte-console-drawer, .matte-statusbar, .editor-line-numbers, .ps-prompt-banner, #matrixCanvas, #sparkCanvas, .ps-terminal-container {
     display: none !important;
   }
   .app-container, .matte-viewport { background: #fff !important; color: #000 !important; }
@@ -773,7 +1020,17 @@ body.hide-rain #matrixCanvas { opacity: 0; }
     <div class="topbar-left">
       <div class="brand-badge">
         <span class="icon">⚡</span>
-        <span class="title">CODENOTE_ROOT</span>
+        <span class="title">POWERSHELL_7.4</span>
+      </div>
+
+      <!-- Mode Switcher Buttons -->
+      <div class="mode-toggle-group">
+        <button class="matte-btn active" id="btnModeTerminal" onclick="switchMode('terminal')" title="หน้าจอพิมพ์คำสั่ง PowerShell Terminal เต็มรูปแบบ (F2)">
+          >_ PowerShell CLI
+        </button>
+        <button class="matte-btn" id="btnModeEditor" onclick="switchMode('editor')" title="หน้าจอเขียนโน้ตและสคริปต์แบบเต็ม (F2)">
+          📝 Script Editor
+        </button>
       </div>
 
       <!-- Tab Bar -->
@@ -819,53 +1076,64 @@ body.hide-rain #matrixCanvas { opacity: 0; }
     </div>
   </div>
 
-  <!-- ── SECONDARY FORMATTING TOOLBAR ── -->
+  <!-- ── SECONDARY FORMATTING & TERMINAL ACTIONS TOOLBAR ── -->
   <div class="matte-toolbar">
-    <div class="toolbar-cluster">
-      <!-- Quick Text Color Picker Button (กดแล้วเลือกสีเปลี่ยนตัวหนังสือได้ทันที) -->
+    <!-- Cluster for Terminal Mode -->
+    <div class="toolbar-cluster" id="toolbarTerminalCluster">
+      <span style="font-size:11.5px;color:var(--ps-yellow);font-weight:700;font-family:var(--font-mono);">⚡ POWERSHELL CONSOLE</span>
+      <div class="toolbar-sep"></div>
+      <button class="matte-btn" onclick="executePowerShellCmd('cls')" title="ล้างหน้าจอ Terminal (Ctrl+L)">🧹 cls</button>
+      <button class="matte-btn" onclick="executePowerShellCmd('dir')" title="แสดงรายชื่อโน้ตทั้งหมด">📁 dir</button>
+      <button class="matte-btn" onclick="executePowerShellCmd('help')" title="แสดงวิธีใช้และคำสั่ง">❓ help</button>
+      <button class="matte-btn" onclick="switchMode('editor')" title="สลับไปหน้าเขียนสคริปต์ (F2)">📝 สลับเป็น Editor</button>
+      <div class="toolbar-sep"></div>
+      <!-- Quick Text Color Picker Button -->
       <label class="matte-btn" style="cursor:pointer;" title="คลิกเพื่อเลือกสีตัวหนังสือตามใจชอบ">
         <input type="color" id="quickTextColorInput" value="#00ff66" style="opacity:0;position:absolute;width:100%;height:100%;left:0;top:0;cursor:pointer;" oninput="changeGlobalTextColor(this.value)">
         <span id="quickColorDot" style="width:11px;height:11px;border-radius:50%;background:#00ff66;display:inline-block;border:1px solid rgba(255,255,255,0.4);"></span>
-        <span>🎨 เปลี่ยนสีตัวหนังสือ</span>
+        <span>🎨 สีเทอร์มินัล</span>
       </label>
-
-      <div class="toolbar-sep"></div>
-
-      <!-- Spark Effect Toggle (ประกายแสงวิ่งตามเคอร์เซอร์) -->
       <label style="font-size:12px;color:#cbd5e1;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
         <input type="checkbox" id="sparkToggle" checked onchange="toggleSparks(this.checked)">
         ✨ ประกายแสงเคอร์เซอร์
       </label>
-
-      <div class="toolbar-sep"></div>
-
-      <!-- Font Size Selector (Persisted) -->
-      <span style="font-size:11.5px;color:var(--text-dim);">ขนาด:</span>
-      <select class="matte-select" id="fontSizeSelect" onchange="setFontSize(this.value)">
-        <option value="16px">16 px</option>
-        <option value="18px">18 px</option>
-        <option value="20px">20 px</option>
-        <option value="22px">22 px (ใหญ่คมชัด)</option>
-        <option value="26px">26 px (ใหญ่มาก)</option>
-        <option value="30px">30 px (จัมโบ้)</option>
-      </select>
+      <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-left:auto;">
+        คีย์ลัด: <b>Tab</b> เติมคำสั่ง · <b>↑/↓</b> ประวัติ · <b>F2</b> สลับโหมด
+      </span>
     </div>
 
-    <div class="toolbar-cluster">
-      <!-- Formatting Buttons -->
-      <button class="matte-btn" onclick="cmd('bold')" title="ตัวหนา (Ctrl+B)"><b>B</b></button>
-      <button class="matte-btn" onclick="cmd('italic')" title="ตัวเอียง (Ctrl+I)"><i>I</i></button>
-      <button class="matte-btn" onclick="cmd('underline')" title="ขีดเส้นใต้ (Ctrl+U)"><u>U</u></button>
-      <button class="matte-btn" onclick="cmd('insertUnorderedList')" title="รายการ">•</button>
-      <button class="matte-btn" onclick="addImage()" title="แทรกรูปภาพ">🖼️</button>
-      
-      <!-- Thai Font Selector (Persisted) -->
-      <select class="matte-select" id="fontFamilySelect" onchange="setFontFamily(this.value)">
-        <option value="'Prompt', sans-serif">Prompt</option>
-        <option value="'Noto Sans Thai', sans-serif">Noto Sans Thai</option>
-        <option value="'Kanit', sans-serif">Kanit</option>
-        <option value="'Cascadia Code', monospace">Cascadia Code</option>
-      </select>
+    <!-- Cluster for Editor Mode -->
+    <div class="toolbar-cluster" id="toolbarEditorCluster" style="display:none;width:100%;justify-content:space-between;">
+      <div class="toolbar-cluster">
+        <button class="matte-btn" onclick="switchMode('terminal')" style="color:#facc15;border-color:rgba(250,204,21,0.4);" title="กลับสู่หน้าจอ PowerShell Terminal">
+          >_ กลับสู่ Terminal
+        </button>
+        <div class="toolbar-sep"></div>
+        <span style="font-size:11.5px;color:var(--text-dim);">ขนาด:</span>
+        <select class="matte-select" id="fontSizeSelect" onchange="setFontSize(this.value)">
+          <option value="16px">16 px</option>
+          <option value="18px">18 px</option>
+          <option value="20px">20 px</option>
+          <option value="22px">22 px (ใหญ่คมชัด)</option>
+          <option value="26px">26 px (ใหญ่มาก)</option>
+          <option value="30px">30 px (จัมโบ้)</option>
+        </select>
+        <div class="toolbar-sep"></div>
+        <button class="matte-btn" onclick="cmd('bold')" title="ตัวหนา (Ctrl+B)"><b>B</b></button>
+        <button class="matte-btn" onclick="cmd('italic')" title="ตัวเอียง (Ctrl+I)"><i>I</i></button>
+        <button class="matte-btn" onclick="cmd('underline')" title="ขีดเส้นใต้ (Ctrl+U)"><u>U</u></button>
+        <button class="matte-btn" onclick="cmd('insertUnorderedList')" title="รายการ">•</button>
+        <button class="matte-btn" onclick="addImage()" title="แทรกรูปภาพ">🖼️</button>
+      </div>
+
+      <div class="toolbar-cluster">
+        <select class="matte-select" id="fontFamilySelect" onchange="setFontFamily(this.value)">
+          <option value="'Cascadia Code', monospace">Cascadia Code</option>
+          <option value="'Prompt', sans-serif">Prompt</option>
+          <option value="'Noto Sans Thai', sans-serif">Noto Sans Thai</option>
+          <option value="'Kanit', sans-serif">Kanit</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -887,30 +1155,78 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 
     <!-- Center Viewport -->
     <div class="matte-viewport">
-      <!-- PowerShell Prompt Path Banner -->
-      <div class="ps-prompt-banner">
-        <span class="ps-prompt-tag">ROOT 7.4</span>
-        <span class="ps-prompt-path">C:\Users\Administrator\CyberConsole</span>
-        <span style="color:var(--text-dim);">❯</span>
-        <span class="ps-prompt-file" id="currentFileBadge">ยินดีต้อนรับ.ps1</span>
-        <span class="ps-prompt-arrow">█</span>
-      </div>
+      <!-- ═══════════════════════════════════════════════════════════════
+           VIEW 1: POWERSHELL TERMINAL CLI (DEFAULT FULL VIEW)
+           ═══════════════════════════════════════════════════════════════ -->
+      <div class="ps-terminal-container" id="terminalViewContainer">
+        <!-- Terminal Welcome Header -->
+        <div class="ps-terminal-header">
+          <div class="ps-term-line ps-term-highlight">PowerShell 7.4.5 (Cyber-Enhanced Interactive Note Terminal)</div>
+          <div class="ps-term-line ps-term-muted">Copyright (C) Microsoft Corporation &amp; CodeNote CyberStudio. All rights reserved.</div>
+          <div class="ps-term-line ps-term-info">
+            💡 <b>ระบบการพิมพ์ PowerShell:</b> พิมพ์คำสั่งแล้วกด <b>Enter</b> เพื่อประมวลผลทันที · พิมพ์ <span class="ps-tok-cmd">help</span> ดูคำสั่งทั้งหมด · พิมพ์ <span class="ps-tok-cmd">note &lt;ข้อความ&gt;</span> เพื่อบันทึกโน้ตด่วน · พิมพ์ <span class="ps-tok-cmd">edit</span> หรือกด <span class="ps-tok-var">[F2]</span> เพื่อสลับโหมด
+          </div>
+        </div>
 
-      <!-- Editor Area -->
-      <div class="editor-main-area" id="editorContainer">
-        <div class="editor-line-numbers" id="lineNumbers">1</div>
-        <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-             data-placeholder="// เริ่มพิมพ์ข้อความที่นี่... (ประกายแสงนีออนจะพุ่งวิ่งตามท้ายตัวหนังสือที่กำลังพิมพ์ทันที)">
+        <!-- Terminal Quick Action Suggestion Chips -->
+        <div class="ps-quick-bar">
+          <span class="ps-quick-label">QUICK:</span>
+          <button class="ps-quick-chip" onclick="executePowerShellCmd('help')">help</button>
+          <button class="ps-quick-chip" onclick="executePowerShellCmd('dir')">dir</button>
+          <button class="ps-quick-chip" onclick="executePowerShellCmd('cat ยินดีต้อนรับ.ps1')">cat ยินดีต้อนรับ.ps1</button>
+          <button class="ps-quick-chip" onclick="executePowerShellCmd('new บันทึกใหม่.ps1')">+ new</button>
+          <button class="ps-quick-chip" onclick="executePowerShellCmd('edit')">📝 edit</button>
+          <button class="ps-quick-chip" onclick="executePowerShellCmd('matrix')">🌧️ matrix</button>
+          <button class="ps-quick-chip" onclick="executePowerShellCmd('hack')">⚡ hack</button>
+          <button class="ps-quick-chip" onclick="executePowerShellCmd('cls')">cls</button>
+        </div>
+
+        <!-- Terminal Output Buffer (Past commands & outputs) -->
+        <div class="ps-terminal-buffer" id="psTerminalBuffer"></div>
+
+        <!-- Active Terminal Input Prompt Line -->
+        <div class="ps-terminal-input-row" id="terminalInputRow">
+          <span class="ps-terminal-prompt-label" id="psPromptLabel">PS C:\Users\Administrator\CyberConsole&gt;</span>
+          <div class="ps-cli-input-container">
+            <div class="ps-cli-syntax-overlay" id="psCliSyntaxOverlay"></div>
+            <input type="text" class="ps-cli-input" id="psCliInput" spellcheck="false" autocomplete="off" autofocus>
+          </div>
+          <span class="ps-blinking-cursor">█</span>
         </div>
       </div>
 
-      <!-- Interactive PowerShell CLI Drawer -->
-      <div class="matte-console-drawer">
-        <div class="console-log" id="cmdLog"></div>
-        <div class="console-input-row">
-          <span class="cli-prompt-label">ROOT ❯</span>
-          <input type="text" class="cli-input" id="cmdInput" placeholder="พิมพ์คำสั่ง: hack, matrix, dir, cat &lt;ชื่อไฟล์&gt;, theme &lt;ชื่อธีม&gt;, new &lt;ชื่อไฟล์&gt;, edit &lt;ชื่อไฟล์&gt;, cls, help..." autocomplete="off">
-          <button class="matte-btn" onclick="runCommandFromInput()" style="padding:3px 10px;font-size:11.5px;">RUN ↵</button>
+      <!-- ═══════════════════════════════════════════════════════════════
+           VIEW 2: SCRIPT EDITOR (FULL WYSIWYG & CODE EDITOR)
+           ═══════════════════════════════════════════════════════════════ -->
+      <div class="ps-editor-container" id="editorViewContainer" style="display:none;">
+        <!-- PowerShell Prompt Path Banner -->
+        <div class="ps-prompt-banner">
+          <span class="ps-prompt-tag">ROOT 7.4</span>
+          <span class="ps-prompt-path">C:\Users\Administrator\CyberConsole</span>
+          <span style="color:var(--text-dim);">❯</span>
+          <span class="ps-prompt-file" id="currentFileBadge">ยินดีต้อนรับ.ps1</span>
+          <span class="ps-prompt-arrow">█</span>
+          <button class="matte-btn" onclick="switchMode('terminal')" style="margin-left:auto;padding:2px 10px;font-size:11.5px;color:#facc15;border-color:rgba(250,204,21,0.4);">
+            >_ กลับหน้าจอ PowerShell Terminal (F2)
+          </button>
+        </div>
+
+        <!-- Editor Area -->
+        <div class="editor-main-area" id="editorContainer">
+          <div class="editor-line-numbers" id="lineNumbers">1</div>
+          <div id="editor" class="editor" contenteditable="true" spellcheck="false"
+               data-placeholder="// เริ่มพิมพ์ข้อความที่นี่... (ประกายแสงนีออนจะพุ่งวิ่งตามท้ายตัวหนังสือที่กำลังพิมพ์ทันที)">
+          </div>
+        </div>
+
+        <!-- Interactive PowerShell CLI Drawer -->
+        <div class="matte-console-drawer">
+          <div class="console-log" id="cmdLog"></div>
+          <div class="console-input-row">
+            <span class="cli-prompt-label">ROOT ❯</span>
+            <input type="text" class="cli-input" id="cmdInput" placeholder="พิมพ์คำสั่ง: hack, matrix, dir, cat &lt;ชื่อไฟล์&gt;, theme &lt;ชื่อธีม&gt;, new &lt;ชื่อไฟล์&gt;, edit &lt;ชื่อไฟล์&gt;, cls, help..." autocomplete="off">
+            <button class="matte-btn" onclick="runCommandFromDrawer()" style="padding:3px 10px;font-size:11.5px;">RUN ↵</button>
+          </div>
         </div>
       </div>
     </div>
@@ -919,6 +1235,7 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   <!-- ── STATUS BAR ── -->
   <div class="matte-statusbar">
     <span class="status-item save-ok" id="saveStatus">● ACCESS GRANTED</span>
+    <span class="status-item mode-tag" id="modeStatus" onclick="toggleModeShortcut()" title="คลิกหรือกด F2 เพื่อสลับโหมด">⚡ POWERSHELL CLI (F2)</span>
     <span class="status-item" id="wordCount">0 คำ</span>
     <span class="status-item" id="charCount">0 ตัวอักษร</span>
     <span class="status-item" id="cursorPos">LN 1, COL 1</span>
@@ -933,12 +1250,12 @@ body.hide-rain #matrixCanvas { opacity: 0; }
 <div class="modal-overlay" id="colorStudioModal">
   <div class="studio-modal">
     <div class="matte-modal-head" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>💻 สตูดิโอเลือกสีตัวหนังสือ (CYBER COLOR STUDIO)</span>
+      <span>💻 สตูดิโอเลือกสีระบบ (CYBER COLOR STUDIO)</span>
       <span style="cursor:pointer;font-size:16px;" onclick="closeModals()">✕</span>
     </div>
     <div class="matte-modal-body" style="max-height:75vh;overflow-y:auto;">
       <!-- Category: Pure Cyber Hacker Themes -->
-      <div class="studio-cat-title">💻 เลือกสีตัวหนังสือแฮกเกอร์สำเร็จรูป (CYBER PALETTES):</div>
+      <div class="studio-cat-title">💻 เลือกสีแฮกเกอร์และ PowerShell สำเร็จรูป:</div>
       <div class="studio-grid" id="hackerGrid"></div>
 
       <!-- Custom Color Mixer -->
@@ -951,8 +1268,8 @@ body.hide-rain #matrixCanvas { opacity: 0; }
           </div>
           <div style="flex:1;">
             <div style="font-size:12px;color:#cbd5e1;margin-bottom:6px;">ตัวอย่างข้อความเมื่อเปลี่ยนสี:</div>
-            <div id="customColorPreviewText" style="font-size:18px;font-weight:600;color:#00ff66;font-family:var(--font-thai);">
-              // System Breach: Root Access Granted 100%
+            <div id="customColorPreviewText" style="font-size:18px;font-weight:600;color:#00ff66;font-family:var(--font-mono);">
+              PS C:\CyberConsole&gt; Write-Host "Root Access Granted 100%"
             </div>
           </div>
         </div>
@@ -981,25 +1298,25 @@ body.hide-rain #matrixCanvas { opacity: 0; }
   </div>
 </div>
 
-<!-- Delete Note Modal -->
+<!-- Delete Note Confirmation Modal -->
 <div class="modal-overlay" id="deleteModal">
-  <div class="matte-modal" style="border-color:var(--accent-red);">
-    <div class="matte-modal-head" style="color:var(--accent-red);">⚠️ ยืนยันการลบไฟล์</div>
-    <div class="matte-modal-body" id="deleteText" style="color:#cbd5e1;font-size:13.5px;line-height:1.6"></div>
+  <div class="matte-modal">
+    <div class="matte-modal-head" style="color:var(--accent-red)">⚠️ ยืนยันการลบไฟล์</div>
+    <div class="matte-modal-body" id="deleteText" style="font-size:13.5px;line-height:1.6;"></div>
     <div class="matte-modal-foot">
       <button class="matte-btn" onclick="closeModals()">ยกเลิก</button>
-      <button class="matte-btn" style="background:var(--accent-red);color:#fff;border-color:var(--accent-red);" onclick="confirmDelete()">ลบไฟล์</button>
+      <button class="matte-btn" style="background:var(--accent-red);border-color:var(--accent-red);color:#fff;" onclick="confirmDelete()">ลบไฟล์</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   MATRIX DIGITAL RAIN CANVAS ENGINE (ฝนโค้ด Matrix ในหนัง)
+   MATRIX DIGITAL CODE RAIN BACKGROUND (OPTIONAL)
    ═══════════════════════════════════════════════════════════════ */
 const matrixCanvas = document.getElementById('matrixCanvas');
 const mCtx = matrixCanvas.getContext('2d');
-let rainOn = localStorage.getItem('cn_matrix_rain') !== 'off';
+let rainOn = localStorage.getItem('cn_matrix_rain') === 'on';
 
 function resizeMatrix() {
   matrixCanvas.width = window.innerWidth;
@@ -1008,45 +1325,32 @@ function resizeMatrix() {
 resizeMatrix();
 window.addEventListener('resize', resizeMatrix);
 
-const katakana = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF$#@%&*<>{}[]=+/\\';
-const chars = katakana.split('');
-const fontSize = 14;
-let columns = Math.floor(matrixCanvas.width / fontSize);
-let drops = [];
-
-function initDrops() {
-  columns = Math.floor(matrixCanvas.width / fontSize);
-  drops = [];
-  for (let x = 0; x < columns; x++) {
-    drops[x] = Math.floor(Math.random() * -50);
-  }
-}
-initDrops();
-window.addEventListener('resize', initDrops);
+const katakana = 'ｦｱｳｴｵｶｷｹｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ1234567890ABCDEF$#@%*';
+const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const alphabet = katakana + latin;
+const fontSize = 16;
+let columns = Math.floor(window.innerWidth / fontSize);
+let rainDrops = Array.from({length: columns}, () => 1);
 
 function drawMatrixRain() {
   if (!rainOn) return;
-  mCtx.fillStyle = 'rgba(3, 3, 5, 0.08)';
+  mCtx.fillStyle = 'rgba(1, 1, 3, 0.05)';
   mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
 
-  mCtx.fillStyle = '#00ff66';
+  const curColor = getComputedStyle(document.documentElement).getPropertyValue('--base-text-color').trim() || '#00ff66';
+  mCtx.fillStyle = curColor;
   mCtx.font = fontSize + 'px monospace';
 
-  for (let i = 0; i < drops.length; i++) {
-    const text = chars[Math.floor(Math.random() * chars.length)];
-    const x = i * fontSize;
-    const y = drops[i] * fontSize;
-
-    mCtx.fillStyle = '#39ff14';
-    mCtx.fillText(text, x, y);
-
-    if (y > matrixCanvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
+  for (let i = 0; i < rainDrops.length; i++) {
+    const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+    mCtx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+    if (rainDrops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+      rainDrops[i] = 0;
     }
-    drops[i]++;
+    rainDrops[i]++;
   }
 }
-setInterval(drawMatrixRain, 35);
+setInterval(drawMatrixRain, 33);
 
 function toggleMatrixRain() {
   rainOn = !rainOn;
@@ -1058,7 +1362,7 @@ function toggleMatrixRain() {
 if (!rainOn) document.body.classList.add('hide-rain');
 
 /* ═══════════════════════════════════════════════════════════════
-   NEON CURSOR SPARKS & COMET TRAIL ENGINE (ประกายแสงวิ่งตามเคอร์เซอร์)
+   NEON CURSOR SPARKS & COMET TRAIL ENGINE
    ═══════════════════════════════════════════════════════════════ */
 const sparkCanvas = document.getElementById('sparkCanvas');
 const sCtx = sparkCanvas.getContext('2d');
@@ -1138,16 +1442,42 @@ function spawnCursorSparks() {
   if (!coords) return;
 
   const curColor = getComputedStyle(document.documentElement).getPropertyValue('--base-text-color').trim() || '#00ff66';
-  const palette = [curColor, '#ffffff', '#00e5ff', '#39ff14'];
+  const palette = [curColor, '#ffffff', '#00e5ff', '#39ff14', '#facc15'];
 
-  // Spawn Shockwave Ring
   rings.push(new ShockwaveRing(coords.x, coords.y, curColor));
-
-  // Spawn 6-9 Neon Sparks
   const count = Math.floor(Math.random() * 4) + 6;
   for (let i = 0; i < count; i++) {
     const col = palette[Math.floor(Math.random() * palette.length)];
     particles.push(new SparkParticle(coords.x, coords.y, col));
+  }
+}
+
+function measureMonoTextWidth(text, fontStr) {
+  if (!text) return 0;
+  const canvas = measureMonoTextWidth._c || (measureMonoTextWidth._c = document.createElement('canvas'));
+  const ctx = canvas.getContext('2d');
+  ctx.font = fontStr || '14.5px "Cascadia Code", "JetBrains Mono", Consolas, monospace';
+  return ctx.measureText(text).width;
+}
+
+function spawnTerminalSparks() {
+  if (!sparksEnabled) return;
+  const inputEl = document.getElementById('psCliInput');
+  if (!inputEl) return;
+  const rect = inputEl.getBoundingClientRect();
+  const textBeforeCaret = inputEl.value.substring(0, inputEl.selectionStart || inputEl.value.length);
+  const textWidth = measureMonoTextWidth(textBeforeCaret, '14.5px "Cascadia Code", "JetBrains Mono", Consolas, monospace');
+  const x = Math.min(window.innerWidth - 10, rect.left + textWidth);
+  const y = rect.top + (rect.height / 2);
+
+  const curColor = getComputedStyle(document.documentElement).getPropertyValue('--base-text-color').trim() || '#00ff66';
+  const palette = [curColor, '#ffffff', '#00e5ff', '#facc15'];
+
+  rings.push(new ShockwaveRing(x, y, curColor));
+  const count = Math.floor(Math.random() * 4) + 6;
+  for (let i = 0; i < count; i++) {
+    const col = palette[Math.floor(Math.random() * palette.length)];
+    particles.push(new SparkParticle(x, y, col));
   }
 }
 
@@ -1196,7 +1526,7 @@ function getCaretCoordinates() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   COLOR PALETTES & TEXT COLOR CONTROLLER (เปลี่ยนสีตัวหนังสือได้ 100%)
+   COLOR PALETTES & TEXT COLOR CONTROLLER
    ═══════════════════════════════════════════════════════════════ */
 const COLOR_THEMES = {
   'matrix-hacker': {
@@ -1204,15 +1534,15 @@ const COLOR_THEMES = {
     label: '💚 The Matrix (เขียวนีออน)',
     color: '#00ff66'
   },
+  'powershell-blue': {
+    name: 'PowerShell Classic Blue',
+    label: '🔷 PowerShell Blue (น้ำเงินฟ้า)',
+    color: '#38bdf8'
+  },
   'cyber-cyan': {
     name: 'Cyberpunk Cyan',
     label: '💙 Cyberpunk (ฟ้าไซเบอร์)',
     color: '#00f0ff'
-  },
-  'cyber-pink': {
-    name: 'Neon Magenta Pink',
-    label: '💖 Neon Pink (ชมพูมาเจนต้า)',
-    color: '#ff007f'
   },
   'mr-robot-amber': {
     name: 'Mr. Robot Amber Gold',
@@ -1223,6 +1553,11 @@ const COLOR_THEMES = {
     name: 'Red Alert Blood',
     label: '❤️ Red Alert (แดงเพลิง)',
     color: '#ff0055'
+  },
+  'cyber-pink': {
+    name: 'Neon Magenta Pink',
+    label: '💖 Neon Pink (ชมพูมาเจนต้า)',
+    color: '#ff007f'
   },
   'ghost-violet': {
     name: 'Ghost Violet',
@@ -1248,20 +1583,19 @@ function applyTextColor(hexColor, name = '') {
   currentTextColor = hexColor;
   localStorage.setItem('cn_text_color', hexColor);
 
-  // Apply directly to root variable and editor
   document.documentElement.style.setProperty('--base-text-color', hexColor);
   if (editor) {
     editor.style.color = hexColor;
     editor.style.caretColor = hexColor;
   }
+  const psInput = document.getElementById('psCliInput');
+  if (psInput) psInput.style.caretColor = hexColor;
 
-  // Update Toolbar Quick Dot
   const dot = document.getElementById('quickColorDot');
   if (dot) dot.style.background = hexColor;
   const input = document.getElementById('quickTextColorInput');
   if (input) input.value = hexColor;
 
-  // Update Status
   const status = document.getElementById('themeStatus');
   if (status) status.textContent = `💻 ${name ? name.toUpperCase() : hexColor.toUpperCase()}`;
 
@@ -1316,10 +1650,10 @@ function openColorStudio() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   FONT PERSISTENCE ENGINE (บันทึกขนาดและฟอนต์ถาวร)
+   FONT PERSISTENCE ENGINE
    ═══════════════════════════════════════════════════════════════ */
 let currentFontSize = localStorage.getItem('cn_font_size') || '22px';
-let currentFontFamily = localStorage.getItem('cn_font_family') || "'Prompt', sans-serif";
+let currentFontFamily = localStorage.getItem('cn_font_family') || "'Cascadia Code', monospace";
 
 function setFontSize(size) {
   currentFontSize = size;
@@ -1554,7 +1888,62 @@ document.addEventListener('click', e => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   FILE SYSTEM & TABS ENGINE (100% RELIABLE SWITCHING)
+   MODE ENGINE: POWERSHELL TERMINAL ↔ SCRIPT EDITOR
+   ═══════════════════════════════════════════════════════════════ */
+let currentMode = localStorage.getItem('cn_view_mode') || 'terminal'; // 'terminal' or 'editor'
+
+function switchMode(mode) {
+  currentMode = mode;
+  localStorage.setItem('cn_view_mode', mode);
+
+  const termView = document.getElementById('terminalViewContainer');
+  const editView = document.getElementById('editorViewContainer');
+  const btnTerm = document.getElementById('btnModeTerminal');
+  const btnEdit = document.getElementById('btnModeEditor');
+  const termCluster = document.getElementById('toolbarTerminalCluster');
+  const editCluster = document.getElementById('toolbarEditorCluster');
+  const modeStatus = document.getElementById('modeStatus');
+
+  if (mode === 'terminal') {
+    if (termView) termView.style.display = 'flex';
+    if (editView) editView.style.display = 'none';
+    if (btnTerm) btnTerm.classList.add('active');
+    if (btnEdit) btnEdit.classList.remove('active');
+    if (termCluster) termCluster.style.display = 'flex';
+    if (editCluster) editCluster.style.display = 'none';
+    if (modeStatus) modeStatus.textContent = '⚡ POWERSHELL CLI (F2)';
+
+    setTimeout(() => {
+      const cliInput = document.getElementById('psCliInput');
+      if (cliInput) cliInput.focus();
+      scrollTerminalToBottom();
+    }, 50);
+  } else {
+    // Editor mode
+    if (termView) termView.style.display = 'none';
+    if (editView) editView.style.display = 'flex';
+    if (btnTerm) btnTerm.classList.remove('active');
+    if (btnEdit) btnEdit.classList.add('active');
+    if (termCluster) termCluster.style.display = 'none';
+    if (editCluster) editCluster.style.display = 'flex';
+    if (modeStatus) modeStatus.textContent = '📝 SCRIPT EDITOR (F2)';
+
+    if (currentFile && files[currentFile] !== undefined) {
+      editor.innerHTML = files[currentFile];
+    }
+    setTimeout(() => {
+      if (editor) editor.focus();
+      updateMetrics();
+    }, 50);
+  }
+}
+
+function toggleModeShortcut() {
+  switchMode(currentMode === 'terminal' ? 'editor' : 'terminal');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FILE SYSTEM & TABS ENGINE
    ═══════════════════════════════════════════════════════════════ */
 let files = {};
 try { files = JSON.parse(localStorage.getItem('cn_files') || '{}'); } catch(e) { files = {}; }
@@ -1591,23 +1980,27 @@ function setStatus(s) {
 }
 
 function updateLineNumbers() {
-  const text = editor.innerText || '';
+  const text = editor ? (editor.innerText || '') : '';
   const lines = text.split('\n').length || 1;
   const nums = Array.from({length: lines}, (_, i) => i + 1).join('\n');
-  document.getElementById('lineNumbers').textContent = nums;
+  const el = document.getElementById('lineNumbers');
+  if (el) el.textContent = nums;
 }
 
 function updateMetrics() {
-  const text = editor.innerText || '';
+  const text = editor ? (editor.innerText || '') : '';
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  document.getElementById('wordCount').textContent = words.toLocaleString() + ' คำ';
-  document.getElementById('charCount').textContent = text.length.toLocaleString() + ' ตัวอักษร';
+  const wEl = document.getElementById('wordCount');
+  const cEl = document.getElementById('charCount');
+  if (wEl) wEl.textContent = words.toLocaleString() + ' คำ';
+  if (cEl) cEl.textContent = text.length.toLocaleString() + ' ตัวอักษร';
   updateLineNumbers();
 }
 
 function renderTabsAndFiles() {
   const names = Object.keys(files);
-  document.getElementById('fileCountBadge').textContent = `${names.length} ไฟล์`;
+  const badge = document.getElementById('fileCountBadge');
+  if (badge) badge.textContent = `${names.length} ไฟล์`;
 
   // Render Tabs
   terminalTabs.innerHTML = '';
@@ -1654,13 +2047,15 @@ function renderTabsAndFiles() {
 }
 
 function openFile(n) {
-  if (currentFile && files[currentFile] !== undefined) {
+  if (currentFile && files[currentFile] !== undefined && editor) {
     files[currentFile] = editor.innerHTML;
     try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
   }
 
   currentFile = n;
-  editor.innerHTML = files[n] !== undefined ? files[n] : '';
+  if (editor) {
+    editor.innerHTML = files[n] !== undefined ? files[n] : '';
+  }
   
   const badge = document.getElementById('currentFileBadge');
   if (badge) badge.textContent = n;
@@ -1670,58 +2065,624 @@ function openFile(n) {
   renderTabsAndFiles();
   attachResizeAll();
   updateMetrics();
-  editor.focus();
 }
 
-/* ── Keystrokes & Typing Spark Trigger ── */
-editor.addEventListener('keydown', e => {
-  const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ';
-  playKey(special);
+/* ═══════════════════════════════════════════════════════════════
+   POWERSHELL LEXER & REAL-TIME PSREADLINE SYNTAX HIGHLIGHTING
+   ═══════════════════════════════════════════════════════════════ */
+const BUILTIN_COMMANDS = [
+  'help', 'get-help', '?', 'man',
+  'dir', 'ls', 'gci', 'get-childitem',
+  'cat', 'type', 'gc', 'get-content', 'set-content',
+  'new', 'ni', 'touch', 'new-item',
+  'edit', 'code', 'notepad', 'ise', 'open',
+  'rm', 'del', 'remove-item',
+  'cls', 'clear', 'clear-host',
+  'note', 'add', 'save', 'mode',
+  'theme', 'color', 'matrix', 'rain',
+  'hack', 'exploit', 'breach',
+  'whoami', 'date', 'get-date', 'ps', 'get-process',
+  'pwd', 'get-location', 'echo', 'write-host', 'write-output',
+  'ver', '$psversiontable', 'sfx', 'history', 'export-pdf', 'exit'
+];
 
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    document.execCommand('insertText', false, '    ');
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function highlightPowerShellSyntax(text) {
+  if (!text) return '';
+  const tokenRegex = /(#.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\$[a-zA-Z0-9_:]+)|(-[a-zA-Z0-9_-]+)|(\||\>|;|\&)|(\b[a-zA-Z0-9_.-]+\b)|(\s+)|(.)/g;
+  let html = '';
+  let match;
+  let isFirstWord = true;
+
+  while ((match = tokenRegex.exec(text)) !== null) {
+    const [full, comment, str, variable, param, op, word, ws, other] = match;
+    if (comment) {
+      html += `<span class="ps-tok-comment">${escapeHtml(comment)}</span>`;
+    } else if (str) {
+      html += `<span class="ps-tok-string">${escapeHtml(str)}</span>`;
+    } else if (variable) {
+      html += `<span class="ps-tok-var">${escapeHtml(variable)}</span>`;
+    } else if (param) {
+      html += `<span class="ps-tok-param">${escapeHtml(param)}</span>`;
+    } else if (op) {
+      html += `<span class="ps-tok-op">${escapeHtml(op)}</span>`;
+    } else if (word) {
+      const lower = word.toLowerCase();
+      const isKnownCmd = BUILTIN_COMMANDS.includes(lower);
+      if (isFirstWord && isKnownCmd) {
+        html += `<span class="ps-tok-cmd">${escapeHtml(word)}</span>`;
+      } else if (isFirstWord) {
+        html += `<span class="ps-tok-cmd-unknown">${escapeHtml(word)}</span>`;
+      } else {
+        html += `<span class="ps-tok-arg">${escapeHtml(word)}</span>`;
+      }
+      isFirstWord = false;
+    } else if (ws) {
+      html += escapeHtml(ws);
+    } else if (other) {
+      html += escapeHtml(other);
+    }
+  }
+  return html;
+}
+
+const psCliInput = document.getElementById('psCliInput');
+const psCliSyntaxOverlay = document.getElementById('psCliSyntaxOverlay');
+
+function updateCliSyntax() {
+  if (!psCliInput || !psCliSyntaxOverlay) return;
+  psCliSyntaxOverlay.innerHTML = highlightPowerShellSyntax(psCliInput.value);
+}
+
+/* Tab Completion */
+let tabCandidates = [];
+let tabIndex = -1;
+let lastTabInput = '';
+
+function handleTabCompletion() {
+  const val = psCliInput.value;
+  if (!val) return;
+
+  const parts = val.split(/\s+/);
+  if (parts.length === 1) {
+    const prefix = parts[0].toLowerCase();
+    if (lastTabInput !== prefix) {
+      lastTabInput = prefix;
+      tabCandidates = BUILTIN_COMMANDS.filter(c => c.toLowerCase().startsWith(prefix));
+      tabIndex = 0;
+    } else {
+      tabIndex = (tabIndex + 1) % tabCandidates.length;
+    }
+    if (tabCandidates.length > 0) {
+      psCliInput.value = tabCandidates[tabIndex];
+      updateCliSyntax();
+      psCliInput.selectionStart = psCliInput.selectionEnd = psCliInput.value.length;
+    }
+  } else if (parts.length >= 2) {
+    const cmd = parts[0].toLowerCase();
+    const argPrefix = parts.slice(1).join(' ').toLowerCase();
+    if (['cat', 'edit', 'code', 'notepad', 'rm', 'del', 'open', 'type'].includes(cmd)) {
+      const fileNames = Object.keys(files);
+      if (lastTabInput !== argPrefix) {
+        lastTabInput = argPrefix;
+        tabCandidates = fileNames.filter(f => f.toLowerCase().startsWith(argPrefix));
+        tabIndex = 0;
+      } else {
+        tabIndex = (tabIndex + 1) % tabCandidates.length;
+      }
+      if (tabCandidates.length > 0) {
+        psCliInput.value = `${parts[0]} ${tabCandidates[tabIndex]}`;
+        updateCliSyntax();
+        psCliInput.selectionStart = psCliInput.selectionEnd = psCliInput.value.length;
+      }
+    } else if (['color', 'theme'].includes(cmd)) {
+      const themes = Object.keys(COLOR_THEMES);
+      if (lastTabInput !== argPrefix) {
+        lastTabInput = argPrefix;
+        tabCandidates = themes.filter(t => t.toLowerCase().startsWith(argPrefix));
+        tabIndex = 0;
+      } else {
+        tabIndex = (tabIndex + 1) % tabCandidates.length;
+      }
+      if (tabCandidates.length > 0) {
+        psCliInput.value = `${parts[0]} ${tabCandidates[tabIndex]}`;
+        updateCliSyntax();
+        psCliInput.selectionStart = psCliInput.selectionEnd = psCliInput.value.length;
+      }
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TERMINAL EXECUTION & OUTPUT ENGINE
+   ═══════════════════════════════════════════════════════════════ */
+const psTerminalBuffer = document.getElementById('psTerminalBuffer');
+let cmdHistory = [], historyIndex = -1;
+
+function scrollTerminalToBottom() {
+  const container = document.getElementById('terminalViewContainer');
+  if (container) {
+    setTimeout(() => {
+      container.scrollTop = container.scrollHeight;
+    }, 10);
+  }
+}
+
+function appendTerminalEntry(cmdText, outputHtml, isError = false, isSuccess = false) {
+  const entry = document.createElement('div');
+  entry.className = 'ps-history-entry';
+
+  if (cmdText !== '') {
+    const cmdDiv = document.createElement('div');
+    cmdDiv.className = 'ps-history-cmd';
+    cmdDiv.innerHTML = `
+      <span class="ps-terminal-prompt-label">PS C:\\Users\\Administrator\\CyberConsole&gt;</span>
+      <span class="ps-history-cmd-text">${highlightPowerShellSyntax(cmdText)}</span>
+    `;
+    entry.appendChild(cmdDiv);
   }
 
-  setTimeout(spawnCursorSparks, 10);
-});
+  if (outputHtml) {
+    const outDiv = document.createElement('div');
+    outDiv.className = 'ps-history-output' + (isError ? ' error-output' : (isSuccess ? ' success-output' : ''));
+    outDiv.innerHTML = outputHtml;
+    entry.appendChild(outDiv);
+  }
 
-editor.addEventListener('input', () => {
-  scheduleSave();
-  updateMetrics();
-  spawnCursorSparks();
-});
+  psTerminalBuffer.appendChild(entry);
+  scrollTerminalToBottom();
+}
+
+function runCommandFromTerminal() {
+  const val = psCliInput.value;
+  if (!val.trim()) {
+    appendTerminalEntry('', '');
+    psCliInput.value = '';
+    updateCliSyntax();
+    return;
+  }
+  const trimmed = val.trim();
+  cmdHistory.push(trimmed);
+  historyIndex = cmdHistory.length;
+  psCliInput.value = '';
+  updateCliSyntax();
+  executePowerShellCmd(trimmed);
+}
+
+function executePowerShellCmd(rawInput) {
+  const trimmed = rawInput.trim();
+  if (!trimmed) return;
+  const parts = trimmed.split(/\s+/);
+  const cmd = parts[0].toLowerCase();
+  const arg = parts.slice(1).join(' ');
+
+  switch(cmd) {
+    case 'help':
+    case 'get-help':
+    case '?':
+    case 'man':
+      appendTerminalEntry(trimmed, `
+<pre style="font-family:inherit;line-height:1.6;">
+<b>NAME</b>
+    CodeNote PowerShell Cyber Terminal v7.4.5
+
+<b>SYNOPSIS</b>
+    ระบบพิมพ์และจัดการโน้ตแบบ Interactive PowerShell Terminal
+
+<b>SYNTAX &amp; COMMANDS</b>
+  • <span class="ps-tok-cmd">dir</span>, <span class="ps-tok-cmd">ls</span>, <span class="ps-tok-cmd">Get-ChildItem</span>       แสดงรายชื่อโน้ตและไฟล์ทั้งหมด
+  • <span class="ps-tok-cmd">cat</span>, <span class="ps-tok-cmd">gc</span>, <span class="ps-tok-cmd">Get-Content &lt;file&gt;</span>   อ่านเนื้อหาของไฟล์
+  • <span class="ps-tok-cmd">new</span>, <span class="ps-tok-cmd">ni</span>, <span class="ps-tok-cmd">New-Item &lt;file&gt;</span>       สร้างไฟล์โน้ตใหม่
+  • <span class="ps-tok-cmd">edit</span>, <span class="ps-tok-cmd">code</span>, <span class="ps-tok-cmd">notepad [file]</span>     เปิดไฟล์ในหน้า Script Editor (หรือกด F2)
+  • <span class="ps-tok-cmd">note</span>, <span class="ps-tok-cmd">add &lt;ข้อความ&gt;</span>             จดบันทึกบรรทัดใหม่ลงในโน้ตปัจจุบันทันที
+  • <span class="ps-tok-cmd">rm</span>, <span class="ps-tok-cmd">del</span>, <span class="ps-tok-cmd">Remove-Item &lt;file&gt;</span>    ลบไฟล์โน้ต
+  • <span class="ps-tok-cmd">cls</span>, <span class="ps-tok-cmd">clear</span>, <span class="ps-tok-cmd">Clear-Host</span>         ล้างหน้าจอ Terminal (Ctrl+L)
+  • <span class="ps-tok-cmd">mode</span>                             สลับระหว่าง Terminal CLI และ Script Editor
+  • <span class="ps-tok-cmd">theme</span>, <span class="ps-tok-cmd">color [name]</span>            เปลี่ยนสีตัวหนังสือ (powershell-blue, matrix-hacker, cyber-cyan, mr-robot-amber...)
+  • <span class="ps-tok-cmd">matrix</span>, <span class="ps-tok-cmd">rain</span>                     เปิด/ปิด ฝนโค้ด Matrix ด้านหลัง
+  • <span class="ps-tok-cmd">hack</span>, <span class="ps-tok-cmd">breach</span>                     รันเอฟเฟกต์แฮกเจาะระบบสไตล์ฮอลลีวูด!
+  • <span class="ps-tok-cmd">whoami</span>                           แสดงบัญชีผู้ใช้งานระบบปัจจุบัน
+  • <span class="ps-tok-cmd">date</span>, <span class="ps-tok-cmd">Get-Date</span>                  แสดงวันที่และเวลาปัจจุบัน
+  • <span class="ps-tok-cmd">ps</span>, <span class="ps-tok-cmd">Get-Process</span>                 ตรวจสอบ Process ที่กำลังทำงาน
+  • <span class="ps-tok-cmd">ver</span>, <span class="ps-tok-var">$PSVersionTable</span>            แสดงข้อมูลเวอร์ชัน PowerShell
+  • <span class="ps-tok-cmd">sfx</span> [on|off]                     เปิด/ปิด เสียงแป้นพิมพ์ Mechanical SFX
+  • <span class="ps-tok-cmd">export-pdf</span>                       ส่งออกโน้ตเป็น PDF หรือสั่งพิมพ์
+</pre>`);
+      break;
+
+    case 'dir':
+    case 'ls':
+    case 'gci':
+    case 'get-childitem': {
+      const keys = Object.keys(files);
+      let out = `    Directory: C:\\Users\\Administrator\\CyberConsole\n\n`;
+      out += `Mode                 LastWriteTime         Length Name\n`;
+      out += `----                 -------------         ------ ----\n`;
+      keys.forEach(k => {
+        const len = (files[k] || '').length;
+        const isCur = (k === currentFile) ? '*' : ' ';
+        out += `-a---${isCur}         10/22/2026   9:30 PM         ${len.toString().padStart(6, ' ')} ${k}\n`;
+      });
+      appendTerminalEntry(trimmed, `<pre style="font-family:inherit;">${out}</pre>`);
+      break;
+    }
+
+    case 'cat':
+    case 'type':
+    case 'gc':
+    case 'get-content': {
+      if (!arg) {
+        appendTerminalEntry(trimmed, `Get-Content : Cannot bind argument to parameter 'Path' because it is null.\nUsage: cat &lt;filename&gt;`, true);
+        break;
+      }
+      let target = arg.trim();
+      if (files[target] === undefined && files[target + '.ps1'] !== undefined) target = target + '.ps1';
+      if (files[target] !== undefined) {
+        const temp = document.createElement('div');
+        temp.innerHTML = files[target];
+        const content = temp.innerText || '(ไฟล์ว่างเปล่า / Empty Note)';
+        appendTerminalEntry(trimmed, `<div style="background:rgba(0,0,0,0.4);padding:8px 12px;border-radius:6px;border-left:3px solid var(--base-text-color);">${escapeHtml(content)}</div>`);
+      } else {
+        appendTerminalEntry(trimmed, `Get-Content : Cannot find path 'C:\\Users\\Administrator\\CyberConsole\\${escapeHtml(target)}' because it does not exist.`, true);
+      }
+      break;
+    }
+
+    case 'note':
+    case 'add': {
+      if (!arg) {
+        appendTerminalEntry(trimmed, `Usage: note &lt;ข้อความที่ต้องการจด&gt;\nตัวอย่าง: note นัดประชุมระบบสต็อก 14:00 น.`, true);
+        break;
+      }
+      if (!currentFile) {
+        currentFile = 'บันทึกด่วน.ps1';
+        files[currentFile] = '';
+      }
+      const timeStr = new Date().toLocaleTimeString('th-TH');
+      const noteLine = `<p>[${timeStr}] ${escapeHtml(arg)}</p>`;
+      files[currentFile] = (files[currentFile] || '') + noteLine;
+      try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
+      if (editor && currentFile) editor.innerHTML = files[currentFile];
+      updateMetrics();
+      renderTabsAndFiles();
+      appendTerminalEntry(trimmed, `[+] บันทึกข้อความลงใน '<span style="color:#00ff66;">${currentFile}</span>' เรียบร้อย: "${escapeHtml(arg)}"`, false, true);
+      break;
+    }
+
+    case 'edit':
+    case 'code':
+    case 'notepad':
+    case 'ise':
+    case 'open': {
+      if (arg) {
+        let target = arg.trim();
+        if (files[target] === undefined && files[target + '.ps1'] !== undefined) target = target + '.ps1';
+        if (files[target] === undefined) {
+          if (!target.includes('.')) target += '.ps1';
+          files[target] = '';
+          try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
+          renderTabsAndFiles();
+        }
+        openFile(target);
+      }
+      switchMode('editor');
+      appendTerminalEntry(trimmed, `[+] สลับไปยัง Script Editor สำหรับไฟล์: <b>${currentFile || 'ยินดีต้อนรับ.ps1'}</b>`, false, true);
+      break;
+    }
+
+    case 'new':
+    case 'ni':
+    case 'touch':
+    case 'new-item': {
+      if (!arg) {
+        openCreate();
+        appendTerminalEntry(trimmed, `[+] เปิดหน้าต่างสร้างไฟล์ใหม่`, false, true);
+        break;
+      }
+      let target = arg.trim();
+      if (!target.includes('.')) target += '.ps1';
+      if (files[target] !== undefined) {
+        appendTerminalEntry(trimmed, `New-Item : An item with the specified name '${target}' already exists.`, true);
+      } else {
+        files[target] = '';
+        try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
+        openFile(target);
+        appendTerminalEntry(trimmed, `[+] สร้างไฟล์ใหม่เรียบร้อย: <span style="color:#00ff66;">${target}</span>`, false, true);
+      }
+      break;
+    }
+
+    case 'rm':
+    case 'del':
+    case 'remove-item': {
+      if (!arg) {
+        appendTerminalEntry(trimmed, `Remove-Item : Cannot bind argument to parameter 'Path' because it is null.\nUsage: rm &lt;filename&gt;`, true);
+        break;
+      }
+      let target = arg.trim();
+      if (files[target] === undefined && files[target + '.ps1'] !== undefined) target = target + '.ps1';
+      if (files[target] !== undefined) {
+        deleteTarget = target;
+        confirmDelete();
+        appendTerminalEntry(trimmed, `[+] ลบไฟล์ '${target}' เรียบร้อย`, false, true);
+      } else {
+        appendTerminalEntry(trimmed, `Remove-Item : Cannot find path '${target}' because it does not exist.`, true);
+      }
+      break;
+    }
+
+    case 'cls':
+    case 'clear':
+    case 'clear-host':
+      psTerminalBuffer.innerHTML = '';
+      break;
+
+    case 'mode':
+      switchMode(currentMode === 'terminal' ? 'editor' : 'terminal');
+      appendTerminalEntry(trimmed, `[+] เปลี่ยนโหมดเป็น: <b>${currentMode.toUpperCase()}</b>`, false, true);
+      break;
+
+    case 'save':
+      doSave();
+      appendTerminalEntry(trimmed, `[+] ACCESS GRANTED: บันทึกข้อมูลและเข้ารหัสไฟล์ '${currentFile}' เรียบร้อย`, false, true);
+      break;
+
+    case 'theme':
+    case 'color': {
+      if (!arg) {
+        const themeList = Object.keys(COLOR_THEMES).map(k => `  • <span class="ps-tok-cmd">${k}</span> (${COLOR_THEMES[k].name})`).join('\n');
+        appendTerminalEntry(trimmed, `<pre style="font-family:inherit;">ชุดสีที่เลือกได้:\n${themeList}\n\nวิธีใช้: theme &lt;ชื่อสี&gt; (เช่น theme powershell-blue หรือ theme cyber-cyan)</pre>`);
+      } else {
+        const key = arg.trim().toLowerCase();
+        if (COLOR_THEMES[key]) {
+          applyTextColor(COLOR_THEMES[key].color, COLOR_THEMES[key].name);
+          appendTerminalEntry(trimmed, `[+] เปลี่ยนชุดสีระบบเป็น: <b>${COLOR_THEMES[key].name}</b>`, false, true);
+        } else {
+          appendTerminalEntry(trimmed, `ไม่พบชุดสี '${escapeHtml(arg)}' พิมพ์ 'theme' เพื่อดูรายชื่อสีทั้งหมด`, true);
+        }
+      }
+      break;
+    }
+
+    case 'matrix':
+    case 'rain':
+      toggleMatrixRain();
+      appendTerminalEntry(trimmed, `[+] Matrix Digital Code Rain: <b>${rainOn ? 'ENABLED 🌧️' : 'DISABLED'}</b>`, false, true);
+      break;
+
+    case 'hack':
+    case 'exploit':
+    case 'breach':
+      appendTerminalEntry(trimmed, `[+] Initializing Hollywood Cyber Penetration Protocol...`);
+      setTimeout(() => appendTerminalEntry('', `[+] Bypassing Firewall &amp; Defense Proxy Node 104.28.19.94...`), 300);
+      setTimeout(() => appendTerminalEntry('', `[+] Injecting Quantum Exploit Payload into Mainframe...`), 650);
+      setTimeout(() => appendTerminalEntry('', `<span style="color:#00ff66;font-weight:700;">[+] ACCESS GRANTED — ROOT PRIVILEGES UNLOCKED ⚡</span>`, false, true), 1000);
+      break;
+
+    case 'whoami':
+      appendTerminalEntry(trimmed, `cyberconsole\\administrator`);
+      break;
+
+    case 'pwd':
+    case 'get-location':
+      appendTerminalEntry(trimmed, `Path\n----\nC:\\Users\\Administrator\\CyberConsole`);
+      break;
+
+    case 'date':
+    case 'get-date':
+      appendTerminalEntry(trimmed, new Date().toString());
+      break;
+
+    case 'ps':
+    case 'get-process': {
+      const psTable = `
+NPM(K)    PM(M)      WS(M)     CPU(s)      Id  ProcessName
+------    -----      -----     ------      --  -----------
+    42    85.20      98.40       1.24    1048  CodeNote
+    18    24.10      32.50       0.45    2092  powershell
+    12    14.30      18.70       0.12    3410  matrix_core
+     8     8.12      12.40       0.04    4890  sfx_audio_engine`;
+      appendTerminalEntry(trimmed, `<pre style="font-family:inherit;">${psTable}</pre>`);
+      break;
+    }
+
+    case 'ver':
+    case '$psversiontable': {
+      const verTable = `
+Name                           Value
+----                           -----
+PSVersion                      7.4.5-cyber
+PSEdition                      Core
+GitCommitId                    7.4.5@codenote-terminal
+OS                             Microsoft Windows NT 10.0.22631
+Platform                       Win32NT
+PSCompatibleVersions           {1.0, 2.0, 3.0, 4.0, 5.0, 5.1.10032.0, 6.0.0, 7.4.5}
+SerializationVersion           1.1.0.1`;
+      appendTerminalEntry(trimmed, `<pre style="font-family:inherit;">${verTable}</pre>`);
+      break;
+    }
+
+    case 'sfx': {
+      if (arg === 'on') { onSfxToggle(true); appendTerminalEntry(trimmed, `[+] Mechanical SFX: ON`, false, true); }
+      else if (arg === 'off') { onSfxToggle(false); appendTerminalEntry(trimmed, `[+] Mechanical SFX: OFF`, false, true); }
+      else {
+        appendTerminalEntry(trimmed, `เสียงพิมพ์ปัจจุบัน: ${soundOn ? 'ON (เปิด)' : 'OFF (ปิด)'} · โปรไฟล์: ${activeProfileId}\nวิธีใช้: sfx on หรือ sfx off`);
+      }
+      break;
+    }
+
+    case 'history': {
+      let h = `  Id  CommandLine\n  --  -----------\n`;
+      cmdHistory.forEach((c, idx) => {
+        h += `  ${(idx + 1).toString().padStart(2, ' ')}  ${c}\n`;
+      });
+      appendTerminalEntry(trimmed, `<pre style="font-family:inherit;">${h}</pre>`);
+      break;
+    }
+
+    case 'export-pdf':
+      printPage();
+      appendTerminalEntry(trimmed, `[+] ส่งออกเอกสารไปยังระบบพิมพ์ / PDF เรียบร้อย`, false, true);
+      break;
+
+    case 'echo':
+    case 'write-host':
+    case 'write-output':
+      appendTerminalEntry(trimmed, escapeHtml(arg));
+      break;
+
+    case 'exit':
+      switchMode('editor');
+      break;
+
+    default:
+      appendTerminalEntry(trimmed, `
+<div style="color:#f43f5e;line-height:1.5;">
+  <b>${escapeHtml(cmd)} :</b> The term '${escapeHtml(cmd)}' is not recognized as the name of a cmdlet, function, script file, or operable program.<br>
+  <span style="color:#94a3b8;font-size:12px;">Check the spelling of the name, or type '<span style="color:#facc15">help</span>' to view all available commands.</span><br>
+  <span style="color:#00ff66;font-size:12px;">💡 แนะนำ: พิมพ์ '<span style="color:#facc15">note &lt;ข้อความ&gt;</span>' เพื่อบันทึกโน้ตลงในไฟล์ทันที!</span>
+</div>`, true);
+      break;
+  }
+}
+
+/* Keystrokes in PowerShell CLI Input */
+if (psCliInput) {
+  psCliInput.addEventListener('keydown', e => {
+    const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ' || e.key === 'Tab';
+    playKey(special);
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      runCommandFromTerminal();
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      handleTabCompletion();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        psCliInput.value = cmdHistory[historyIndex] || '';
+        updateCliSyntax();
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex < cmdHistory.length - 1) {
+        historyIndex++;
+        psCliInput.value = cmdHistory[historyIndex] || '';
+        updateCliSyntax();
+      } else {
+        historyIndex = cmdHistory.length;
+        psCliInput.value = '';
+        updateCliSyntax();
+      }
+    } else if (e.ctrlKey && e.key === 'c') {
+      e.preventDefault();
+      appendTerminalEntry(psCliInput.value + ' ^C', '');
+      psCliInput.value = '';
+      updateCliSyntax();
+    } else if (e.ctrlKey && e.key === 'l') {
+      e.preventDefault();
+      executePowerShellCmd('cls');
+    }
+
+    setTimeout(spawnTerminalSparks, 10);
+  });
+
+  psCliInput.addEventListener('input', () => {
+    updateCliSyntax();
+    spawnTerminalSparks();
+  });
+}
+
+// Click anywhere in terminal focuses input
+const termContainer = document.getElementById('terminalViewContainer');
+if (termContainer) {
+  termContainer.addEventListener('click', e => {
+    const sel = window.getSelection();
+    if (!sel || sel.toString().length === 0) {
+      if (psCliInput) psCliInput.focus();
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCRIPT EDITOR KEYSTROKES & CLI DRAWER
+   ═══════════════════════════════════════════════════════════════ */
+if (editor) {
+  editor.addEventListener('keydown', e => {
+    const special = e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key === ' ';
+    playKey(special);
+
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      document.execCommand('insertText', false, '    ');
+    }
+
+    setTimeout(spawnCursorSparks, 10);
+  });
+
+  editor.addEventListener('input', () => {
+    scheduleSave();
+    updateMetrics();
+    spawnCursorSparks();
+  });
+}
 
 document.addEventListener('keydown', e => {
   const mod = e.ctrlKey || e.metaKey;
-  if (mod && e.key === 's') { e.preventDefault(); doSave(); logCmd('// FILE ENCRYPTED & SAVED: ' + currentFile, 'success'); }
-  if (mod && e.key === 'n') { e.preventDefault(); openCreate(); }
-  if (e.key === 'Escape') { closeModals(); sfxPanelOpen = false; document.getElementById('sfxPanel').classList.remove('open'); }
-  if (e.key === 'Enter' && document.getElementById('createModal').classList.contains('show')) { e.preventDefault(); confirmCreate(); }
+  if (e.key === 'F2') {
+    e.preventDefault();
+    toggleModeShortcut();
+  }
+  if (mod && e.key === '`') {
+    e.preventDefault();
+    toggleModeShortcut();
+  }
+  if (mod && e.key === 's') {
+    e.preventDefault();
+    doSave();
+    logCmd('// FILE ENCRYPTED & SAVED: ' + currentFile, 'success');
+  }
+  if (mod && e.key === 'n') {
+    e.preventDefault();
+    openCreate();
+  }
+  if (e.key === 'Escape') {
+    closeModals();
+    sfxPanelOpen = false;
+    document.getElementById('sfxPanel').classList.remove('open');
+  }
+  if (e.key === 'Enter' && document.getElementById('createModal').classList.contains('show')) {
+    e.preventDefault();
+    confirmCreate();
+  }
 });
 
 document.addEventListener('selectionchange', () => {
   try {
     const sel = window.getSelection();
-    if (!sel || !sel.rangeCount) return;
+    if (!sel || !sel.rangeCount || currentMode !== 'editor') return;
     const r = sel.getRangeAt(0).cloneRange();
     r.selectNodeContents(editor);
     r.setEnd(sel.getRangeAt(0).startContainer, sel.getRangeAt(0).startOffset);
     const lines = r.toString().split('\n');
     const ln = lines.length;
     const col = lines[lines.length - 1].length + 1;
-    document.getElementById('cursorPos').textContent = `LN ${ln}, COL ${col}`;
+    const pos = document.getElementById('cursorPos');
+    if (pos) pos.textContent = `LN ${ln}, COL ${col}`;
   } catch(e) {}
 });
 
-/* ═══════════════════════════════════════════════════════════════
-   INTERACTIVE HOLLYWOOD HACKER CLI CONSOLE
-   ═══════════════════════════════════════════════════════════════ */
+/* Drawer inside Script Editor */
 const cmdInput = document.getElementById('cmdInput');
 const cmdLog = document.getElementById('cmdLog');
-let cmdHistory = [], historyIndex = -1;
 
 function logCmd(msg, type = 'info') {
+  if (!cmdLog) return;
   cmdLog.classList.add('open');
   const row = document.createElement('div');
   row.className = `console-row ${type}`;
@@ -1730,170 +2691,40 @@ function logCmd(msg, type = 'info') {
   cmdLog.scrollTop = cmdLog.scrollHeight;
 }
 
-function runCommandFromInput() {
+function runCommandFromDrawer() {
   const val = cmdInput.value.trim();
   if (!val) return;
-  cmdHistory.push(val);
-  historyIndex = cmdHistory.length;
   cmdInput.value = '';
   executePowerShellCmd(val);
 }
 
-cmdInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    runCommandFromInput();
-  } else if (e.key === 'ArrowUp') {
-    if (historyIndex > 0) {
-      historyIndex--;
-      cmdInput.value = cmdHistory[historyIndex] || '';
+if (cmdInput) {
+  cmdInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      runCommandFromDrawer();
     }
-  } else if (e.key === 'ArrowDown') {
-    if (historyIndex < cmdHistory.length - 1) {
-      historyIndex++;
-      cmdInput.value = cmdHistory[historyIndex] || '';
-    } else {
-      historyIndex = cmdHistory.length;
-      cmdInput.value = '';
-    }
-  }
-});
-
-function executePowerShellCmd(input) {
-  logCmd(`ROOT ❯ ${input}`, 'info');
-  const parts = input.split(/\s+/);
-  const cmd = parts[0].toLowerCase();
-  const arg = parts.slice(1).join(' ').toLowerCase();
-
-  switch(cmd) {
-    case 'hack':
-    case 'exploit':
-    case 'breach':
-      logCmd('[+] Initializing Hollywood Cyber Penetration Sequence...', 'info');
-      setTimeout(() => logCmd('[+] Bypassing Firewall & Proxy Node 104.28.19.94...', 'info'), 250);
-      setTimeout(() => logCmd('[+] Injecting Quantum Payload into Mainframe...', 'info'), 500);
-      setTimeout(() => logCmd('[+] ACCESS GRANTED — ROOT PRIVILEGES UNLOCKED ⚡', 'success'), 800);
-      break;
-
-    case 'matrix':
-    case 'rain':
-      toggleMatrixRain();
-      logCmd(`Matrix Code Rain: ${rainOn ? 'ENABLED 🌧️' : 'DISABLED'}`, 'success');
-      break;
-
-    case 'ls':
-    case 'dir':
-    case 'gci':
-      logCmd(`    Directory: C:\\CyberConsole\\Root\nMode                LastWriteTime         Length Name\n----                -------------         ------ ----`, 'info');
-      Object.keys(files).forEach(name => {
-        const len = (files[name] || '').length;
-        logCmd(`-a----         8/22/2026   5:00 PM         ${len.toString().padStart(6, ' ')} ${name}`, 'info');
-      });
-      break;
-
-    case 'color':
-    case 'theme':
-      if (!arg) {
-        logCmd(`สีที่เลือกได้:\n` + Object.keys(COLOR_THEMES).map(k => `  • ${k} (${COLOR_THEMES[k].name})`).join('\n'), 'info');
-      } else if (COLOR_THEMES[arg]) {
-        applyTextColor(COLOR_THEMES[arg].color, COLOR_THEMES[arg].name);
-        logCmd(`เปลี่ยนสีตัวหนังสือเป็น: ${COLOR_THEMES[arg].name}`, 'success');
-      } else {
-        logCmd(`ไม่พบสี '${arg}'`, 'error');
-      }
-      break;
-
-    case 'cat':
-    case 'type':
-    case 'gc':
-      if (!arg) { logCmd('วิธีใช้: cat <ชื่อไฟล์>', 'error'); break; }
-      if (files[arg] !== undefined) {
-        const temp = document.createElement('div');
-        temp.innerHTML = files[arg];
-        logCmd(temp.innerText || '(ไฟล์ว่างเปล่า)', 'info');
-      } else {
-        logCmd(`ไม่พบไฟล์ '${arg}'`, 'error');
-      }
-      break;
-
-    case 'new':
-    case 'ni':
-    case 'touch':
-      if (!arg) { openCreate(); break; }
-      if (files[arg] !== undefined) { logCmd(`ไฟล์ '${arg}' มีอยู่แล้ว`, 'error'); }
-      else {
-        files[arg] = '';
-        localStorage.setItem('cn_files', JSON.stringify(files));
-        openFile(arg);
-        logCmd(`สร้างไฟล์ใหม่เรียบร้อย: ${arg}`, 'success');
-      }
-      break;
-
-    case 'edit':
-    case 'code':
-    case 'notepad':
-    case 'open':
-      if (!arg) { logCmd('วิธีใช้: edit <ชื่อไฟล์>', 'error'); break; }
-      if (files[arg] !== undefined) {
-        openFile(arg);
-        logCmd(`เปิดไฟล์ '${arg}' ในโปรแกรมแก้ไขแล้ว`, 'success');
-      } else {
-        logCmd(`ไม่พบไฟล์ '${arg}' กำลังสร้างไฟล์ใหม่...`, 'info');
-        files[arg] = '';
-        localStorage.setItem('cn_files', JSON.stringify(files));
-        openFile(arg);
-      }
-      break;
-
-    case 'rm':
-    case 'del':
-    case 'remove-item':
-      if (!arg) { logCmd('วิธีใช้: rm <ชื่อไฟล์>', 'error'); break; }
-      if (files[arg] !== undefined) {
-        deleteTarget = arg;
-        confirmDelete();
-        logCmd(`ลบไฟล์ '${arg}' เรียบร้อย`, 'success');
-      } else {
-        logCmd(`ไม่พบไฟล์ '${arg}'`, 'error');
-      }
-      break;
-
-    case 'clear':
-    case 'cls':
-      cmdLog.innerHTML = '';
-      cmdLog.classList.remove('open');
-      break;
-
-    case 'help':
-    case 'get-help':
-    case '?':
-      logCmd(`คำสั่ง Hollywood Hacker Console:
-  • hack, breach         - รันเอฟเฟกต์แฮกเจาะระบบฮอลลีวูด!
-  • matrix, rain         - เปิด/ปิด ฝนโค้ด Matrix ด้านหลัง
-  • dir, ls              - แสดงรายชื่อโน้ตทั้งหมด
-  • color <ชื่อสี>       - เปลี่ยนสีตัวหนังสือ (matrix-hacker, cyber-cyan, cyber-pink, mr-robot-amber, red-breach...)
-  • cat <ชื่อไฟล์>        - อ่านเนื้อหาของไฟล์
-  • new <ชื่อไฟล์>        - สร้างไฟล์โน้ตใหม่
-  • edit <ชื่อไฟล์>       - เปิดไฟล์ในตัวแก้ไข
-  • rm <ชื่อไฟล์>         - ลบไฟล์
-  • cls, clear           - ล้างข้อความ Terminal`, 'info');
-      break;
-
-    default:
-      logCmd(`ไม่รู้จักคำสั่ง '${cmd}' พิมพ์ 'help' เพื่อดูคำสั่งทั้งหมด`, 'error');
-      break;
-  }
+  });
 }
 
 /* ── UI Actions ── */
-function cmd(c) { editor.focus(); document.execCommand(c, false, null); }
+function cmd(c) {
+  if (editor) {
+    editor.focus();
+    document.execCommand(c, false, null);
+  }
+}
 
 function toggleSidebar() {
   const sb = document.getElementById('psSidebar');
-  sb.classList.toggle('collapsed');
+  if (sb) sb.classList.toggle('collapsed');
 }
 
-function addImage() { editor.focus(); imageInput.value = ''; imageInput.click(); }
+function addImage() {
+  if (editor) editor.focus();
+  imageInput.value = '';
+  imageInput.click();
+}
 imageInput.onchange = e => Array.from(e.target.files).forEach(insertImageFile);
 
 function insertImageFile(file) {
@@ -1987,7 +2818,7 @@ function confirmCreate() {
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
   closeModals();
   openFile(n);
-  logCmd(`// NEW FILE CREATED: ${n}`, 'success');
+  appendTerminalEntry('', `[+] สร้างไฟล์ใหม่เรียบร้อย: <span style="color:#00ff66;">${n}</span>`, false, true);
 }
 
 function confirmDelete() {
@@ -1999,24 +2830,30 @@ function confirmDelete() {
   if (keys.length) openFile(keys[0]);
   else {
     currentFile = null;
-    editor.innerHTML = '';
-    document.getElementById('currentFileBadge').textContent = '(NO_FILES)';
+    if (editor) editor.innerHTML = '';
+    const badge = document.getElementById('currentFileBadge');
+    if (badge) badge.textContent = '(NO_FILES)';
     renderTabsAndFiles();
     setStatus('saved');
     updateMetrics();
   }
 }
 
-function printPage() { doSave(); window.print(); }
+function printPage() {
+  doSave();
+  window.print();
+}
 
 /* Drag & Drop */
 const editorContainer = document.getElementById('editorContainer');
-editorContainer.addEventListener('dragover', e => e.preventDefault());
-editorContainer.addEventListener('drop', e => {
-  e.preventDefault();
-  const imgs = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-  imgs.forEach(insertImageFile);
-});
+if (editorContainer) {
+  editorContainer.addEventListener('dragover', e => e.preventDefault());
+  editorContainer.addEventListener('drop', e => {
+    e.preventDefault();
+    const imgs = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    imgs.forEach(insertImageFile);
+  });
+}
 
 /* PWA & Cache Purge */
 if ('caches' in window) {
@@ -2040,14 +2877,19 @@ if ('serviceWorker' in navigator) {
    ═══════════════════════════════════════════════════════════════ */
 if (Object.keys(files).length === 0) {
   files['ยินดีต้อนรับ.ps1'] = [
-    '<h2>// HOLLYWOOD HACKER TERMINAL — NEON SPARK ENGINE ⚡</h2>',
+    '<h2>// POWERSHELL 7.4 CYBER TERMINAL &amp; NOTE STUDIO ⚡</h2>',
     '<p>&nbsp;</p>',
-    '<p>ยินดีต้อนรับสู่ระบบ CodeNote</p>',
-    '<p>• 🎨 <b>เปลี่ยนสีตัวหนังสือ:</b> สามารถกดปุ่ม <b>"🎨 เปลี่ยนสีตัวหนังสือ"</b> บนแถบเครื่องมือ หรือเปิด <b>"🎨 สตูดิโอสี"</b> ด้านบนขวาเพื่อเลือกสีที่ต้องการได้ทันที</p>',
-    '<p>• ✨ <b>ประกายแสง:</b> เวลาพิมพ์จะมีประกายแสงนีออนพุ่งกระจายวิ่งตามเคอร์เซอร์</p>',
+    '<p>ยินดีต้อนรับสู่ระบบ <b>CodeNote — PowerShell Edition</b></p>',
+    '<p>• 💻 <b>ระบบพิมพ์แบบ PowerShell:</b> หน้าจอหลักเป็น PowerShell Terminal เต็มรูปแบบ มี Prompt <code>PS C:\\Users\\Administrator\\CyberConsole&gt;</code> พิมพ์คำสั่งแล้วกด Enter</p>',
+    '<p>• ✨ <b>PSReadLine Real-Time Highlighting:</b> ไฮไลต์สีคำสั่งอัตโนมัติขณะพิมพ์ (Cmdlets สีเหลือง, ข้อความสีฟ้า, ตัวแปรสีเขียว, พารามิเตอร์สีม่วงอ่อน)</p>',
+    '<p>• ⚡ <b>Tab Auto-Complete:</b> กดปุ่ม <b>Tab</b> เพื่อเติมคำสั่งหรือชื่อไฟล์อัตโนมัติ</p>',
+    '<p>• 📜 <b>ประวัติคำสั่ง:</b> กดลูกศร <b>↑ / ↓</b> เพื่อย้อนดูประวัติคำสั่งที่เคยพิมพ์</p>',
+    '<p>• 📝 <b>สลับโหมด:</b> กดปุ่ม <b>"📝 Script Editor"</b> ด้านบน หรือพิมพ์ <code>edit &lt;ชื่อไฟล์&gt;</code> หรือกดคีย์ลัด <code>F2</code> เพื่อสลับมาระหว่าง Terminal และ Editor ได้ตลอดเวลา</p>',
+    '<p>• 🎵 <b>เสียงคีย์บอร์ด SFX &amp; ประกายแสงเคอร์เซอร์:</b> มีประกายแสงวิ่งตามเคอร์เซอร์และเสียง Mechanical Switch สมจริงทุกปุ่ม</p>',
     '<p>&nbsp;</p>',
-    '<p><strong># คีย์ลัด:</strong></p>',
-    '<p>• <b>Ctrl+S:</b> บันทึก · <b>Ctrl+N:</b> สร้างโน้ตใหม่ · <b>Tab:</b> เว้นวรรคย่อหน้า</p>'
+    '<p><strong># คำสั่งแนะนำ:</strong></p>',
+    '<p>• <code>dir</code> : ดูรายชื่อโน้ตทั้งหมด · <code>cat ยินดีต้อนรับ.ps1</code> : อ่านเนื้อหา</p>',
+    '<p>• <code>note &lt;ข้อความ&gt;</code> : จดบันทึกบรรทัดใหม่ทันที · <code>cls</code> : ล้างหน้าจอ</p>'
   ].join('');
   try { localStorage.setItem('cn_files', JSON.stringify(files)); } catch(e) {}
 }
@@ -2057,6 +2899,8 @@ setFontSize(currentFontSize);
 setFontFamily(currentFontFamily);
 buildSfxPanel();
 openFile(Object.keys(files)[0] || 'ยินดีต้อนรับ.ps1');
+switchMode(currentMode);
+updateCliSyntax();
 </script>
 </body>
 </html>
