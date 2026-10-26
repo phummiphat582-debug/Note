@@ -70,38 +70,173 @@ html, body {
   overflow: hidden;
 }
 
-/* Titlebar */
+/* ═══════════════════════════════════════════════════════════════
+   WINDOWS TERMINAL TITLEBAR & WORK TABS
+   ═══════════════════════════════════════════════════════════════ */
 .ps-titlebar {
-  height: 32px;
+  height: 38px;
   background: var(--bg-titlebar);
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
-  padding-left: 10px;
+  padding: 0;
   user-select: none;
   flex-shrink: 0;
   border-bottom: 1px solid var(--border-matte);
+  position: relative;
+  z-index: 100;
 }
 
-.ps-title-left {
+.ps-tabs-bar {
   display: flex;
+  align-items: flex-end;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding-left: 6px;
+  overflow: hidden;
+}
+
+.ps-tabs-list {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  gap: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  max-width: calc(100% - 40px);
+}
+.ps-tabs-list::-webkit-scrollbar { display: none; }
+
+.ps-tab {
+  height: 32px;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  color: #cccccc;
+  padding: 0 10px;
+  background: #181818;
+  color: #999999;
+  font-size: 12.5px;
+  font-family: var(--font-ps);
+  border-radius: 4px 4px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+  flex-shrink: 0;
 }
 
-.ps-icon {
-  width: 16px;
-  height: 16px;
+.ps-tab:hover {
+  background: #222222;
+  color: #e0e0e0;
+}
+
+.ps-tab.active {
+  background: var(--bg-matte);
+  color: #ffffff;
+  border-color: var(--border-matte);
+  border-bottom: 1px solid var(--bg-matte);
+  margin-bottom: -1px;
+  z-index: 2;
+  box-shadow: 0 -2px 0 0 #0078d4 inset;
+}
+
+.ps-tab-icon {
+  width: 15px;
+  height: 15px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: #0078d4;
   color: #ffffff;
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 700;
   border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ps-tab-title {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ps-tab-close {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: #888888;
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+  transition: background 0.1s, color 0.1s;
+}
+
+.ps-tab-close:hover {
+  background: #e81123;
+  color: #ffffff;
+}
+
+.ps-tab-add-btn {
+  height: 28px;
+  width: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #aaaaaa;
+  font-size: 16px;
+  font-family: inherit;
+  cursor: pointer;
+  margin-left: 3px;
+  margin-bottom: 2px;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ps-tab-add-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.ps-titlebar-right {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.ps-titlebar-tool-btn {
+  height: 100%;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  color: #aaaaaa;
+  font-size: 11.5px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+.ps-titlebar-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 
 .ps-win-controls {
@@ -111,7 +246,7 @@ html, body {
 }
 
 .ps-win-btn {
-  width: 46px;
+  width: 44px;
   height: 100%;
   display: inline-flex;
   align-items: center;
@@ -130,6 +265,13 @@ html, body {
 .ps-win-btn.close-btn:hover {
   background: #e81123;
   color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .ps-tab-title { max-width: 80px; font-size: 11px; }
+  .ps-tab { padding: 0 6px; gap: 5px; }
+  .ps-titlebar-tool-btn .btn-label { display: none; }
+  .ps-win-btn { width: 34px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -156,15 +298,6 @@ html, body {
 ::selection {
   background: #ffffff;
   color: #000000;
-}
-
-/* Header Banner */
-.ps-banner {
-  margin-bottom: 12px;
-  line-height: 1.45;
-}
-.ps-banner-row {
-  color: var(--text-bright);
 }
 
 /* History Log */
@@ -384,30 +517,26 @@ html, body {
 
 <body>
 <div class="ps-window">
-  <!-- Titlebar -->
+  <!-- Windows Terminal Titlebar with Tabs -->
   <div class="ps-titlebar">
-    <div class="ps-title-left">
-      <span class="ps-icon">&gt;_</span>
-      <span>Administrator: Windows PowerShell</span>
+    <div class="ps-tabs-bar">
+      <div class="ps-tabs-list" id="psTabsList"></div>
+      <button class="ps-tab-add-btn" id="psAddTabBtn" title="เพิ่มแท็บงานใหม่ (Ctrl+T)" onclick="createNewTab()">+</button>
     </div>
-    <div class="ps-win-controls">
-      <button class="ps-win-btn" title="Minimize" onclick="executeCmd('cls')">─</button>
-      <button class="ps-win-btn" title="Maximize" onclick="toggleFullscreen()">□</button>
-      <button class="ps-win-btn close-btn" title="Close" onclick="executeCmd('exit')">✕</button>
+    <div class="ps-titlebar-right">
+      <button class="ps-titlebar-tool-btn" title="เปิดสมุดโน้ต Notepad" onclick="openNotepad(['C:','Users','Administrator','Documents','Notes.txt'])">
+        <span>📝</span><span class="btn-label">Notepad</span>
+      </button>
+      <div class="ps-win-controls">
+        <button class="ps-win-btn" title="Minimize / ล้างหน้าจอ" onclick="executeCmd('cls')">─</button>
+        <button class="ps-win-btn" title="Maximize" onclick="toggleFullscreen()">□</button>
+        <button class="ps-win-btn close-btn" title="Close Tab" onclick="closeTab(activeTabId)">✕</button>
+      </div>
     </div>
   </div>
 
   <!-- Console Viewport -->
   <div class="ps-console" id="psConsole">
-    <!-- Header Banner -->
-    <div class="ps-banner">
-      <div class="ps-banner-row">Windows PowerShell</div>
-      <div class="ps-banner-row">Copyright (C) Microsoft Corporation. All rights reserved.</div>
-      <div class="ps-banner-row" style="margin-top:4px;color:#85a5ff;">
-        Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
-      </div>
-    </div>
-
     <!-- Output History -->
     <div class="ps-history" id="psHistory"></div>
 
@@ -587,6 +716,7 @@ const CMDS = [
   'whoami', 'hostname',
   'get-command', 'gcm',
   'get-help', 'help', 'man',
+  'tab', 'tabs', 'new-tab',
   'exit'
 ];
 
@@ -599,6 +729,210 @@ const psHistory = document.getElementById('psHistory');
 const psInput = document.getElementById('psInput');
 const psPromptStr = document.getElementById('psPromptStr');
 let cmdHistory = [], historyIndex = -1;
+
+/* ═══════════════════════════════════════════════════════════════
+   WORK TABS & PERSISTENT SESSION ENGINE ("ถ้าไม่ลบงานก็ไม่หาย")
+   ═══════════════════════════════════════════════════════════════ */
+const STORAGE_KEY_TABS = 'ps_tabs_v2';
+const STORAGE_KEY_ACTIVE_TAB = 'ps_active_tab_v2';
+
+let tabs = [];
+let activeTabId = null;
+
+function saveTabs() {
+  try {
+    localStorage.setItem(STORAGE_KEY_TABS, JSON.stringify(tabs));
+    if (activeTabId) {
+      localStorage.setItem(STORAGE_KEY_ACTIVE_TAB, activeTabId);
+    }
+  } catch(e) {
+    console.warn("Error saving tabs to localStorage:", e);
+  }
+}
+
+function getActiveTab() {
+  if (!tabs || tabs.length === 0) return null;
+  return tabs.find(t => t.id === activeTabId) || tabs[0];
+}
+
+function saveActiveTabState() {
+  const tab = getActiveTab();
+  if (tab) {
+    tab.historyHtml = psHistory ? psHistory.innerHTML : '';
+    tab.cmdHistory = [...cmdHistory];
+    tab.currentPath = [...currentPath];
+    saveTabs();
+  }
+}
+
+function loadActiveTab() {
+  const tab = getActiveTab();
+  if (!tab) return;
+  activeTabId = tab.id;
+  currentPath = (Array.isArray(tab.currentPath) && tab.currentPath.length > 0) ? [...tab.currentPath] : ["C:", "Users", "Administrator"];
+  cmdHistory = Array.isArray(tab.cmdHistory) ? [...tab.cmdHistory] : [];
+  historyIndex = cmdHistory.length;
+  if (psHistory) {
+    psHistory.innerHTML = tab.historyHtml || '';
+  }
+  if (psPromptStr) {
+    psPromptStr.textContent = getPromptString();
+  }
+  if (psInput) {
+    psInput.value = '';
+    psInput.style.height = '22px';
+  }
+  scrollBottom();
+}
+
+function switchTab(tabId) {
+  if (tabId === activeTabId) return;
+  saveActiveTabState();
+  activeTabId = tabId;
+  saveTabs();
+  loadActiveTab();
+  renderTabs();
+  setTimeout(() => { if (psInput) psInput.focus(); }, 30);
+}
+
+function createNewTab(customTitle) {
+  saveActiveTabState();
+  const nextNum = tabs.length + 1;
+  const newTab = {
+    id: 'tab_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+    title: customTitle || `งาน ${nextNum}`,
+    currentPath: ["C:", "Users", "Administrator"],
+    historyHtml: '',
+    cmdHistory: []
+  };
+  tabs.push(newTab);
+  activeTabId = newTab.id;
+  saveTabs();
+  loadActiveTab();
+  renderTabs();
+
+  const tabsList = document.getElementById('psTabsList');
+  if (tabsList) {
+    setTimeout(() => { tabsList.scrollLeft = tabsList.scrollWidth; }, 40);
+  }
+  setTimeout(() => { if (psInput) psInput.focus(); }, 30);
+}
+
+function renameTab(tabId) {
+  const tab = tabs.find(t => t.id === tabId);
+  if (!tab) return;
+  const newName = window.prompt("เปลี่ยนชื่องาน (Tab Title):", tab.title);
+  if (newName !== null) {
+    const trimmed = newName.trim();
+    if (trimmed) {
+      tab.title = trimmed;
+      saveTabs();
+      renderTabs();
+    }
+  }
+}
+
+function closeTab(tabId) {
+  const tab = tabs.find(t => t.id === tabId);
+  if (!tab) return;
+
+  if (tabs.length <= 1) {
+    const ok = window.confirm(`คุณต้องการล้างงานในแท็บ "${tab.title}" หรือไม่?\n(ประวัติในแท็บนี้จะถูกล้างและเริ่มต้นใหม่)`);
+    if (ok) {
+      tab.title = 'งาน 1';
+      tab.historyHtml = '';
+      tab.cmdHistory = [];
+      tab.currentPath = ["C:", "Users", "Administrator"];
+      saveTabs();
+      loadActiveTab();
+      renderTabs();
+    }
+    return;
+  }
+
+  const ok = window.confirm(`คุณต้องการลบแท็บ "${tab.title}" หรือไม่?\nงานในแท็บนี้จะถูกลบถาวร`);
+  if (!ok) return;
+
+  const idx = tabs.findIndex(t => t.id === tabId);
+  if (idx !== -1) {
+    tabs.splice(idx, 1);
+    if (activeTabId === tabId) {
+      const nextIdx = Math.max(0, idx - 1);
+      activeTabId = tabs[nextIdx].id;
+      loadActiveTab();
+    }
+    saveTabs();
+    renderTabs();
+  }
+}
+
+function renderTabs() {
+  const list = document.getElementById('psTabsList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  tabs.forEach(tab => {
+    const isAct = tab.id === activeTabId;
+    const tabEl = document.createElement('div');
+    tabEl.className = 'ps-tab' + (isAct ? ' active' : '');
+    tabEl.title = `งาน: ${tab.title} (คลิกเพื่อเลือก, ดับเบิลคลิกเพื่อเปลี่ยนชื่อ)`;
+
+    tabEl.innerHTML = `
+      <span class="ps-tab-icon">&gt;_</span>
+      <span class="ps-tab-title">${escapeHtml(tab.title)}</span>
+      <button class="ps-tab-close" title="ลบแท็บงาน (✕)">✕</button>
+    `;
+
+    tabEl.addEventListener('click', (e) => {
+      if (e.target.closest('.ps-tab-close')) {
+        e.stopPropagation();
+        closeTab(tab.id);
+        return;
+      }
+      switchTab(tab.id);
+    });
+
+    tabEl.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      renameTab(tab.id);
+    });
+
+    tabEl.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      renameTab(tab.id);
+    });
+
+    list.appendChild(tabEl);
+  });
+}
+
+function initTabs() {
+  try {
+    tabs = JSON.parse(localStorage.getItem(STORAGE_KEY_TABS));
+  } catch(e) { tabs = null; }
+
+  if (!Array.isArray(tabs) || tabs.length === 0) {
+    tabs = [
+      {
+        id: 'tab_' + Date.now(),
+        title: 'งาน 1',
+        currentPath: ["C:", "Users", "Administrator"],
+        historyHtml: '',
+        cmdHistory: []
+      }
+    ];
+    saveTabs();
+  }
+
+  activeTabId = localStorage.getItem(STORAGE_KEY_ACTIVE_TAB);
+  if (!activeTabId || !tabs.some(t => t.id === activeTabId)) {
+    activeTabId = tabs[0].id;
+    saveTabs();
+  }
+
+  loadActiveTab();
+  renderTabs();
+}
 
 function scrollBottom() {
   setTimeout(() => { psConsole.scrollTop = psConsole.scrollHeight; }, 10);
@@ -625,6 +959,7 @@ function appendLog(cmdText, outputHtml, isError = false) {
 
   psHistory.appendChild(entry);
   scrollBottom();
+  saveActiveTabState();
 }
 
 function formatError(cmdName, message, category = 'CommandNotFoundException') {
@@ -883,10 +1218,56 @@ At line:1 char:1
       break;
     }
 
+    case 'tab':
+    case 'tabs':
+    case 'new-tab':
+    case 'แท็บ': {
+      const subCmd = (args[0] || '').toLowerCase();
+      if (cmd === 'new-tab' || subCmd === 'new' || subCmd === 'add' || subCmd === 'create') {
+        const tabName = (cmd === 'new-tab' ? args.join(' ') : args.slice(1).join(' ')) || `งาน ${tabs.length + 1}`;
+        createNewTab(tabName);
+        appendLog(trimmed, `<span style="color:var(--ps-green)">[+] สร้างแท็บงานใหม่: "${escapeHtml(tabName)}" เรียบร้อยแล้ว</span>`);
+      } else if (subCmd === 'list' || subCmd === 'ls') {
+        let out = `Id                           Name                      Status\n`;
+        out +=    `--                           ----                      ------\n`;
+        tabs.forEach((t, idx) => {
+          const isAct = t.id === activeTabId;
+          out += `${t.id.padEnd(28, ' ')} ${(idx + 1) + '. ' + t.title.padEnd(23, ' ')} ${isAct ? '[Active]' : ''}\n`;
+        });
+        appendLog(trimmed, `<pre style="font-family:inherit;">${out}</pre>`);
+      } else if (subCmd === 'rename' || subCmd === 'name') {
+        const newName = args.slice(1).join(' ').trim();
+        if (!newName) {
+          appendLog(trimmed, `<pre style="font-family:inherit;">Usage: tab rename &lt;ชื่อใหม่&gt;</pre>`, true);
+        } else {
+          const activeTab = getActiveTab();
+          if (activeTab) {
+            const old = activeTab.title;
+            activeTab.title = newName;
+            saveTabs();
+            renderTabs();
+            appendLog(trimmed, `<span style="color:var(--ps-green)">[+] เปลี่ยนชื่องานจาก "${escapeHtml(old)}" เป็น "${escapeHtml(newName)}"</span>`);
+          }
+        }
+      } else if (subCmd === 'close' || subCmd === 'del' || subCmd === 'remove') {
+        closeTab(activeTabId);
+        appendLog(trimmed, '');
+      } else {
+        let out = `ระบบแท็บงาน (Work Tabs):\n`;
+        out += `  tab new [ชื่องาน]     - เพิ่มแท็บงานใหม่ (หรือคลิกปุ่ม + ด้านบน)\n`;
+        out += `  tab list             - ดูรายชื่อแท็บงานทั้งหมด\n`;
+        out += `  tab rename <ชื่อใหม่> - เปลี่ยนชื่องานของแท็บปัจจุบัน (หรือดับเบิลคลิกที่ชื่อแท็บ)\n`;
+        out += `  tab close            - ลบแท็บงานปัจจุบัน (หรือกดกากบาท ✕)\n`;
+        appendLog(trimmed, `<pre style="font-family:inherit;">${out}</pre>`);
+      }
+      break;
+    }
+
     case 'clear-host':
     case 'cls':
     case 'clear':
       psHistory.innerHTML = '';
+      saveActiveTabState();
       break;
 
     case 'write-host':
@@ -954,7 +1335,12 @@ TOPIC
 SHORT DESCRIPTION
     Windows PowerShell is a task-based command-line shell and scripting language.
 
-CMDLETS FOR NOTE-TAKING &amp; FILES:
+CMDLETS FOR NOTE-TAKING &amp; WORK TABS:
+    tab new [name]            - Create a new work tab (+)
+    tab list                  - List all work tabs
+    tab rename &lt;name&gt;         - Rename current tab (or double click tab)
+    tab close                 - Close current tab (or click ✕)
+    notepad [file]            - Open Windows Notepad editor
     Get-ChildItem (dir, ls)   - List files and folders
     Get-Content (cat, type)   - Read file content
     Set-Content (sc)          - Write text to file
@@ -963,7 +1349,6 @@ CMDLETS FOR NOTE-TAKING &amp; FILES:
     Remove-Item (ri, del, rm) - Remove files
     Set-Location (cd)         - Change directory
     Get-Location (pwd)        - Current directory
-    notepad [file]            - Open Windows Notepad editor
     Clear-Host (cls)          - Clear screen
     Get-Process (ps)          - View running processes
     whoami, hostname, date    - System information
@@ -971,8 +1356,11 @@ CMDLETS FOR NOTE-TAKING &amp; FILES:
       break;
 
     case 'exit':
-      window.close();
-      appendLog(trimmed, `[Process completed]`);
+      if (tabs.length > 1) {
+        closeTab(activeTabId);
+      } else {
+        appendLog(trimmed, `[Process completed]`);
+      }
       break;
 
     default:
@@ -1156,6 +1544,9 @@ function updateLnCol() {
   document.getElementById('npStatusLnCol').textContent = `Ln ${ln}, Col ${col}`;
 }
 
+notepadTextarea.addEventListener('input', () => {
+  saveNotepad();
+});
 notepadTextarea.addEventListener('keyup', updateLnCol);
 notepadTextarea.addEventListener('click', updateLnCol);
 notepadTextarea.addEventListener('keydown', e => {
@@ -1179,8 +1570,24 @@ function toggleFullscreen() {
 /* ═══════════════════════════════════════════════════════════════
    INITIALIZATION
    ═══════════════════════════════════════════════════════════════ */
-psPromptStr.textContent = getPromptString();
-if (psInput) psInput.focus();
+initTabs();
+
+window.addEventListener('beforeunload', () => {
+  saveActiveTabState();
+  saveFs();
+});
+
+window.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 't') {
+    e.preventDefault();
+    createNewTab();
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'w') {
+    if (tabs.length > 1 && !notepadModal.classList.contains('show')) {
+      e.preventDefault();
+      closeTab(activeTabId);
+    }
+  }
+});
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(regs => {
